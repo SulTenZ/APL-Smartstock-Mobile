@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../data/api/services/auth_service.dart';
+import '../../../data/services/auth_service.dart';
 
 class LoginController {
   final AuthService _authService = AuthService();
