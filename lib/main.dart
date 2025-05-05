@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+
+import 'features/splash/splash_view.dart';
 import 'features/authentication/login/login_view.dart';
+import 'features/authentication/register/register_view.dart';
+import 'features/authentication/registerOTP/register_otp_view.dart';
+import 'features/home/home_view.dart';
+import 'features/stock/manage_stock_view.dart';
+import 'features/stock/product/product_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,30 +21,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'E-Inventory',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProductController()),
+        // Tambahkan provider lain di sini jika diperlukan
+      ],
+      child: MaterialApp(
+        title: 'E-Inventory',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        initialRoute: '/splash',
+        routes: {
+          '/splash': (context) => const SplashView(),
+          '/login': (context) => const LoginView(),
+          '/register': (context) => const RegisterView(),
+          '/home': (context) => const HomeView(),
+          '/manage-stock': (context) => const ManageStockView(),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == '/register-otp') {
+            final email = settings.arguments as String;
+            return MaterialPageRoute(
+              builder: (context) => RegisterOtpView(email: email),
+            );
+          }
+          return null;
+        },
       ),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => const LoginView(),
-        '/dashboard': (context) => const DashboardView(),
-      },
-    );
-  }
-}
-
-class DashboardView extends StatelessWidget {
-  const DashboardView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Dashboard")),
-      body: const Center(child: Text("Welcome to Dashboard!")),
     );
   }
 }
