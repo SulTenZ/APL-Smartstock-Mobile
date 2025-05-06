@@ -56,36 +56,59 @@ class _EditBrandBody extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
-            CustomFormField(
-              label: 'Nama Brand',
-              hintText: 'Masukkan nama brand',
-              controller: controller.namaController, onChanged: (val) {  },
-            ),
-            const SizedBox(height: 12),
-            CustomFormField(
-              label: 'Deskripsi',
-              hintText: 'Masukkan deskripsi',
-              controller: controller.deskripsiController, onChanged: (val) {  },
-            ),
-            const SizedBox(height: 12),
+
+            // Gambar dipindahkan ke atas
             GestureDetector(
               onTap: controller.pickImage,
               child: Container(
-                height: 160,
+                height: 200,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(color: Colors.grey.shade400),
                 ),
                 child: controller.imageFile != null
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.file(controller.imageFile!, fit: BoxFit.cover),
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.file(
+                          controller.imageFile!,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                       )
-                    : const Center(child: Text('Tap untuk memilih gambar')),
+                    : const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.camera_alt, size: 48, color: Colors.grey),
+                            SizedBox(height: 8),
+                            Text('Tap untuk memilih gambar'),
+                          ],
+                        ),
+                      ),
               ),
             ),
-            const SizedBox(height: 20),
+
+            const SizedBox(height: 16),
+
+            CustomFormField(
+              label: 'Nama Brand',
+              hintText: 'Masukkan nama brand',
+              controller: controller.namaController,
+              onChanged: (val) {},
+            ),
+            const SizedBox(height: 12),
+
+            CustomFormField(
+              label: 'Deskripsi',
+              hintText: 'Masukkan deskripsi',
+              controller: controller.deskripsiController,
+              onChanged: (val) {},
+            ),
+
+            const SizedBox(height: 24),
+
             CustomButton(
               text: 'Simpan Perubahan',
               onPressed: () async {

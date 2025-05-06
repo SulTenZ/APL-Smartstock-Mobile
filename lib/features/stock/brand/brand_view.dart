@@ -137,10 +137,7 @@ class BrandBody extends StatelessWidget {
                                 ),
                                 child: IconButton(
                                   icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                                  onPressed: () => controller.deleteBrand(
-                                    context,
-                                    item['id'].toString(),
-                                  ),
+                                  onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
                                 ),
                               ),
                             ],
@@ -169,6 +166,45 @@ class BrandBody extends StatelessWidget {
             'Tambahkan brand produk dengan menekan tombol + di atas',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, BrandController controller, String id) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text(
+          'Konfirmasi Hapus',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: const Text('Apakah kamu yakin ingin menghapus brand ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Batal'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.grey[700],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              controller.deleteBrand(context, id);
+            },
+            child: const Text('Hapus'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
           ),
         ],
       ),

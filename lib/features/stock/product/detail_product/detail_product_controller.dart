@@ -59,36 +59,35 @@ class DetailProductController extends ChangeNotifier {
     }
   }
 
-  // Update product size
-  Future<bool> updateProductSize({
-    required String productId,
-    required String sizeId,
-    required int quantity,
-  }) async {
-    try {
-      isLoading = true;
-      errorMessage = null;
-      notifyListeners();
+// Update product size (menggunakan productSizeId yang benar)
+Future<bool> updateProductSize({
+  required String productSizeId,
+  required int quantity,
+}) async {
+  try {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
 
-      await _productService.updateProductSize(
-        productId: productId,
-        sizeId: sizeId,
-        quantity: quantity,
-      );
+    await _productService.updateProductSize(
+      productSizeId: productSizeId,
+      quantity: quantity,
+    );
 
-      // Refresh product details after updating size
-      await getProductDetails(productId);
+    // Refresh product details after updating size
+    await getProductDetails(product?['id']);
 
-      isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      isLoading = false;
-      errorMessage = e.toString();
-      notifyListeners();
-      return false;
-    }
+    isLoading = false;
+    notifyListeners();
+    return true;
+  } catch (e) {
+    isLoading = false;
+    errorMessage = e.toString();
+    notifyListeners();
+    return false;
   }
+}
+
 
   // Delete product size
   Future<bool> deleteProductSize({

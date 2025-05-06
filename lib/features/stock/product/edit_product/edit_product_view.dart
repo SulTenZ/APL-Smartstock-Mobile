@@ -1,7 +1,8 @@
-// lib/features/stock/product/edit_product/edit_product_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../data/services/product_service.dart';
+import '../../../../common/widgets/custom_button.dart';
+import '../../../../common/widgets/custom_form.dart';
 import '../edit_product/edit_product_controller.dart';
 
 class EditProductView extends StatefulWidget {
@@ -63,41 +64,65 @@ class _EditProductViewState extends State<EditProductView> {
     return ChangeNotifierProvider(
       create: (_) => EditProductController(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Edit Produk')),
+        backgroundColor: Colors.grey[100],
+        appBar: AppBar(
+          backgroundColor: Colors.grey[500],
+          elevation: 0,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+          ),
+          title: const Text(
+            'Edit Produk',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Colors.white,
+            ),
+          ),
+        ),
         body: isLoadingProduct || product == null
             ? const Center(child: CircularProgressIndicator())
             : Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Form(
                   key: _formKey,
                   child: Consumer<EditProductController>(
                     builder: (context, controller, _) {
                       return Column(
                         children: [
-                          TextFormField(
+                          CustomFormField(
+                            label: 'Nama Produk',
+                            hintText: 'Masukkan nama produk',
                             controller: _namaController,
-                            decoration: const InputDecoration(labelText: 'Nama Produk'),
-                            validator: (value) => value!.isEmpty ? 'Wajib diisi' : null,
+                            onChanged: (_) {},
                           ),
-                          TextFormField(
+                          const SizedBox(height: 16),
+                          CustomFormField(
+                            label: 'Harga Beli',
+                            hintText: 'Masukkan harga beli',
                             controller: _hargaBeliController,
-                            decoration: const InputDecoration(labelText: 'Harga Beli'),
                             keyboardType: TextInputType.number,
-                            validator: (value) => value!.isEmpty ? 'Wajib diisi' : null,
+                            onChanged: (_) {},
                           ),
-                          TextFormField(
+                          const SizedBox(height: 16),
+                          CustomFormField(
+                            label: 'Harga Jual',
+                            hintText: 'Masukkan harga jual',
                             controller: _hargaJualController,
-                            decoration: const InputDecoration(labelText: 'Harga Jual'),
                             keyboardType: TextInputType.number,
-                            validator: (value) => value!.isEmpty ? 'Wajib diisi' : null,
+                            onChanged: (_) {},
                           ),
-                          TextFormField(
+                          const SizedBox(height: 16),
+                          CustomFormField(
+                            label: 'Minimal Stok',
+                            hintText: 'Masukkan minimal stok',
                             controller: _minStockController,
-                            decoration: const InputDecoration(labelText: 'Minimal Stok'),
                             keyboardType: TextInputType.number,
+                            onChanged: (_) {},
                           ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
+                          const SizedBox(height: 24),
+                          CustomButton(
+                            text: 'Simpan Perubahan',
                             onPressed: controller.isLoading
                                 ? null
                                 : () async {
@@ -121,9 +146,7 @@ class _EditProductViewState extends State<EditProductView> {
                                       }
                                     }
                                   },
-                            child: controller.isLoading
-                                ? const CircularProgressIndicator()
-                                : const Text('Simpan Perubahan'),
+                            isDisabled: controller.isLoading,
                           )
                         ],
                       );

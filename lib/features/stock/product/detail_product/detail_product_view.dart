@@ -56,10 +56,12 @@ class _DetailProductViewState extends State<DetailProductView> {
             ),
             body: _buildBody(controller),
             floatingActionButton: FloatingActionButton(
+              backgroundColor: Colors.grey[500],
               onPressed: () => _showAddSizeDialog(context, controller),
-              child: const Icon(Icons.add),
+              child: const Icon(Icons.add, color: Colors.white),
               tooltip: 'Tambah Ukuran',
             ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           );
         },
       ),
@@ -334,7 +336,7 @@ class _DetailProductViewState extends State<DetailProductView> {
                             onPressed: () => _showUpdateSizeDialog(
                               context,
                               controller,
-                              size['size']?['id'],
+                              size['id'], // Using productSizeId for the update
                               size['size']?['label'],
                               size['quantity'] ?? 0,
                             ),
@@ -518,11 +520,11 @@ class _DetailProductViewState extends State<DetailProductView> {
   Future<void> _showUpdateSizeDialog(
     BuildContext context,
     DetailProductController controller,
-    String? sizeId,
+    String? productSizeId, // Change to productSizeId
     String? sizeLabel,
     int currentQuantity,
   ) async {
-    if (sizeId == null) {
+    if (productSizeId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('ID ukuran tidak valid')),
       );
@@ -571,8 +573,7 @@ class _DetailProductViewState extends State<DetailProductView> {
                   });
                   
                   final success = await controller.updateProductSize(
-                    productId: widget.productId,
-                    sizeId: sizeId,
+                    productSizeId: productSizeId, // Updated parameter name
                     quantity: quantity,
                   );
                   

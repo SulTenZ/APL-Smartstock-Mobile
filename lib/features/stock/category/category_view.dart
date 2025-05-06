@@ -1,3 +1,4 @@
+// lib/features/stock/category/category_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'category_controller.dart';
@@ -106,11 +107,9 @@ class CategoryBody extends StatelessWidget {
                                 MaterialPageRoute(
                                   builder: (_) => EditCategoryView(
                                     id: item['id'].toString(),
-                                    name: item['nama'],
-                                    desc: item['deskripsi'] ?? '',
+                                    nama: item['nama'],
+                                    deskripsi: item['deskripsi'] ?? '',
                                     productTypeId: item['productTypeId'].toString(),
-                                    nama: '',
-                                    deskripsi: '',
                                   ),
                                 ),
                               );
@@ -121,10 +120,7 @@ class CategoryBody extends StatelessWidget {
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => controller.deleteCategory(
-                              context,
-                              item['id'].toString(),
-                            ),
+                            onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
                           ),
                         ],
                       ),
@@ -133,6 +129,46 @@ class CategoryBody extends StatelessWidget {
                 },
               ),
             ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, CategoryController controller, String id) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text(
+          'Konfirmasi Hapus',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: const Text('Apakah kamu yakin ingin menghapus kategori ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Batal'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.grey[700],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              controller.deleteCategory(context, id);
+              controller.fetchCategories(); // ✅ Auto-refresh setelah hapus
+            },
+            child: const Text('Hapus'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

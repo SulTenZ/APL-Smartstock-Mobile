@@ -33,10 +33,7 @@ class ProductService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return {
-        'data': data['data'],
-        'pagination': data['pagination'],
-      };
+      return {'data': data['data'], 'pagination': data['pagination']};
     } else {
       throw Exception('Gagal mengambil data produk');
     }
@@ -77,26 +74,27 @@ class ProductService {
   }) async {
     final token = await SharedPrefs.getToken();
     final uri = Uri.parse('$baseUrl/api/product');
-    
-    final request = http.MultipartRequest('POST', uri)
-      ..headers['Authorization'] = 'Bearer $token'
-      ..fields['nama'] = nama
-      ..fields['hargaBeli'] = hargaBeli.toString()
-      ..fields['hargaJual'] = hargaJual.toString()
-      ..fields['categoryId'] = categoryId.toString()
-      ..fields['brandId'] = brandId.toString()
-      ..fields['productTypeId'] = productTypeId;
+
+    final request =
+        http.MultipartRequest('POST', uri)
+          ..headers['Authorization'] = 'Bearer $token'
+          ..fields['nama'] = nama
+          ..fields['hargaBeli'] = hargaBeli.toString()
+          ..fields['hargaJual'] = hargaJual.toString()
+          ..fields['categoryId'] = categoryId.toString()
+          ..fields['brandId'] = brandId.toString()
+          ..fields['productTypeId'] = productTypeId;
 
     if (deskripsi != null) request.fields['deskripsi'] = deskripsi;
     if (minStock != null) request.fields['minStock'] = minStock.toString();
     if (kondisi != null) request.fields['kondisi'] = kondisi;
     if (stockBatchId != null) request.fields['stockBatchId'] = stockBatchId;
-    
+
     // Add sizes if provided
     if (sizes != null && sizes.isNotEmpty) {
       request.fields['sizes'] = jsonEncode(sizes);
     }
-    
+
     // Add image if provided
     if (imageFile != null) {
       final mimeType = lookupMimeType(imageFile.path);
@@ -142,7 +140,7 @@ class ProductService {
   }) async {
     final token = await SharedPrefs.getToken();
     final uri = Uri.parse('$baseUrl/api/product/$id');
-    
+
     final request = http.MultipartRequest('PUT', uri)
       ..headers['Authorization'] = 'Bearer $token';
 
@@ -150,18 +148,19 @@ class ProductService {
     if (deskripsi != null) request.fields['deskripsi'] = deskripsi;
     if (hargaBeli != null) request.fields['hargaBeli'] = hargaBeli.toString();
     if (hargaJual != null) request.fields['hargaJual'] = hargaJual.toString();
-    if (categoryId != null) request.fields['categoryId'] = categoryId.toString();
+    if (categoryId != null)
+      request.fields['categoryId'] = categoryId.toString();
     if (brandId != null) request.fields['brandId'] = brandId.toString();
     if (productTypeId != null) request.fields['productTypeId'] = productTypeId;
     if (minStock != null) request.fields['minStock'] = minStock.toString();
     if (kondisi != null) request.fields['kondisi'] = kondisi;
     if (stockBatchId != null) request.fields['stockBatchId'] = stockBatchId;
-    
+
     // Add sizes if provided
     if (sizes != null) {
       request.fields['sizes'] = jsonEncode(sizes);
     }
-    
+
     // Add image if provided
     if (imageFile != null) {
       final mimeType = lookupMimeType(imageFile.path);
@@ -238,10 +237,7 @@ class ProductService {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({
-        'sizeId': sizeId,
-        'quantity': quantity,
-      }),
+      body: jsonEncode({'sizeId': sizeId, 'quantity': quantity}),
     );
 
     if (response.statusCode == 201) {
@@ -253,14 +249,13 @@ class ProductService {
     }
   }
 
-  // Update product size stock
+  // Update product size stock (berdasarkan productSizeId, bukan kombinasi productId & sizeId)
   Future<Map<String, dynamic>> updateProductSize({
-    required String productId,
-    required String sizeId,
+    required String productSizeId,
     required int quantity,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product/$productId/sizes/$sizeId');
+    final uri = Uri.parse('$baseUrl/api/product-size/$productSizeId');
 
     final response = await http.put(
       uri,
@@ -268,9 +263,7 @@ class ProductService {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({
-        'quantity': quantity,
-      }),
+      body: jsonEncode({'quantity': quantity}),
     );
 
     if (response.statusCode == 200) {
@@ -278,7 +271,9 @@ class ProductService {
       return data['data'];
     } else {
       final body = jsonDecode(response.body);
-      throw Exception(body['message'] ?? 'Gagal memperbarui stok ukuran produk');
+      throw Exception(
+        body['message'] ?? 'Gagal memperbarui stok ukuran produk',
+      );
     }
   }
 

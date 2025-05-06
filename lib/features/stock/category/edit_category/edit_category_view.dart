@@ -18,8 +18,6 @@ class EditCategoryView extends StatelessWidget {
     required this.nama,
     required this.deskripsi,
     required this.productTypeId,
-    required name,
-    required desc,
   });
 
   @override
@@ -94,13 +92,15 @@ class _EditCategoryBodyState extends State<EditCategoryBody> {
                   CustomFormField(
                     label: 'Nama Kategori',
                     hintText: 'Masukkan nama kategori',
-                    controller: _namaController, onChanged: (val) {  },
+                    controller: _namaController,
+                    onChanged: (val) => controller.updateNama(val),
                   ),
                   const SizedBox(height: 16),
                   CustomFormField(
                     label: 'Deskripsi',
                     hintText: 'Masukkan deskripsi',
-                    controller: _deskripsiController, onChanged: (val) {  },
+                    controller: _deskripsiController,
+                    onChanged: (val) => controller.updateDeskripsi(val),
                   ),
                   const SizedBox(height: 16),
                   CustomDropDown<String>(
