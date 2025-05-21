@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'home_controller.dart';
 import '../../../common/widgets/custom_navbar.dart';
 import '../stock/manage_stock_view.dart';
+import '../transaction/transaction_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -78,7 +79,12 @@ class HomeView extends StatelessWidget {
                 icon: Icons.shopping_cart,
                 title: "Catat Transaksi",
                 color: Colors.green,
-                onTap: () {}, // belum diimplementasikan
+                onTap: () {
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (_) => const TransactionView()),
+                  );
+                },
               ),
               _buildMenuItem(
                 icon: Icons.bar_chart,

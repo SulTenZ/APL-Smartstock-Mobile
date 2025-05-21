@@ -23,7 +23,7 @@ class CreateProductController extends ChangeNotifier {
   int? brandId;
   String? productTypeId;
   int minStock = 0;
-  String kondisi = 'Baru';
+  String kondisi = 'BARU';
   String? stockBatchId;
   File? imageFile;
   List<Map<String, dynamic>> sizes = [];
@@ -146,7 +146,7 @@ class CreateProductController extends ChangeNotifier {
       // Add new size
       sizes.add({
         'sizeId': sizeId,
-        'label': label,
+        // 'label': label,
         'quantity': quantity,
       });
     }
@@ -266,7 +266,7 @@ class CreateProductController extends ChangeNotifier {
     brandId = null;
     productTypeId = null;
     minStock = 0;
-    kondisi = 'Baru';
+    kondisi = 'BARU';
     stockBatchId = null;
     imageFile = null;
     sizes = [];

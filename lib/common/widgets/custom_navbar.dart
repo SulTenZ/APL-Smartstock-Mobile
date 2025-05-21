@@ -1,4 +1,4 @@
-// lib/common/widgets/custom_appbar.dart
+// lib/common/widgets/custom_navbar.dart
 import 'package:flutter/material.dart';
 
 class CustomNavbar extends StatelessWidget {
@@ -38,7 +38,24 @@ class CustomNavbar extends StatelessWidget {
           selectedItemColor: Colors.black,
           unselectedItemColor: Colors.grey[400],
           elevation: 0,
-          onTap: onTap,
+          onTap: (index) {
+            if (index == currentIndex) return;
+            switch (index) {
+              case 0:
+                Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                break;
+              case 1:
+                Navigator.pushNamed(context, '/transaction-history');
+                break;
+              case 2:
+                Navigator.pushNamed(context, '/stock-batch');
+                break;
+              case 3:
+                Navigator.pushNamed(context, '/profile');
+                break;
+            }
+            onTap(index);
+          },
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Transaksi'),

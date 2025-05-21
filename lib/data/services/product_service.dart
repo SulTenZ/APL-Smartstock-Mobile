@@ -5,41 +5,44 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
-
 import '../../utils/shared_preferences.dart';
 
 class ProductService {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
 
-  // Get all products with optional filtering and pagination
-  Future<Map<String, dynamic>> getAllProducts({
-    String? search,
-    int? page,
-    int? limit,
-  }) async {
-    final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product').replace(
-      queryParameters: {
-        if (search != null) 'search': search,
-        if (page != null) 'page': page.toString(),
-        if (limit != null) 'limit': limit.toString(),
-      },
-    );
+Future<Map<String, dynamic>> getAllProducts({
+  String? search,
+  int? page,
+  int? limit,
+  String? brandId,
+  int? categoryId,
+  String? productTypeId,
+}) async {
+  final token = await SharedPrefs.getToken();
+  final uri = Uri.parse('$baseUrl/api/product').replace(
+    queryParameters: {
+      if (search != null) 'search': search,
+      if (page != null) 'page': page.toString(),
+      if (limit != null) 'limit': limit.toString(),
+      if (brandId != null) 'brandId': brandId,
+      if (categoryId != null) 'categoryId': categoryId.toString(),
+      if (productTypeId != null) 'productTypeId': productTypeId,
+    },
+  );
 
-    final response = await http.get(
-      uri,
-      headers: {'Authorization': 'Bearer $token'},
-    );
+  final response = await http.get(
+    uri,
+    headers: {'Authorization': 'Bearer $token'},
+  );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return {'data': data['data'], 'pagination': data['pagination']};
-    } else {
-      throw Exception('Gagal mengambil data produk');
-    }
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return {'data': data['data'], 'pagination': data['pagination']};
+  } else {
+    throw Exception('Gagal mengambil data produk');
   }
+}
 
-  // Get product details by ID
   Future<Map<String, dynamic>> getProductById(String id) async {
     final token = await SharedPrefs.getToken();
     final uri = Uri.parse('$baseUrl/api/product/$id');
@@ -57,7 +60,6 @@ class ProductService {
     }
   }
 
-  // Create a new product
   Future<Map<String, dynamic>> createProduct({
     required String nama,
     String? deskripsi,
@@ -75,27 +77,28 @@ class ProductService {
     final token = await SharedPrefs.getToken();
     final uri = Uri.parse('$baseUrl/api/product');
 
-    final request =
-        http.MultipartRequest('POST', uri)
-          ..headers['Authorization'] = 'Bearer $token'
-          ..fields['nama'] = nama
-          ..fields['hargaBeli'] = hargaBeli.toString()
-          ..fields['hargaJual'] = hargaJual.toString()
-          ..fields['categoryId'] = categoryId.toString()
-          ..fields['brandId'] = brandId.toString()
-          ..fields['productTypeId'] = productTypeId;
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['nama'] = nama
+      ..fields['hargaBeli'] = hargaBeli.toString()
+      ..fields['hargaJual'] = hargaJual.toString()
+      ..fields['categoryId'] = categoryId.toString()
+      ..fields['brandId'] = brandId.toString()
+      ..fields['productTypeId'] = productTypeId;
 
     if (deskripsi != null) request.fields['deskripsi'] = deskripsi;
     if (minStock != null) request.fields['minStock'] = minStock.toString();
-    if (kondisi != null) request.fields['kondisi'] = kondisi;
+    if (kondisi != null) request.fields['kondisi'] = kondisi.toUpperCase();
     if (stockBatchId != null) request.fields['stockBatchId'] = stockBatchId;
 
-    // Add sizes if provided
     if (sizes != null && sizes.isNotEmpty) {
-      request.fields['sizes'] = jsonEncode(sizes);
+      final cleanSizes = sizes.map((s) => {
+        'sizeId': s['sizeId'],
+        'quantity': s['quantity'],
+      }).toList();
+      request.fields['sizes'] = jsonEncode(cleanSizes);
     }
 
-    // Add image if provided
     if (imageFile != null) {
       final mimeType = lookupMimeType(imageFile.path);
       final type = mimeType?.split('/');
@@ -122,7 +125,6 @@ class ProductService {
     }
   }
 
-  // Update an existing product
   Future<Map<String, dynamic>> updateProduct({
     required String id,
     String? nama,
@@ -148,20 +150,14 @@ class ProductService {
     if (deskripsi != null) request.fields['deskripsi'] = deskripsi;
     if (hargaBeli != null) request.fields['hargaBeli'] = hargaBeli.toString();
     if (hargaJual != null) request.fields['hargaJual'] = hargaJual.toString();
-    if (categoryId != null)
-      request.fields['categoryId'] = categoryId.toString();
+    if (categoryId != null) request.fields['categoryId'] = categoryId.toString();
     if (brandId != null) request.fields['brandId'] = brandId.toString();
     if (productTypeId != null) request.fields['productTypeId'] = productTypeId;
     if (minStock != null) request.fields['minStock'] = minStock.toString();
     if (kondisi != null) request.fields['kondisi'] = kondisi;
     if (stockBatchId != null) request.fields['stockBatchId'] = stockBatchId;
+    if (sizes != null) request.fields['sizes'] = jsonEncode(sizes);
 
-    // Add sizes if provided
-    if (sizes != null) {
-      request.fields['sizes'] = jsonEncode(sizes);
-    }
-
-    // Add image if provided
     if (imageFile != null) {
       final mimeType = lookupMimeType(imageFile.path);
       final type = mimeType?.split('/');

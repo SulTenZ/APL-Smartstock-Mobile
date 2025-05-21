@@ -1,4 +1,5 @@
 // lib/features/stock/product/product_view.dart
+import 'package:alp_shoes_secondbrand_mobile/features/stock/product/create_product/create_product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'product_controller.dart';
@@ -49,7 +50,7 @@ class _ProductViewState extends State<ProductView> {
               children: [
                 TextField(
                   controller: _searchController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Cari produk...'
                   ),
                   onSubmitted: (value) => controller.searchProducts(value),
@@ -108,17 +109,57 @@ class _ProductViewState extends State<ProductView> {
                                         ),
                                       ],
                                     ),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.arrow_forward_ios),
-                                      onPressed: () async {
-                                        await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => DetailProductView(productId: product['id']),
-                                          ),
-                                        );
-                                        controller.getProducts(refresh: true);
-                                      },
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.arrow_forward_ios),
+                                          onPressed: () async {
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => DetailProductView(productId: product['id']),
+                                              ),
+                                            );
+                                            controller.getProducts(refresh: true);
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete, color: Colors.red),
+                                          onPressed: () async {
+                                            final confirm = await showDialog<bool>(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: const Text('Hapus Produk'),
+                                                content: const Text('Apakah Anda yakin ingin menghapus produk ini?'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(context, false),
+                                                    child: const Text('Batal'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(context, true),
+                                                    child: const Text('Hapus'),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+
+                                            if (confirm == true) {
+                                              final success = await controller.deleteProduct(product['id']);
+                                              if (success) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(content: Text('Produk berhasil dihapus')),
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text('Gagal menghapus produk: ${controller.errorMessage ?? 'Terjadi kesalahan'}')),
+                                                );
+                                              }
+                                            }
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
@@ -136,7 +177,12 @@ class _ProductViewState extends State<ProductView> {
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const CreateProductView()),
+            MaterialPageRoute(
+              builder: (_) => ChangeNotifierProvider(
+                create: (_) => CreateProductController()..init(),
+                child: const CreateProductView()
+              ),
+            ),
           );
           if (result == true) {
             Provider.of<ProductController>(context, listen: false).getProducts(refresh: true);
