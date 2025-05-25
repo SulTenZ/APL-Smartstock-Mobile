@@ -15,22 +15,65 @@ class TransactionHistoryDetailView extends StatelessWidget {
     final customer = transaction['customer']?['nama'] ?? '-';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Detail Transaksi"),
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          // Header Info
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            child: Padding(
+      backgroundColor: Colors.grey[100],
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            // Header
+            Row(
+              children: [
+                InkWell(
+                  onTap: () => Navigator.pop(context),
+                  borderRadius: BorderRadius.circular(50),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.arrow_back, color: Colors.black),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                const Text(
+                  "Detail Transaksi",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF222222),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Informasi Transaksi
+            Container(
               padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('ID: ${transaction['id'] ?? "-"}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
                   Text('Tanggal: $date'),
                   Text('Customer: $customer'),
                   Text('Metode: ${transaction['paymentMethod'] ?? "-"}'),
@@ -39,41 +82,78 @@ class TransactionHistoryDetailView extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 18),
 
-          // Items
-          const Text("Daftar Produk:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          ...items.map((item) {
-            final product = item['product'] ?? {};
-            return Card(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              child: ListTile(
-                leading: product['image'] != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(product['image'], width: 48, height: 48, fit: BoxFit.cover),
-                      )
-                    : const Icon(Icons.image_outlined, size: 48),
-                title: Text(product['nama'] ?? '-', style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Qty: ${item['quantity']} | Ukuran: ${item['size'] ?? "-"}'),
-                    Text('Harga: Rp${item['hargaJual'] ?? "-"}'),
-                    Text('Subtotal: Rp${(item['hargaJual'] ?? 0) * (item['quantity'] ?? 0)}'),
+            const SizedBox(height: 24),
+
+            // Daftar Produk
+            const Text("Daftar Produk", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 12),
+            ...items.map((item) {
+              final product = item['product'] ?? {};
+              final size = item['size'] ?? {};
+              final sizeLabel = size is Map ? size['label']?.toString() ?? '-' : size.toString();
+              final harga = item['hargaJual'] ?? 0;
+              final quantity = item['quantity'] ?? 0;
+              final subtotal = harga * quantity;
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
                   ],
                 ),
-              ),
-            );
-          }),
-          const SizedBox(height: 18),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    product['image'] != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(product['image'], width: 48, height: 48, fit: BoxFit.cover),
+                          )
+                        : const Icon(Icons.image_outlined, size: 48),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(product['nama'] ?? '-', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 6),
+                          Text('Jumlah: $quantity'),
+                          Text('Ukuran: $sizeLabel'),
+                          Text('Harga Satuan: Rp$harga'),
+                          Text('Subtotal: Rp$subtotal'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
 
-          // Ringkasan
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            child: Padding(
+            const SizedBox(height: 24),
+
+            // Ringkasan
+            Container(
               padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Column(
                 children: [
                   rowSummary("Total", transaction['totalAmount']),
@@ -82,19 +162,19 @@ class TransactionHistoryDetailView extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget rowSummary(String label, dynamic value) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label),
-            Text("Rp${value ?? 0}", style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text(label, style: const TextStyle(fontSize: 14)),
+            Text("Rp${value ?? 0}", style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
           ],
         ),
       );

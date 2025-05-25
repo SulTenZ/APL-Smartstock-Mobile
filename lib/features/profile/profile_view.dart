@@ -1,4 +1,4 @@
-// lib/features/profile/profile_view.dart
+// 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'profile_controller.dart';
@@ -13,57 +13,60 @@ class ProfileView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        backgroundColor: Colors.blueGrey,
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-        title: const Text(
-          'Profil Saya',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.edit, color: Colors.white),
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: FutureBuilder(
-        future: Future.wait([
-          controller.getUserName(),
-          controller.getUserEmail(),
-        ]),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: SafeArea(
+        child: FutureBuilder(
+          future: Future.wait([
+            controller.getUserName(),
+            controller.getUserEmail(),
+          ]),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final name = snapshot.data![0] ?? '-';
-          final email = snapshot.data![1] ?? '-';
+            final name = snapshot.data![0] ?? '-';
+            final email = snapshot.data![1] ?? '-';
 
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 16),
+                  // Custom Header
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () => Navigator.pop(context),
+                        borderRadius: BorderRadius.circular(50),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(Icons.arrow_back, color: Colors.black),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      const Text(
+                        'Profil Saya',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 22,
+                          color: Color(0xFF222222),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
                   // Profile Picture
                   Container(
                     padding: const EdgeInsets.all(4),
@@ -81,14 +84,12 @@ class ProfileView extends StatelessWidget {
                     child: CircleAvatar(
                       radius: 60,
                       backgroundColor: Colors.blueGrey.withOpacity(0.3),
-                      child: const Icon(
-                        Icons.person,
-                        size: 60,
-                        color: Colors.blueGrey,
-                      ),
+                      child: const Icon(Icons.person, size: 60, color: Colors.blueGrey),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
+
+                  // Nama & Email
                   Text(
                     name,
                     style: const TextStyle(
@@ -105,8 +106,10 @@ class ProfileView extends StatelessWidget {
                       color: Colors.grey[600],
                     ),
                   ),
+
                   const SizedBox(height: 36),
-                  // Profile sections
+
+                  // Info Section
                   _buildProfileSection(
                     icon: Icons.person_outline,
                     title: 'Informasi Personal',
@@ -119,6 +122,8 @@ class ProfileView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
+
+                  // Setting Section
                   _buildProfileSection(
                     icon: Icons.settings_outlined,
                     title: 'Pengaturan Aplikasi',
@@ -136,8 +141,10 @@ class ProfileView extends StatelessWidget {
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 40),
-                  // Logout button
+
+                  // Logout Button
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -153,7 +160,10 @@ class ProfileView extends StatelessWidget {
                         ? const SizedBox(
                             width: 16,
                             height: 16,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
                           )
                         : const Icon(Icons.logout),
                     label: Text(
@@ -170,15 +180,13 @@ class ProfileView extends StatelessWidget {
                   const SizedBox(height: 30),
                 ],
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
       bottomNavigationBar: CustomNavbar(
-        currentIndex: 3, // Profile tab
-        onTap: (index) {
-          // Logic already handled in CustomNavbar
-        },
+        currentIndex: 3,
+        onTap: (index) {},
       ),
     );
   }

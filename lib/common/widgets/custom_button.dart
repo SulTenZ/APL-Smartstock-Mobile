@@ -1,5 +1,7 @@
 // lib/common/widgets/custom_button.dart
+// Modern button widget dengan gradient background dan rounded corners besar
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -15,25 +17,54 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: isDisabled ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFBDBDBD),
-          disabledBackgroundColor: Color(0xFFBDBDBD).withOpacity(0.4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: isDisabled 
+          ? LinearGradient(
+              colors: [
+                Colors.grey.shade300,
+                Colors.grey.shade400,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            )
+          : const LinearGradient(
+              colors: [
+                Color(0xFF9E9E9E),
+                Color(0xFF757575),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: isDisabled ? [] : [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-          elevation: 0,
-        ),
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isDisabled ? null : onPressed,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+            child: Center(
+              child: Text(
+                text,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
           ),
         ),
       ),

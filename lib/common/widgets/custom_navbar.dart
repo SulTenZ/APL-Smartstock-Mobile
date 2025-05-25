@@ -38,6 +38,8 @@ class CustomNavbar extends StatelessWidget {
           selectedItemColor: Colors.black,
           unselectedItemColor: Colors.grey[400],
           elevation: 0,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
           onTap: (index) {
             if (index == currentIndex) return;
             switch (index) {
@@ -57,10 +59,10 @@ class CustomNavbar extends StatelessWidget {
             onTap(index);
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Transaksi'),
-            BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Stok'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
           ],
         ),
       ),
