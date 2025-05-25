@@ -1,4 +1,3 @@
-// lib/features/transaction_history/transaction_history_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'transaction_history_controller.dart';
@@ -17,43 +16,36 @@ class TransactionHistoryView extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Custom Header with Back Button
-                Row(
+                // Header - Back icon + Judul center pakai Stack
+                Stack(
+                  alignment: Alignment.center,
                   children: [
-                    InkWell(
-                      onTap: () => Navigator.pop(context),
-                      borderRadius: BorderRadius.circular(50),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.black,
+                          size: 20,
                         ),
-                        child: const Icon(Icons.arrow_back, color: Colors.black),
+                        onPressed: () => Navigator.pop(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
                     ),
-                    const SizedBox(width: 16),
                     const Text(
-                      'Riwayat Transaksi',
+                      'RIWAYAT TRANSAKSI',
                       style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
                         color: Color(0xFF222222),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
 
                 // List Content
                 Expanded(
@@ -152,4 +144,3 @@ class TransactionHistoryView extends StatelessWidget {
     );
   }
 }
-

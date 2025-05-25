@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'home_controller.dart';
 import '../../../common/widgets/custom_navbar.dart';
-import '../../../common/widgets/custom_sub_menu_button.dart';
+import '../../../common/widgets/custom_menu_button.dart';
 import '../stock/manage_stock_view.dart';
 import '../transaction/transaction_view.dart';
 
@@ -19,89 +20,59 @@ class HomeView extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Custom Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Consumer<HomeController>(
-                      builder: (context, controller, _) {
-                        return Text(
-                          'Halo, ${controller.userName}!',
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF222222),
-                          ),
-                        );
-                      },
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.notifications_none, color: Color(0xFF555555)),
-                        onPressed: () {
-                          // Aksi notifikasi
-                        },
+                // Header - Centered Title
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 32),
+                  child: Center(
+                    child: Text(
+                      "MENU UTAMA",
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF222222),
                       ),
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 30),
-
-                // Section Title
-                const Text(
-                  "Menu Utama",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF333333),
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // Menu Buttons
-                CustomSubMenuButton(
-                  icon: Icons.inventory_2,
-                  title: "Manajemen Stok",
-                  color: Colors.indigo,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ManageStockView()),
-                    );
-                  },
-                ),
-                CustomSubMenuButton(
-                  icon: Icons.shopping_cart,
-                  title: "Catat Transaksi",
-                  color: Colors.green,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const TransactionView()),
-                    );
-                  },
-                ),
-                CustomSubMenuButton(
-                  icon: Icons.bar_chart,
-                  title: "Statistik Laba",
-                  color: Colors.orange,
-                  onTap: () {
-                    // Belum diimplementasikan
-                  },
+                // Menu Buttons with spacing from header
+                Expanded(
+                  child: Column(
+                    children: [
+                      CustomMenuButton(
+                        icon: Icons.inventory_2,
+                        title: "Manajemen Stok",
+                        color: Colors.indigo,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const ManageStockView()),
+                          );
+                        },
+                      ),
+                      CustomMenuButton(
+                        icon: Icons.shopping_cart,
+                        title: "Catat Transaksi",
+                        color: Colors.green,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const TransactionView()),
+                          );
+                        },
+                      ),
+                      CustomMenuButton(
+                        icon: Icons.bar_chart,
+                        title: "Statistik Laba",
+                        color: Colors.orange,
+                        onTap: () {
+                          // Belum diimplementasikan
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -110,7 +81,7 @@ class HomeView extends StatelessWidget {
         bottomNavigationBar: CustomNavbar(
           currentIndex: 0,
           onTap: (index) {
-            // Tambahkan logika navigasi sesuai kebutuhan
+            // Navigasi sesuai kebutuhan
           },
         ),
       ),
