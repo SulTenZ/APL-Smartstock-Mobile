@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../utils/shared_preferences.dart';
 
 class AuthService {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
@@ -21,35 +22,36 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        final token = data['token'];
+        final name = data['user']['nama']; // sesuaikan dengan key dari backend
+        final email = data['user']['email'];
+
+        await SharedPrefs.saveLoginData(token: token, name: name, email: email);
+        await SharedPrefs.debugPrintAll();
+
         return {'success': true, 'data': data};
       } else {
         final body = jsonDecode(response.body);
-        return {
-          'success': false,
-          'message': body['message'] ?? 'Login gagal',
-        };
+        return {'success': false, 'message': body['message'] ?? 'Login gagal'};
       }
     } catch (e) {
       print("❌ ERROR saat login: $e");
-      return {
-        'success': false,
-        'message': 'Terjadi kesalahan koneksi',
-      };
+      return {'success': false, 'message': 'Terjadi kesalahan koneksi'};
     }
   }
 
-  Future<Map<String, dynamic>> register(String nama, String email, String password) async {
+  Future<Map<String, dynamic>> register(
+    String nama,
+    String email,
+    String password,
+  ) async {
     final url = Uri.parse('$baseUrl/api/auth/register');
 
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'nama': nama,
-          'email': email,
-          'password': password,
-        }),
+        body: jsonEncode({'nama': nama, 'email': email, 'password': password}),
       );
 
       print("📝 STATUS: ${response.statusCode}");
@@ -67,10 +69,7 @@ class AuthService {
       }
     } catch (e) {
       print("❌ ERROR saat register: $e");
-      return {
-        'success': false,
-        'message': 'Terjadi kesalahan koneksi',
-      };
+      return {'success': false, 'message': 'Terjadi kesalahan koneksi'};
     }
   }
 
@@ -99,10 +98,7 @@ class AuthService {
       }
     } catch (e) {
       print("❌ ERROR saat verifikasi OTP: $e");
-      return {
-        'success': false,
-        'message': 'Terjadi kesalahan koneksi',
-      };
+      return {'success': false, 'message': 'Terjadi kesalahan koneksi'};
     }
   }
 
@@ -131,11 +127,7 @@ class AuthService {
       }
     } catch (e) {
       print("❌ ERROR saat resend OTP: $e");
-      return {
-        'success': false,
-        'message': 'Terjadi kesalahan koneksi',
-      };
+      return {'success': false, 'message': 'Terjadi kesalahan koneksi'};
     }
   }
 }
-
