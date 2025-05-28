@@ -40,7 +40,6 @@ class HomeView extends StatelessWidget {
                   child: Column(
                     children: [
                       CustomMenuButton(
-                        icon: Icons.inventory_2,
                         title: "Manajemen Stok",
                         color: Colors.indigo,
                         onTap: () {
@@ -49,9 +48,9 @@ class HomeView extends StatelessWidget {
                             MaterialPageRoute(builder: (_) => const ManageStockView()),
                           );
                         },
+                        customIconPath: 'assets/images/inventory-management.png',
                       ),
                       CustomMenuButton(
-                        icon: Icons.shopping_cart,
                         title: "Catat Transaksi",
                         color: Colors.green,
                         onTap: () {
@@ -60,14 +59,15 @@ class HomeView extends StatelessWidget {
                             MaterialPageRoute(builder: (_) => const TransactionView()),
                           );
                         },
+                        customIconPath: 'assets/images/trolley_2.png',
                       ),
                       CustomMenuButton(
-                        icon: Icons.bar_chart,
                         title: "Statistik Laba",
                         color: Colors.orange,
                         onTap: () {
                           _showComingSoonDialog(context);
                         },
+                        customIconPath: 'assets/images/profit-growth_2.png',
                       ),
                     ],
                   ),
