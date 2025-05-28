@@ -26,126 +26,131 @@ class BrandBody extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.grey[500],
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-        title: const Text(
-          'Brand Produk',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ),
+                  const Text(
+                    'BRAND PRODUK',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF222222),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.add, color: Colors.black),
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const CreateBrandView()),
+                        );
+                        if (result == true) controller.fetchBrands();
+                      },
+                    ),
+                  ),
+                ],
               ),
-              child: IconButton(
-                icon: const Icon(Icons.add, color: Colors.white),
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const CreateBrandView()),
-                  );
-                  if (result == true) {
-                    controller.fetchBrands();
-                  }
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: controller.isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : controller.brands.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    itemCount: controller.brands.length,
-                    itemBuilder: (context, index) {
-                      final item = controller.brands[index];
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: item['image'] != null
-                                ? Image.network(item['image'], width: 50, height: 50, fit: BoxFit.cover)
-                                : Container(
-                                    width: 50,
-                                    height: 50,
-                                    color: Colors.grey[300],
-                                    child: const Icon(Icons.image_not_supported, color: Colors.grey),
-                                  ),
-                          ),
-                          title: Text(
-                            item['nama'],
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                          ),
-                          subtitle: Text(item['deskripsi'] ?? '-', maxLines: 2, overflow: TextOverflow.ellipsis),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
+              const SizedBox(height: 40),
+              Expanded(
+                child: controller.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : controller.brands.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
+                            itemCount: controller.brands.length,
+                            itemBuilder: (context, index) {
+                              final item = controller.brands[index];
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 16),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
-                                child: IconButton(
-                                  icon: const Icon(Icons.edit, size: 20, color: Colors.blue),
-                                  onPressed: () async {
-                                    final result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => EditBrandView(
-                                          id: item['id'].toString(),
-                                          nama: item['nama'],
-                                          deskripsi: item['deskripsi'] ?? '',
-                                          image: item['image'] ?? '',
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                  leading: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: item['image'] != null
+                                        ? Image.network(item['image'], width: 50, height: 50, fit: BoxFit.cover)
+                                        : Container(
+                                            width: 50,
+                                            height: 50,
+                                            color: Colors.grey[300],
+                                            child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                                          ),
+                                  ),
+                                  title: Text(item['nama'], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                                  subtitle: Text(item['deskripsi'] ?? '-', maxLines: 2, overflow: TextOverflow.ellipsis),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: IconButton(
+                                          icon: const Icon(Icons.edit, size: 20, color: Colors.blue),
+                                          onPressed: () async {
+                                            final result = await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => EditBrandView(
+                                                  id: item['id'].toString(),
+                                                  nama: item['nama'],
+                                                  deskripsi: item['deskripsi'] ?? '',
+                                                  image: item['image'] ?? '',
+                                                ),
+                                              ),
+                                            );
+                                            if (result == true) controller.fetchBrands();
+                                          },
                                         ),
                                       ),
-                                    );
-                                    if (result == true) {
-                                      controller.fetchBrands();
-                                    }
-                                  },
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: IconButton(
+                                          icon: const Icon(Icons.delete, size: 20, color: Colors.red),
+                                          onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.red.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                                  onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
-                                ),
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                        ),
-                      );
-                    },
-                  ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -157,10 +162,7 @@ class BrandBody extends StatelessWidget {
         children: [
           Icon(Icons.branding_watermark, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          Text(
-            'Belum ada brand',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.grey[600]),
-          ),
+          Text('Belum ada brand', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.grey[600])),
           const SizedBox(height: 8),
           Text(
             'Tambahkan brand produk dengan menekan tombol + di atas',
@@ -176,35 +178,26 @@ class BrandBody extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text(
-          'Konfirmasi Hapus',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Konfirmasi Hapus', style: TextStyle(fontWeight: FontWeight.bold)),
         content: const Text('Apakah kamu yakin ingin menghapus brand ini?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text('Batal'),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.grey[700],
-            ),
+            style: TextButton.styleFrom(foregroundColor: Colors.grey[700]),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               controller.deleteBrand(context, id);
             },
-            child: const Text('Hapus'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
+            child: const Text('Hapus'),
           ),
         ],
       ),

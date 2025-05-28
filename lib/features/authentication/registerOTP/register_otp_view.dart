@@ -1,6 +1,8 @@
 // lib/features/authentication/registerOTP/register_otp_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../common/widgets/custom_button.dart';
+import '../../../common/widgets/custom_form.dart';
 import 'register_otp_controller.dart';
 
 class RegisterOtpView extends StatelessWidget {
@@ -14,17 +16,15 @@ class RegisterOtpView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Verifikasi OTP'),
-          backgroundColor: Colors.deepPurple,
-          foregroundColor: Colors.white,
         ),
         body: Consumer<RegisterOtpController>(
           builder: (context, controller, _) {
-            return Padding(
-              padding: const EdgeInsets.all(24.0),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  const Text(
                     'Masukkan kode OTP yang telah dikirim ke:',
                     style: TextStyle(fontSize: 16),
                   ),
@@ -38,30 +38,26 @@ class RegisterOtpView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  TextField(
+                  CustomFormField(
+                    label: "Kode OTP",
+                    hintText: "Masukkan Kode OTP",
                     controller: controller.otpController,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Kode OTP',
-                      border: OutlineInputBorder(),
-                      errorText: controller.errorMessage,
-                    ),
+                    errorText: controller.errorMessage,
+                    onChanged: (val) {},
                   ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
+                  const SizedBox(height: 24),
+                  if (controller.errorMessage != null)
+                    Text(
+                      controller.errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  const SizedBox(height: 8),
+                  CustomButton(
+                    text: controller.isLoading ? "Memverifikasi..." : "Verifikasi",
                     onPressed: controller.isLoading
                         ? null
                         : () => controller.verifyOtp(context, email),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                    child: controller.isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : const Text('Verifikasi'),
                   ),
                   const SizedBox(height: 16),
                   TextButton(

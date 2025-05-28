@@ -30,31 +30,61 @@ class _DetailProductViewState extends State<DetailProductView> {
           }
 
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Detail Produk'),
-              backgroundColor: Colors.grey[500],
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditProductView(
-                          productId: widget.productId,
-                          product: controller.product,
+            backgroundColor: Colors.grey[100],
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                            onPressed: () => Navigator.pop(context),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
                         ),
-                      ),
-                    );
+                        const Text(
+                          'DETAIL PRODUK',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF222222),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.black, size: 20),
+                            onPressed: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditProductView(
+                                    productId: widget.productId,
+                                    product: controller.product,
+                                  ),
+                                ),
+                              );
 
-                    if (result == true) {
-                      controller.getProductDetails(widget.productId);
-                    }
-                  },
+                              if (result == true) {
+                                controller.getProductDetails(widget.productId);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(child: _buildBody(controller)),
+                  ],
                 ),
-              ],
+              ),
             ),
-            body: _buildBody(controller),
             floatingActionButton: FloatingActionButton(
               backgroundColor: Colors.grey[500],
               onPressed: () => _showAddSizeDialog(context, controller),
@@ -67,12 +97,11 @@ class _DetailProductViewState extends State<DetailProductView> {
       ),
     );
   }
-  
   Widget _buildBody(DetailProductController controller) {
     if (controller.isLoading && controller.product == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     if (controller.product == null) {
       return Center(
         child: Column(
@@ -91,9 +120,9 @@ class _DetailProductViewState extends State<DetailProductView> {
         ),
       );
     }
-    
+
     final product = controller.product!;
-    
+
     return RefreshIndicator(
       onRefresh: () => controller.getProductDetails(widget.productId),
       child: SingleChildScrollView(
@@ -102,7 +131,6 @@ class _DetailProductViewState extends State<DetailProductView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product image
             if (product['image'] != null)
               Center(
                 child: ClipRRect(
@@ -135,255 +163,136 @@ class _DetailProductViewState extends State<DetailProductView> {
                 ),
               ),
             const SizedBox(height: 24),
-            
-            // Product information
             Text(
               product['nama'] ?? '',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
-            
-            // Price and stock info
             Row(
               children: [
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Harga Beli',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Rp${product['hargaBeli']?.toString() ?? '0'}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Harga Jual',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Rp${product['hargaJual']?.toString() ?? '0'}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                Expanded(child: _buildCard('Harga Beli', 'Rp${product['hargaBeli'] ?? '0'}')),
+                Expanded(child: _buildCard('Harga Jual', 'Rp${product['hargaJual'] ?? '0'}')),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Total Stok',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            controller.calculateTotalStock().toString(),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: controller.isLowStock() ? Colors.red : Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: _buildCard(
+                    'Total Stok',
+                    controller.calculateTotalStock().toString(),
+                    textColor: controller.isLowStock() ? Colors.red : Colors.green,
                   ),
                 ),
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Minimum Stok',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            (product['minStock']?.toString() ?? '0'),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                Expanded(child: _buildCard('Minimum Stok', product['minStock'].toString())),
               ],
             ),
             const SizedBox(height: 16),
-            
-            // Additional info
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Informasi Produk',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Divider(),
-                    _buildInfoRow('Kategori', product['category']?['nama'] ?? '-'),
-                    _buildInfoRow('Brand', product['brand']?['nama'] ?? '-'),
-                    _buildInfoRow('Tipe Produk', product['productType']?['name'] ?? '-'),
-                    _buildInfoRow('Kondisi', product['kondisi'] ?? '-'),
-                    _buildInfoRow('Deskripsi', product['deskripsi'] ?? '-'),
-                  ],
-                ),
-              ),
-            ),
+            _buildProductInfo(product),
             const SizedBox(height: 16),
-            
-            // Sizes and stock
-            const Text(
-              'Ukuran dan Stok',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            const Text('Ukuran dan Stok', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            
-            if (product['sizes'] == null || (product['sizes'] as List).isEmpty)
-              const Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Text(
-                      'Belum ada data ukuran',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ),
-              )
-            else
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: (product['sizes'] as List).length,
-                itemBuilder: (context, index) {
-                  final size = (product['sizes'] as List)[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(
-                        size['size']?['label'] ?? 'Ukuran tidak diketahui',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text('Stok: ${size['quantity'] ?? 0}'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () => _showUpdateSizeDialog(
-                              context,
-                              controller,
-                              size['id'], // Using productSizeId for the update
-                              size['size']?['label'],
-                              size['quantity'] ?? 0,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _showDeleteSizeConfirmation(
-                              context,
-                              controller,
-                              size['size']?['id'],
-                              size['size']?['label'],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+            _buildSizeList(product, controller),
           ],
         ),
       ),
     );
   }
-  
-  // Helper method to build information rows
+
+  Widget _buildCard(String title, String value, {Color? textColor}) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+          const SizedBox(height: 4),
+          Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+        ]),
+      ),
+    );
+  }
+
+  Widget _buildProductInfo(Map<String, dynamic> product) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('Informasi Produk', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Divider(),
+          _buildInfoRow('Kategori', product['category']?['nama'] ?? '-'),
+          _buildInfoRow('Brand', product['brand']?['nama'] ?? '-'),
+          _buildInfoRow('Tipe Produk', product['productType']?['name'] ?? '-'),
+          _buildInfoRow('Kondisi', product['kondisi'] ?? '-'),
+          _buildInfoRow('Deskripsi', product['deskripsi'] ?? '-'),
+        ]),
+      ),
+    );
+  }
+
   Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
+          SizedBox(width: 100, child: Text(label, style: const TextStyle(color: Colors.grey))),
+          Expanded(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500))),
         ],
       ),
+    );
+  }
+
+  Widget _buildSizeList(Map<String, dynamic> product, DetailProductController controller) {
+    final sizes = product['sizes'] as List?;
+    if (sizes == null || sizes.isEmpty) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Center(child: Text('Belum ada data ukuran', style: TextStyle(color: Colors.grey))),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: sizes.length,
+      itemBuilder: (context, index) {
+        final size = sizes[index];
+        return Card(
+          child: ListTile(
+            title: Text(size['size']?['label'] ?? 'Ukuran tidak diketahui',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Stok: ${size['quantity'] ?? 0}'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.blue),
+                  onPressed: () => _showUpdateSizeDialog(
+                    context,
+                    controller,
+                    size['id'],
+                    size['size']?['label'],
+                    size['quantity'] ?? 0,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => _showDeleteSizeConfirmation(
+                    context,
+                    controller,
+                    size['size']?['id'],
+                    size['size']?['label'],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
   

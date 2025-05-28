@@ -10,6 +10,7 @@ class CustomFormField extends StatelessWidget {
   final bool obscureText;
   final TextInputType keyboardType;
   final Function(String)? onChanged;
+  final String? errorText; // ✅ Tambahkan ini
 
   const CustomFormField({
     Key? key,
@@ -19,6 +20,7 @@ class CustomFormField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.onChanged,
+    this.errorText, // ✅ Tambahkan ini juga ke konstruktor
   }) : super(key: key);
 
   @override
@@ -59,6 +61,7 @@ class CustomFormField extends StatelessWidget {
             ),
             decoration: InputDecoration(
               hintText: hintText,
+              errorText: errorText, // ✅ Ini bagian pentingnya
               hintStyle: GoogleFonts.poppins(
                 color: const Color(0xFFB0B0B0),
                 fontSize: 16,
@@ -67,8 +70,8 @@ class CustomFormField extends StatelessWidget {
               filled: true,
               fillColor: Colors.white,
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 24, 
-                vertical: 20
+                horizontal: 24,
+                vertical: 20,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),

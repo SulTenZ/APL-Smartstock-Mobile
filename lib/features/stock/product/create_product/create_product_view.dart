@@ -25,7 +25,6 @@ class _CreateProductViewState extends State<CreateProductView> {
   final _minStockController = TextEditingController();
   final _stockBatchIdController = TextEditingController();
   final _jumlahSizeController = TextEditingController();
-
   String? _selectedSize;
   final ImagePicker _picker = ImagePicker();
 
@@ -45,58 +44,61 @@ class _CreateProductViewState extends State<CreateProductView> {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        Provider.of<CreateProductController>(
-          context,
-          listen: false,
-        ).setImageFile(File(image.path));
+        Provider.of<CreateProductController>(context, listen: false).setImageFile(File(image.path));
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<CreateProductController>(context);
-
-    final filteredCategories =
-        controller.categories.where((cat) {
-          if (controller.productTypeId == null) return true;
-          return cat['productTypeId'].toString() == controller.productTypeId;
-        }).toList();
+    final filteredCategories = controller.categories.where((cat) {
+      if (controller.productTypeId == null) return true;
+      return cat['productTypeId'].toString() == controller.productTypeId;
+    }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tambah Produk'),
-        backgroundColor: Colors.grey[500],
-        elevation: 0,
-      ),
       backgroundColor: Colors.grey[100],
-      body:
-          controller.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
+      body: SafeArea(
+        child: controller.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (controller.errorMessage != null)
-                        Container(
-                          padding: const EdgeInsets.all(8.0),
-                          margin: const EdgeInsets.only(bottom: 16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.red.shade100,
-                            borderRadius: BorderRadius.circular(4.0),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: IconButton(
+                              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                              onPressed: () => Navigator.pop(context),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
                           ),
-                          child: Text(
-                            controller.errorMessage!,
-                            style: TextStyle(color: Colors.red.shade900),
+                          const Text(
+                            'TAMBAH PRODUK',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF222222),
+                            ),
                           ),
-                        ),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
+                      const Text(
+                        'Form Produk',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 16),
                       GestureDetector(
                         onTap: _pickImage,
                         child: Container(
@@ -106,46 +108,35 @@ class _CreateProductViewState extends State<CreateProductView> {
                             borderRadius: BorderRadius.circular(8.0),
                             border: Border.all(color: Colors.grey.shade400),
                           ),
-                          child:
-                              controller.imageFile != null
-                                  ? Stack(
-                                    alignment: Alignment.topRight,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          8.0,
-                                        ),
-                                        child: Image.file(
-                                          controller.imageFile!,
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          fit: BoxFit.cover,
-                                        ),
+                          child: controller.imageFile != null
+                              ? Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: Image.file(
+                                        controller.imageFile!,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        fit: BoxFit.cover,
                                       ),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.close,
-                                          color: Colors.white,
-                                        ),
-                                        onPressed: controller.clearImageFile,
-                                      ),
-                                    ],
-                                  )
-                                  : const Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.camera_alt,
-                                          size: 48,
-                                          color: Colors.grey,
-                                        ),
-                                        SizedBox(height: 8),
-                                        Text('Tambahkan Foto Produk'),
-                                      ],
                                     ),
+                                    IconButton(
+                                      icon: const Icon(Icons.close, color: Colors.white),
+                                      onPressed: controller.clearImageFile,
+                                    ),
+                                  ],
+                                )
+                              : const Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.camera_alt, size: 48, color: Colors.grey),
+                                      SizedBox(height: 8),
+                                      Text('Tambahkan Foto Produk'),
+                                    ],
                                   ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -153,15 +144,14 @@ class _CreateProductViewState extends State<CreateProductView> {
                         label: 'Tipe Produk *',
                         hintText: 'Pilih tipe produk',
                         value: controller.productTypeId,
-                        items:
-                            controller.productTypes
-                                .map<DropdownMenuItem<String>>(
-                                  (type) => DropdownMenuItem<String>(
-                                    value: type['id'].toString(),
-                                    child: Text(type['name']),
-                                  ),
-                                )
-                                .toList(),
+                        items: controller.productTypes
+                            .map<DropdownMenuItem<String>>(
+                              (type) => DropdownMenuItem<String>(
+                                value: type['id'].toString(),
+                                child: Text(type['name']),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (val) => controller.setProductType(val),
                       ),
                       const SizedBox(height: 16),
@@ -169,15 +159,14 @@ class _CreateProductViewState extends State<CreateProductView> {
                         label: 'Kategori *',
                         hintText: 'Pilih kategori',
                         value: controller.categoryId,
-                        items:
-                            filteredCategories
-                                .map(
-                                  (cat) => DropdownMenuItem(
-                                    value: int.tryParse(cat['id'].toString()),
-                                    child: Text(cat['nama']),
-                                  ),
-                                )
-                                .toList(),
+                        items: filteredCategories
+                            .map(
+                              (cat) => DropdownMenuItem(
+                                value: int.tryParse(cat['id'].toString()),
+                                child: Text(cat['nama']),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (val) => controller.categoryId = val,
                       ),
                       const SizedBox(height: 16),
@@ -185,15 +174,14 @@ class _CreateProductViewState extends State<CreateProductView> {
                         label: 'Brand *',
                         hintText: 'Pilih brand',
                         value: controller.brandId,
-                        items:
-                            controller.brands
-                                .map(
-                                  (b) => DropdownMenuItem(
-                                    value: int.tryParse(b['id'].toString()),
-                                    child: Text(b['nama']),
-                                  ),
-                                )
-                                .toList(),
+                        items: controller.brands
+                            .map(
+                              (b) => DropdownMenuItem(
+                                value: int.tryParse(b['id'].toString()),
+                                child: Text(b['nama']),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (val) => controller.brandId = val,
                       ),
                       const SizedBox(height: 16),
@@ -219,10 +207,7 @@ class _CreateProductViewState extends State<CreateProductView> {
                               hintText: '0',
                               controller: _hargaBeliController,
                               keyboardType: TextInputType.number,
-                              onChanged:
-                                  (val) =>
-                                      controller.hargaBeli =
-                                          double.tryParse(val) ?? 0.0,
+                              onChanged: (val) => controller.hargaBeli = double.tryParse(val) ?? 0.0,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -232,10 +217,7 @@ class _CreateProductViewState extends State<CreateProductView> {
                               hintText: '0',
                               controller: _hargaJualController,
                               keyboardType: TextInputType.number,
-                              onChanged:
-                                  (val) =>
-                                      controller.hargaJual =
-                                          double.tryParse(val) ?? 0.0,
+                              onChanged: (val) => controller.hargaJual = double.tryParse(val) ?? 0.0,
                             ),
                           ),
                         ],
@@ -246,15 +228,10 @@ class _CreateProductViewState extends State<CreateProductView> {
                         hintText: '0',
                         controller: _minStockController,
                         keyboardType: TextInputType.number,
-                        onChanged:
-                            (val) =>
-                                controller.minStock = int.tryParse(val) ?? 0,
+                        onChanged: (val) => controller.minStock = int.tryParse(val) ?? 0,
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Ukuran & Jumlah Stok',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      const Text('Ukuran & Jumlah Stok', style: TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -265,17 +242,15 @@ class _CreateProductViewState extends State<CreateProductView> {
                               label: 'Ukuran',
                               hintText: 'Pilih ukuran',
                               value: _selectedSize,
-                              items:
-                                  controller.availableSizes
-                                      .map(
-                                        (s) => DropdownMenuItem<String>(
-                                          value: s['id'].toString(),
-                                          child: Text(s['label'].toString()),
-                                        ),
-                                      )
-                                      .toList(),
-                              onChanged:
-                                  (val) => setState(() => _selectedSize = val),
+                              items: controller.availableSizes
+                                  .map(
+                                    (s) => DropdownMenuItem<String>(
+                                      value: s['id'].toString(),
+                                      child: Text(s['label'].toString()),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (val) => setState(() => _selectedSize = val),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -294,22 +269,11 @@ class _CreateProductViewState extends State<CreateProductView> {
                             height: 56,
                             child: ElevatedButton(
                               onPressed: () {
-                                if (_selectedSize != null &&
-                                    _jumlahSizeController.text.isNotEmpty) {
+                                if (_selectedSize != null && _jumlahSizeController.text.isNotEmpty) {
                                   final selected = controller.availableSizes
-                                      .firstWhere(
-                                        (s) => s['id'] == _selectedSize,
-                                      );
-                                  final quantity =
-                                      int.tryParse(
-                                        _jumlahSizeController.text,
-                                      ) ??
-                                      0;
-                                  controller.addSize(
-                                    _selectedSize!,
-                                    selected['label'],
-                                    quantity,
-                                  );
+                                      .firstWhere((s) => s['id'] == _selectedSize);
+                                  final quantity = int.tryParse(_jumlahSizeController.text) ?? 0;
+                                  controller.addSize(_selectedSize!, selected['label'], quantity);
                                   _jumlahSizeController.clear();
                                   setState(() => _selectedSize = null);
                                 }
@@ -319,15 +283,9 @@ class _CreateProductViewState extends State<CreateProductView> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 14),
                               ),
-                              child: const Icon(
-                                Icons.add,
-                                size: 20,
-                                color: Colors.white,
-                              ),
+                              child: const Icon(Icons.add, size: 20, color: Colors.white),
                             ),
                           ),
                         ],
@@ -336,9 +294,7 @@ class _CreateProductViewState extends State<CreateProductView> {
                       ...controller.sizes.map(
                         (s) => ListTile(
                           contentPadding: EdgeInsets.zero,
-                          leading: CircleAvatar(
-                            child: Text(s['label'].toString()),
-                          ),
+                          leading: CircleAvatar(child: Text(s['label'].toString())),
                           title: Text('Jumlah: ${s['quantity']}'),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
@@ -353,14 +309,8 @@ class _CreateProductViewState extends State<CreateProductView> {
                         value: controller.kondisi,
                         items: const [
                           DropdownMenuItem(value: 'BARU', child: Text('BARU')),
-                          DropdownMenuItem(
-                            value: 'BEKAS',
-                            child: Text('BEKAS'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'REKONDISI',
-                            child: Text('REKONDISI'),
-                          ),
+                          DropdownMenuItem(value: 'BEKAS', child: Text('BEKAS')),
+                          DropdownMenuItem(value: 'REKONDISI', child: Text('REKONDISI')),
                         ],
                         onChanged: (val) => controller.kondisi = val!,
                       ),
@@ -373,26 +323,16 @@ class _CreateProductViewState extends State<CreateProductView> {
                       ),
                       const SizedBox(height: 24),
                       CustomButton(
-                        text:
-                            controller.formSubmitting
-                                ? 'Menyimpan...'
-                                : 'Simpan Produk',
+                        text: controller.formSubmitting ? 'Menyimpan...' : 'Simpan Produk',
                         isDisabled: controller.formSubmitting,
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             controller.nama = _namaController.text.trim();
-                            controller.deskripsi =
-                                _deskripsiController.text.trim();
-                            controller.hargaBeli =
-                                double.tryParse(_hargaBeliController.text) ??
-                                0.0;
-                            controller.hargaJual =
-                                double.tryParse(_hargaJualController.text) ??
-                                0.0;
-                            controller.minStock =
-                                int.tryParse(_minStockController.text) ?? 0;
-                            controller.stockBatchId =
-                                _stockBatchIdController.text.trim();
+                            controller.deskripsi = _deskripsiController.text.trim();
+                            controller.hargaBeli = double.tryParse(_hargaBeliController.text) ?? 0.0;
+                            controller.hargaJual = double.tryParse(_hargaJualController.text) ?? 0.0;
+                            controller.minStock = int.tryParse(_minStockController.text) ?? 0;
+                            controller.stockBatchId = _stockBatchIdController.text.trim();
 
                             final success = await controller.createProduct();
                             if (success) Navigator.pop(context, true);
@@ -403,6 +343,7 @@ class _CreateProductViewState extends State<CreateProductView> {
                   ),
                 ),
               ),
+      ),
     );
   }
 }

@@ -32,36 +32,86 @@ class _ProductViewState extends State<ProductView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('Daftar Produk'),
-        backgroundColor: Colors.grey[500],
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-      ),
-      body: Consumer<ProductController>(
-        builder: (context, controller, child) {
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
+    return Consumer<ProductController>(
+      builder: (context, controller, child) {
+        return Scaffold(
+          backgroundColor: const Color(0xFFF2F2F2),
+          body: SafeArea(
             child: Column(
               children: [
-                TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Cari produk...'
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                          onPressed: () => Navigator.pop(context),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          color: Colors.black,
+                        ),
+                      ),
+                      const Text(
+                        "DAFTAR PRODUK",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF222222),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ChangeNotifierProvider(
+                                  create: (_) => CreateProductController()..init(),
+                                  child: const CreateProductView(),
+                                ),
+                              ),
+                            );
+                            if (result == true) {
+                              Provider.of<ProductController>(context, listen: false).getProducts(refresh: true);
+                            }
+                          },
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
-                  onSubmitted: (value) => controller.searchProducts(value),
                 ),
-                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: TextField(
+                    controller: _searchController,
+                    onSubmitted: (value) => controller.searchProducts(value),
+                    decoration: InputDecoration(
+                      hintText: 'Cari Produk',
+                      prefixIcon: const Icon(Icons.search),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Expanded(
                   child: controller.isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : controller.products.isEmpty
                           ? const Center(child: Text('Tidak ada produk yang tersedia'))
                           : ListView.builder(
+                              padding: const EdgeInsets.all(16),
                               itemCount: controller.products.length,
                               itemBuilder: (context, index) {
                                 final product = controller.products[index];
@@ -144,7 +194,6 @@ class _ProductViewState extends State<ProductView> {
                                                 ],
                                               ),
                                             );
-
                                             if (confirm == true) {
                                               final success = await controller.deleteProduct(product['id']);
                                               if (success) {
@@ -168,27 +217,9 @@ class _ProductViewState extends State<ProductView> {
                 ),
               ],
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.grey[500],
-        child: const Icon(Icons.add),
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ChangeNotifierProvider(
-                create: (_) => CreateProductController()..init(),
-                child: const CreateProductView()
-              ),
-            ),
-          );
-          if (result == true) {
-            Provider.of<ProductController>(context, listen: false).getProducts(refresh: true);
-          }
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

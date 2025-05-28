@@ -26,109 +26,119 @@ class CategoryBody extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.grey[500],
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-        title: const Text(
-          'Kategori Produk',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.add, color: Colors.white),
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const CreateCategoryView()),
-                  );
-                  if (result == true) {
-                    controller.fetchCategories();
-                  }
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: controller.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(20),
-              child: ListView.builder(
-                itemCount: controller.categories.length,
-                itemBuilder: (context, index) {
-                  final item = controller.categories[index];
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      leading: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.teal.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(Icons.category_outlined, size: 28, color: Colors.teal),
-                      ),
-                      title: Text(
-                        item['nama'],
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                      ),
-                      subtitle: Text(item['deskripsi'] ?? '-', style: const TextStyle(color: Colors.grey)),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () async {
-                              final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => EditCategoryView(
-                                    id: item['id'].toString(),
-                                    nama: item['nama'],
-                                    deskripsi: item['deskripsi'] ?? '',
-                                    productTypeId: item['productTypeId'].toString(),
-                                  ),
+                  ),
+                  const Text(
+                    'KATEGORI PRODUK',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF222222),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.add, color: Colors.black, size: 28),
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const CreateCategoryView()),
+                        );
+                        if (result == true) controller.fetchCategories();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+              Expanded(
+                child: controller.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: controller.categories.length,
+                        itemBuilder: (context, index) {
+                          final item = controller.categories[index];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
                                 ),
-                              );
-                              if (result == true) {
-                                controller.fetchCategories();
-                              }
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
-                          ),
-                        ],
+                              ],
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                              leading: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.teal.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(Icons.category_outlined, size: 28, color: Colors.teal),
+                              ),
+                              title: Text(
+                                item['nama'],
+                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                              ),
+                              subtitle: Text(item['deskripsi'] ?? '-', style: const TextStyle(color: Colors.grey)),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.blue),
+                                    onPressed: () async {
+                                      final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => EditCategoryView(
+                                            id: item['id'].toString(),
+                                            nama: item['nama'],
+                                            deskripsi: item['deskripsi'] ?? '',
+                                            productTypeId: item['productTypeId'].toString(),
+                                          ),
+                                        ),
+                                      );
+                                      if (result == true) {
+                                        controller.fetchCategories();
+                                      }
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  );
-                },
               ),
-            ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

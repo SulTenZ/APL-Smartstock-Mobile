@@ -40,83 +40,97 @@ class _EditBrandBody extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.grey[500],
-        title: const Text('Edit Brand', style: TextStyle(color: Colors.white)),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ListView(
-          children: [
-            const Text(
-              'Form Brand',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 16),
-
-            // Gambar dipindahkan ke atas
-            GestureDetector(
-              onTap: controller.pickImage,
-              child: Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.grey.shade400),
-                ),
-                child: controller.imageFile != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.file(
-                          controller.imageFile!,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.camera_alt, size: 48, color: Colors.grey),
-                            SizedBox(height: 8),
-                            Text('Tap untuk memilih gambar'),
-                          ],
-                        ),
-                      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ),
+                  const Text(
+                    'EDIT BRAND',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF222222),
+                    ),
+                  ),
+                ],
               ),
-            ),
-
-            const SizedBox(height: 16),
-
-            CustomFormField(
-              label: 'Nama Brand',
-              hintText: 'Masukkan nama brand',
-              controller: controller.namaController,
-              onChanged: (val) {},
-            ),
-            const SizedBox(height: 12),
-
-            CustomFormField(
-              label: 'Deskripsi',
-              hintText: 'Masukkan deskripsi',
-              controller: controller.deskripsiController,
-              onChanged: (val) {},
-            ),
-
-            const SizedBox(height: 24),
-
-            CustomButton(
-              text: 'Simpan Perubahan',
-              onPressed: () async {
-                final result = await controller.submit(context);
-                if (result) Navigator.pop(context, true);
-              },
-            ),
-          ],
+              const SizedBox(height: 40),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Form Brand',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                ),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: controller.pickImage,
+                child: Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.grey.shade400),
+                  ),
+                  child: controller.imageFile != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.file(
+                            controller.imageFile!,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.camera_alt, size: 48, color: Colors.grey),
+                              SizedBox(height: 8),
+                              Text('Tap untuk memilih gambar'),
+                            ],
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              CustomFormField(
+                label: 'Nama Brand',
+                hintText: 'Masukkan nama brand',
+                controller: controller.namaController,
+                onChanged: (val) {},
+              ),
+              const SizedBox(height: 12),
+              CustomFormField(
+                label: 'Deskripsi',
+                hintText: 'Masukkan deskripsi',
+                controller: controller.deskripsiController,
+                onChanged: (val) {},
+              ),
+              const SizedBox(height: 24),
+              CustomButton(
+                text: 'Simpan Perubahan',
+                onPressed: () async {
+                  final result = await controller.submit(context);
+                  if (result) Navigator.pop(context, true);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
