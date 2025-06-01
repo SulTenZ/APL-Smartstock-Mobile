@@ -12,8 +12,8 @@ class TransactionSubmissionController extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController alamatController = TextEditingController();
-  final TextEditingController catatanController = TextEditingController(); // Tambahkan controller untuk catatan
-  final TextEditingController diskonController = TextEditingController(); // Tambahkan controller untuk diskon
+  final TextEditingController catatanController = TextEditingController();
+  final TextEditingController diskonController = TextEditingController();
 
   String? selectedPaymentMethod;
   final Map<String, String> paymentMethods = {

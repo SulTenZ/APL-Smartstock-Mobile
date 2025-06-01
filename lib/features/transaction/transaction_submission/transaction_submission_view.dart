@@ -6,6 +6,7 @@ import '../../../common/widgets/custom_form.dart';
 import '../../../common/widgets/custom_drop_down.dart';
 import '../transaction_controller.dart';
 import 'transaction_submission_controller.dart';
+import '../transaction_success/transaction_success_view.dart';
 
 class TransactionSubmissionView extends StatelessWidget {
   const TransactionSubmissionView({super.key});
@@ -294,14 +295,73 @@ class TransactionSubmissionView extends StatelessWidget {
                                   try {
                                     await submitController.submitTransaction();
                                     cartController.clearCart();
-                                    Navigator.popUntil(
-                                      context,
-                                      (route) => route.isFirst,
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("Transaksi berhasil!"),
-                                        backgroundColor: Colors.green,
+
+                                    // Navigate to success page
+                                    Navigator.of(context).pushReplacement(
+                                      PageRouteBuilder(
+                                        pageBuilder:
+                                            (
+                                              context,
+                                              animation,
+                                              secondaryAnimation,
+                                            ) => TransactionSuccessView(
+                                              transactionId: transactionId,
+                                              customerName:
+                                                  submitController
+                                                          .namaController
+                                                          .text
+                                                          .isEmpty
+                                                      ? "Customer"
+                                                      : submitController
+                                                          .namaController
+                                                          .text,
+                                              totalAmount:
+                                                  submitController.totalHarga,
+                                              items: submitController.items,
+                                              paymentMethod:
+                                                  submitController
+                                                      .selectedPaymentMethod!,
+                                              discount:
+                                                  double.tryParse(
+                                                    submitController
+                                                        .diskonController
+                                                        .text,
+                                                  ) ??
+                                                  0,
+                                              notes:
+                                                  submitController
+                                                          .catatanController
+                                                          .text
+                                                          .isEmpty
+                                                      ? null
+                                                      : submitController
+                                                          .catatanController
+                                                          .text,
+                                            ),
+                                        transitionDuration: const Duration(
+                                          milliseconds: 800,
+                                        ),
+                                        reverseTransitionDuration:
+                                            const Duration(milliseconds: 800),
+                                        transitionsBuilder: (
+                                          context,
+                                          animation,
+                                          secondaryAnimation,
+                                          child,
+                                        ) {
+                                          return FadeTransition(
+                                            opacity: Tween<double>(
+                                              begin: 0.0,
+                                              end: 1.0,
+                                            ).animate(
+                                              CurvedAnimation(
+                                                parent: animation,
+                                                curve: Curves.easeInOut,
+                                              ),
+                                            ),
+                                            child: child,
+                                          );
+                                        },
                                       ),
                                     );
                                   } catch (e) {
