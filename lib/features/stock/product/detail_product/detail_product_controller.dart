@@ -1,13 +1,18 @@
 // lib/features/stock/product/detail_product/detail_product_controller.dart
 import 'package:flutter/material.dart';
 import '../../../../data/services/product_service.dart';
+import '../../../../data/services/stock_batch_service.dart';
 
 class DetailProductController extends ChangeNotifier {
   final ProductService _productService = ProductService();
+  final StockBatchService _stockBatchService = StockBatchService();
 
   Map<String, dynamic>? product;
+  Map<String, dynamic>? stockBatch;
   bool isLoading = false;
+  bool isLoadingBatch = false;
   String? errorMessage;
+  String? batchErrorMessage;
 
   // Get product details by ID
   Future<void> getProductDetails(String productId) async {
@@ -18,12 +23,36 @@ class DetailProductController extends ChangeNotifier {
 
       product = await _productService.getProductById(productId);
 
+      // Fetch stock batch if product has stockBatchId
+      if (product != null && product!['stockBatchId'] != null) {
+        await getStockBatchDetails(product!['stockBatchId']);
+      }
+
       isLoading = false;
       notifyListeners();
     } catch (e) {
       isLoading = false;
       errorMessage = e.toString();
       product = null;
+      notifyListeners();
+    }
+  }
+
+  // Get stock batch details by ID
+  Future<void> getStockBatchDetails(String stockBatchId) async {
+    try {
+      isLoadingBatch = true;
+      batchErrorMessage = null;
+      notifyListeners();
+
+      stockBatch = await _stockBatchService.getStockBatchById(stockBatchId);
+
+      isLoadingBatch = false;
+      notifyListeners();
+    } catch (e) {
+      isLoadingBatch = false;
+      batchErrorMessage = e.toString();
+      stockBatch = null;
       notifyListeners();
     }
   }
@@ -59,35 +88,34 @@ class DetailProductController extends ChangeNotifier {
     }
   }
 
-// Update product size (menggunakan productSizeId yang benar)
-Future<bool> updateProductSize({
-  required String productSizeId,
-  required int quantity,
-}) async {
-  try {
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
+  // Update product size (menggunakan productSizeId yang benar)
+  Future<bool> updateProductSize({
+    required String productSizeId,
+    required int quantity,
+  }) async {
+    try {
+      isLoading = true;
+      errorMessage = null;
+      notifyListeners();
 
-    await _productService.updateProductSize(
-      productSizeId: productSizeId,
-      quantity: quantity,
-    );
+      await _productService.updateProductSize(
+        productSizeId: productSizeId,
+        quantity: quantity,
+      );
 
-    // Refresh product details after updating size
-    await getProductDetails(product?['id']);
+      // Refresh product details after updating size
+      await getProductDetails(product?['id']);
 
-    isLoading = false;
-    notifyListeners();
-    return true;
-  } catch (e) {
-    isLoading = false;
-    errorMessage = e.toString();
-    notifyListeners();
-    return false;
+      isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      isLoading = false;
+      errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
   }
-}
-
 
   // Delete product size
   Future<bool> deleteProductSize({
@@ -136,5 +164,46 @@ Future<bool> updateProductSize({
     final totalStock = calculateTotalStock();
 
     return totalStock <= minStock;
+  }
+
+  // Get stock batch summary
+  Map<String, dynamic>? getStockBatchSummary() {
+    if (stockBatch == null) return null;
+    return _stockBatchService.getBatchSummary(stockBatch!);
+  }
+
+  // Calculate average cost per item from batch
+  double getAverageCostPerItem() {
+    if (stockBatch == null) return 0.0;
+    return _stockBatchService.calculateAverageCostPerItem(stockBatch!);
+  }
+
+  // Check if product is part of a batch
+  bool hasStockBatch() {
+    return product != null && 
+           product!['stockBatchId'] != null && 
+           stockBatch != null;
+  }
+
+  // Get batch name
+  String? getBatchName() {
+    return stockBatch?['nama'];
+  }
+
+  // Get batch total price
+  double getBatchTotalPrice() {
+    return stockBatch?['totalHarga']?.toDouble() ?? 0.0;
+  }
+
+  // Get batch total shoes count
+  int getBatchTotalShoes() {
+    return stockBatch?['jumlahSepatu']?.toInt() ?? 0;
+  }
+
+  // Refresh both product and batch data
+  Future<void> refreshData() async {
+    if (product != null && product!['id'] != null) {
+      await getProductDetails(product!['id']);
+    }
   }
 }

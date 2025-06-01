@@ -4,6 +4,7 @@ import 'category/category_view.dart';
 import 'brand/brand_view.dart';
 import 'size/size_view.dart';
 import 'product/product_view.dart';
+import 'stock_batch/stock_batch_view.dart'; // Import tambahan untuk Stock Batch
 import '../../common/widgets/custom_sub_menu_button.dart';
 
 class ManageStockView extends StatelessWidget {
@@ -56,64 +57,71 @@ class ManageStockView extends StatelessWidget {
                       icon: Icons.category,
                       title: 'Tipe Produk',
                       color: Colors.purple,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProductTypeView(),
-                        ),
-                      ),
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ProductTypeView(),
+                            ),
+                          ),
                     ),
                     CustomSubMenuButton(
                       icon: Icons.layers,
                       title: 'Kategori',
                       color: Colors.blue,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const CategoryView(),
-                        ),
-                      ),
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const CategoryView(),
+                            ),
+                          ),
                     ),
                     CustomSubMenuButton(
                       icon: Icons.branding_watermark,
                       title: 'Brand',
                       color: Colors.teal,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const BrandView(),
-                        ),
-                      ),
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const BrandView(),
+                            ),
+                          ),
                     ),
                     CustomSubMenuButton(
                       icon: Icons.straighten,
                       title: 'Size',
                       color: Colors.amber,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SizeView(),
-                        ),
-                      ),
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const SizeView()),
+                          ),
                     ),
                     CustomSubMenuButton(
                       icon: Icons.inventory_2,
                       title: 'Produk',
                       color: Colors.deepOrange,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProductView(),
-                        ),
-                      ),
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ProductView(),
+                            ),
+                          ),
                     ),
                     CustomSubMenuButton(
                       icon: Icons.store,
-                      title: 'Stok',
-                      color: Colors.green,
-                      onTap: () {
-                        // Belum diimplementasikan
-                      },
+                      title: 'Batch Stok',
+                      color: Colors.indigo,
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const StockBatchView(),
+                            ),
+                          ),
                     ),
                   ],
                 ),

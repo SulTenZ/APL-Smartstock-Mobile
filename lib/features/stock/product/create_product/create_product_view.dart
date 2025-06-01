@@ -23,10 +23,16 @@ class _CreateProductViewState extends State<CreateProductView> {
   final _hargaBeliController = TextEditingController();
   final _hargaJualController = TextEditingController();
   final _minStockController = TextEditingController();
-  final _stockBatchIdController = TextEditingController();
   final _jumlahSizeController = TextEditingController();
   String? _selectedSize;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() =>
+        context.read<CreateProductController>().init());
+  }
 
   @override
   void dispose() {
@@ -35,7 +41,6 @@ class _CreateProductViewState extends State<CreateProductView> {
     _hargaBeliController.dispose();
     _hargaJualController.dispose();
     _minStockController.dispose();
-    _stockBatchIdController.dispose();
     _jumlahSizeController.dispose();
     super.dispose();
   }
@@ -44,10 +49,12 @@ class _CreateProductViewState extends State<CreateProductView> {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        Provider.of<CreateProductController>(context, listen: false).setImageFile(File(image.path));
+        context.read<CreateProductController>().setImageFile(File(image.path));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal mengambil gambar: $e')),
+      );
     }
   }
 
@@ -65,7 +72,7 @@ class _CreateProductViewState extends State<CreateProductView> {
         child: controller.isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(20),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -145,14 +152,12 @@ class _CreateProductViewState extends State<CreateProductView> {
                         hintText: 'Pilih tipe produk',
                         value: controller.productTypeId,
                         items: controller.productTypes
-                            .map<DropdownMenuItem<String>>(
-                              (type) => DropdownMenuItem<String>(
-                                value: type['id'].toString(),
-                                child: Text(type['name']),
-                              ),
-                            )
+                            .map((type) => DropdownMenuItem<String>(
+                                  value: type['id'].toString(),
+                                  child: Text(type['name']),
+                                ))
                             .toList(),
-                        onChanged: (val) => controller.setProductType(val),
+                        onChanged: controller.setProductType,
                       ),
                       const SizedBox(height: 16),
                       CustomDropDown<int>(
@@ -160,14 +165,14 @@ class _CreateProductViewState extends State<CreateProductView> {
                         hintText: 'Pilih kategori',
                         value: controller.categoryId,
                         items: filteredCategories
-                            .map(
-                              (cat) => DropdownMenuItem(
-                                value: int.tryParse(cat['id'].toString()),
-                                child: Text(cat['nama']),
-                              ),
-                            )
+                            .map((cat) => DropdownMenuItem(
+                                  value: int.tryParse(cat['id'].toString()),
+                                  child: Text(cat['nama']),
+                                ))
                             .toList(),
-                        onChanged: (val) => controller.categoryId = val,
+                        onChanged: (val) => setState(() {
+                          controller.categoryId = val;
+                        }),
                       ),
                       const SizedBox(height: 16),
                       CustomDropDown<int>(
@@ -175,14 +180,14 @@ class _CreateProductViewState extends State<CreateProductView> {
                         hintText: 'Pilih brand',
                         value: controller.brandId,
                         items: controller.brands
-                            .map(
-                              (b) => DropdownMenuItem(
-                                value: int.tryParse(b['id'].toString()),
-                                child: Text(b['nama']),
-                              ),
-                            )
+                            .map((b) => DropdownMenuItem(
+                                  value: int.tryParse(b['id'].toString()),
+                                  child: Text(b['nama']),
+                                ))
                             .toList(),
-                        onChanged: (val) => controller.brandId = val,
+                        onChanged: (val) => setState(() {
+                          controller.brandId = val;
+                        }),
                       ),
                       const SizedBox(height: 16),
                       CustomFormField(
@@ -194,7 +199,7 @@ class _CreateProductViewState extends State<CreateProductView> {
                       const SizedBox(height: 16),
                       CustomFormField(
                         label: 'Deskripsi',
-                        hintText: 'Masukkan deskripsi produk',
+                        hintText: 'Opsional',
                         controller: _deskripsiController,
                         onChanged: (val) => controller.deskripsi = val,
                       ),
@@ -203,21 +208,21 @@ class _CreateProductViewState extends State<CreateProductView> {
                         children: [
                           Expanded(
                             child: CustomFormField(
-                              label: 'Harga Beli (Rp) *',
+                              label: 'Harga Beli (Rp)',
                               hintText: '0',
                               controller: _hargaBeliController,
                               keyboardType: TextInputType.number,
-                              onChanged: (val) => controller.hargaBeli = double.tryParse(val) ?? 0.0,
+                              onChanged: (val) => controller.hargaBeli = double.tryParse(val) ?? 0,
                             ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: CustomFormField(
-                              label: 'Harga Jual (Rp) *',
+                              label: 'Harga Jual (Rp)',
                               hintText: '0',
                               controller: _hargaJualController,
                               keyboardType: TextInputType.number,
-                              onChanged: (val) => controller.hargaJual = double.tryParse(val) ?? 0.0,
+                              onChanged: (val) => controller.hargaJual = double.tryParse(val) ?? 0,
                             ),
                           ),
                         ],
@@ -231,7 +236,7 @@ class _CreateProductViewState extends State<CreateProductView> {
                         onChanged: (val) => controller.minStock = int.tryParse(val) ?? 0,
                       ),
                       const SizedBox(height: 16),
-                      const Text('Ukuran & Jumlah Stok', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Ukuran & Jumlah'),
                       const SizedBox(height: 8),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -243,12 +248,10 @@ class _CreateProductViewState extends State<CreateProductView> {
                               hintText: 'Pilih ukuran',
                               value: _selectedSize,
                               items: controller.availableSizes
-                                  .map(
-                                    (s) => DropdownMenuItem<String>(
-                                      value: s['id'].toString(),
-                                      child: Text(s['label'].toString()),
-                                    ),
-                                  )
+                                  .map((s) => DropdownMenuItem<String>(
+                                        value: s['id'].toString(),
+                                        child: Text(s['label'].toString()),
+                                      ))
                                   .toList(),
                               onChanged: (val) => setState(() => _selectedSize = val),
                             ),
@@ -259,9 +262,8 @@ class _CreateProductViewState extends State<CreateProductView> {
                             child: CustomFormField(
                               label: 'Jumlah',
                               hintText: '0',
-                              keyboardType: TextInputType.number,
                               controller: _jumlahSizeController,
-                              onChanged: (val) {},
+                              keyboardType: TextInputType.number,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -269,17 +271,18 @@ class _CreateProductViewState extends State<CreateProductView> {
                             height: 56,
                             child: ElevatedButton(
                               onPressed: () {
-                                if (_selectedSize != null && _jumlahSizeController.text.isNotEmpty) {
-                                  final selected = controller.availableSizes
-                                      .firstWhere((s) => s['id'] == _selectedSize);
-                                  final quantity = int.tryParse(_jumlahSizeController.text) ?? 0;
-                                  controller.addSize(_selectedSize!, selected['label'], quantity);
+                                if (_selectedSize != null &&
+                                    _jumlahSizeController.text.isNotEmpty) {
+                                  final selected = controller.availableSizes.firstWhere(
+                                      (s) => s['id'] == _selectedSize);
+                                  final qty = int.tryParse(_jumlahSizeController.text) ?? 0;
+                                  controller.addSize(_selectedSize!, selected['label'], qty);
                                   _jumlahSizeController.clear();
                                   setState(() => _selectedSize = null);
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey[600],
+                                backgroundColor: Colors.grey[800],
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -290,18 +293,14 @@ class _CreateProductViewState extends State<CreateProductView> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      ...controller.sizes.map(
-                        (s) => ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: CircleAvatar(child: Text(s['label'].toString())),
-                          title: Text('Jumlah: ${s['quantity']}'),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => controller.removeSize(s['sizeId']),
-                          ),
-                        ),
-                      ),
+                      ...controller.sizes.map((s) => ListTile(
+                            title: Text('Ukuran: ${s['label']}'),
+                            subtitle: Text('Jumlah: ${s['quantity']}'),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => controller.removeSize(s['sizeId']),
+                            ),
+                          )),
                       const SizedBox(height: 16),
                       CustomDropDown<String>(
                         label: 'Kondisi',
@@ -312,14 +311,22 @@ class _CreateProductViewState extends State<CreateProductView> {
                           DropdownMenuItem(value: 'BEKAS', child: Text('BEKAS')),
                           DropdownMenuItem(value: 'REKONDISI', child: Text('REKONDISI')),
                         ],
-                        onChanged: (val) => controller.kondisi = val!,
+                        onChanged: (val) => setState(() {
+                          controller.kondisi = val!;
+                        }),
                       ),
                       const SizedBox(height: 16),
-                      CustomFormField(
-                        label: 'ID Batch Stok',
-                        hintText: 'Opsional',
-                        controller: _stockBatchIdController,
-                        onChanged: (val) => controller.stockBatchId = val,
+                      CustomDropDown<String>(
+                        label: 'Batch Stok',
+                        hintText: 'Pilih batch (opsional)',
+                        value: controller.stockBatchId,
+                        items: controller.stockBatches
+                            .map((batch) => DropdownMenuItem<String>(
+                                  value: batch['id'].toString(),
+                                  child: Text(batch['nama']),
+                                ))
+                            .toList(),
+                        onChanged: (val) => setState(() => controller.stockBatchId = val),
                       ),
                       const SizedBox(height: 24),
                       CustomButton(
@@ -329,10 +336,9 @@ class _CreateProductViewState extends State<CreateProductView> {
                           if (_formKey.currentState!.validate()) {
                             controller.nama = _namaController.text.trim();
                             controller.deskripsi = _deskripsiController.text.trim();
-                            controller.hargaBeli = double.tryParse(_hargaBeliController.text) ?? 0.0;
-                            controller.hargaJual = double.tryParse(_hargaJualController.text) ?? 0.0;
+                            controller.hargaBeli = double.tryParse(_hargaBeliController.text) ?? 0;
+                            controller.hargaJual = double.tryParse(_hargaJualController.text) ?? 0;
                             controller.minStock = int.tryParse(_minStockController.text) ?? 0;
-                            controller.stockBatchId = _stockBatchIdController.text.trim();
 
                             final success = await controller.createProduct();
                             if (success) Navigator.pop(context, true);

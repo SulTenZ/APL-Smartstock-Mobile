@@ -1,8 +1,10 @@
 // lib/features/transaction/transaction_view.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'transaction_controller.dart';
 import '../../common/widgets/custom_product_card.dart';
+import '../../common/color/color_theme.dart';
 
 class TransactionView extends StatefulWidget {
   const TransactionView({super.key});
@@ -30,283 +32,404 @@ class _TransactionViewState extends State<TransactionView> {
     return Consumer<TransactionController>(
       builder: (context, controller, _) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF2F2F2),
-          body: SafeArea(
-            child: Column(
-              children: [
-                // Custom AppBar
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                          onPressed: () => Navigator.pop(context),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          color: Colors.black,
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFFFAFAFA), // Very light gray
+                  Color(ColorTheme.backgroundColor), // White
+                  Color(0xFFF5F5F5), // Light gray
+                ],
+              ),
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  // Custom AppBar - TIDAK DIUBAH sesuai permintaan
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                            onPressed: () => Navigator.pop(context),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            color: const Color(ColorTheme.primaryColor),
+                          ),
                         ),
-                      ),
-                      const Text(
-                        "TRANSAKSI",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF222222),
+                        Text(
+                          "TRANSAKSI",
+                          style: GoogleFonts.poppins(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(ColorTheme.primaryColor),
+                          ),
                         ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Stack(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.shopping_cart_outlined),
-                              onPressed: () => _showCart(context, controller),
-                              color: Colors.black,
-                            ),
-                            if (controller.cart.isNotEmpty)
-                              Positioned(
-                                right: 4,
-                                top: 4,
-                                child: CircleAvatar(
-                                  radius: 8,
-                                  backgroundColor: Colors.black,
-                                  child: Text(
-                                    '${controller.cart.length}',
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.white,
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: IconButton(
+                                  icon: const Icon(Icons.shopping_cart_outlined),
+                                  onPressed: () => _showCart(context, controller),
+                                  color: const Color(ColorTheme.primaryColor),
+                                ),
+                              ),
+                              if (controller.cart.isNotEmpty)
+                                Positioned(
+                                  right: 4,
+                                  top: 4,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: const Color(ColorTheme.primaryColor),
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 18,
+                                      minHeight: 18,
+                                    ),
+                                    child: Text(
+                                      '${controller.cart.length}',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 10,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Search Field
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    child: TextField(
-                      onChanged: controller.setSearch,
-                      decoration: InputDecoration(
-                        hintText: 'Cari Produk',
-                        hintStyle: TextStyle(color: Colors.grey[500]),
-                        prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+                  ),
+
+                  // Search Field
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        onChanged: controller.setSearch,
+                        style: GoogleFonts.poppins(),
+                        decoration: InputDecoration(
+                          hintText: 'Cari Produk',
+                          hintStyle: GoogleFonts.poppins(
+                            color: const Color(ColorTheme.secondaryColor),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: const Color(ColorTheme.secondaryColor),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 16,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: const Color(ColorTheme.primaryColor),
+                              width: 1,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // Filter Dropdown
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            hint: Text('Tipe Produk', style: TextStyle(color: Colors.grey[600])),
-                            value: controller.selectedProductTypeId,
-                            underline: const SizedBox(),
-                            icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
-                            items: controller.productTypes
-                                .map<DropdownMenuItem<String>>((type) {
-                              return DropdownMenuItem(
-                                value: type['id'].toString(),
-                                child: Text(type['name']),
-                              );
-                            }).toList(),
-                            onChanged: (val) => controller.setFilter(typeId: val),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: DropdownButton<int>(
-                            isExpanded: true,
-                            hint: Text('Kategori', style: TextStyle(color: Colors.grey[600])),
-                            value: controller.selectedCategoryId,
-                            underline: const SizedBox(),
-                            icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
-                            items: controller.categories
-                                .map<DropdownMenuItem<int>>((cat) {
-                              return DropdownMenuItem(
-                                value: cat['id'],
-                                child: Text(cat['nama']),
-                              );
-                            }).toList(),
-                            onChanged: (val) => controller.setFilter(categoryId: val),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Brand Chips
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 45,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
+                  // Filter Dropdown
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: controller.brands.map((brand) {
-                      final isSelected =
-                          controller.selectedBrandId == brand['id'].toString();
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: FilterChip(
-                          label: Text(
-                            brand['nama'],
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black87,
-                              fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(ColorTheme.secondaryColor)
+                                    .withOpacity(0.3),
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              hint: Text(
+                                'Tipe Produk',
+                                style: GoogleFonts.poppins(
+                                  color: const Color(ColorTheme.secondaryColor),
+                                ),
+                              ),
+                              value: controller.selectedProductTypeId,
+                              underline: const SizedBox(),
+                              icon: Icon(
+                                Icons.keyboard_arrow_down,
+                                color: const Color(ColorTheme.secondaryColor),
+                              ),
+                              style: GoogleFonts.poppins(
+                                color: const Color(ColorTheme.textColor),
+                              ),
+                              items: controller.productTypes
+                                  .map<DropdownMenuItem<String>>((type) {
+                                return DropdownMenuItem(
+                                  value: type['id'].toString(),
+                                  child: Text(type['name']),
+                                );
+                              }).toList(),
+                              onChanged: (val) => controller.setFilter(typeId: val),
                             ),
                           ),
-                          selected: isSelected,
-                          onSelected: (_) {
-                            final selected = controller.selectedBrandId ==
-                                brand['id'].toString();
-                            controller.setFilter(
-                              brandId: selected ? null : brand['id'].toString(),
-                            );
-                          },
-                          selectedColor: Colors.grey[700],
-                          backgroundColor: Colors.white,
-                          checkmarkColor: Colors.white,
-                          side: BorderSide(
-                            color: isSelected ? Colors.grey[700]! : Colors.grey[300]!,
-                            width: 1,
-                          ),
-                          elevation: isSelected ? 2 : 0,
-                          shadowColor: Colors.black.withOpacity(0.1),
                         ),
-                      );
-                    }).toList(),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(ColorTheme.secondaryColor)
+                                    .withOpacity(0.3),
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: DropdownButton<int>(
+                              isExpanded: true,
+                              hint: Text(
+                                'Kategori',
+                                style: GoogleFonts.poppins(
+                                  color: const Color(ColorTheme.secondaryColor),
+                                ),
+                              ),
+                              value: controller.selectedCategoryId,
+                              underline: const SizedBox(),
+                              icon: Icon(
+                                Icons.keyboard_arrow_down,
+                                color: const Color(ColorTheme.secondaryColor),
+                              ),
+                              style: GoogleFonts.poppins(
+                                color: const Color(ColorTheme.textColor),
+                              ),
+                              items: controller.categories
+                                  .map<DropdownMenuItem<int>>((cat) {
+                                return DropdownMenuItem(
+                                  value: cat['id'],
+                                  child: Text(cat['nama']),
+                                );
+                              }).toList(),
+                              onChanged: (val) => controller.setFilter(categoryId: val),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 16),
+                  // Brand Chips
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 45,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: controller.brands.map((brand) {
+                        final isSelected =
+                            controller.selectedBrandId == brand['id'].toString();
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: FilterChip(
+                            label: Text(
+                              brand['nama'],
+                              style: GoogleFonts.poppins(
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(ColorTheme.textColor),
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                              ),
+                            ),
+                            selected: isSelected,
+                            onSelected: (_) {
+                              final selected = controller.selectedBrandId ==
+                                  brand['id'].toString();
+                              controller.setFilter(
+                                brandId: selected ? null : brand['id'].toString(),
+                              );
+                            },
+                            selectedColor: const Color(ColorTheme.primaryColor),
+                            backgroundColor: Colors.white,
+                            checkmarkColor: Colors.white,
+                            side: BorderSide(
+                              color: isSelected
+                                  ? const Color(ColorTheme.primaryColor)
+                                  : const Color(ColorTheme.secondaryColor)
+                                      .withOpacity(0.5),
+                              width: 1,
+                            ),
+                            elevation: isSelected ? 4 : 1,
+                            shadowColor: Colors.black.withOpacity(0.1),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
 
-                // Product Grid
-                Expanded(
-                  child: controller.isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : controller.products.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.search_off,
-                                    size: 64,
-                                    color: Colors.grey[400],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    "Produk tidak ditemukan",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[600],
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "Coba ubah kata kunci pencarian",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[500],
-                                    ),
+                  const SizedBox(height: 16),
+
+                  // Product Grid
+                  Expanded(
+                    child: controller.isLoading
+                        ? Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 10),
                                   ),
                                 ],
                               ),
-                            )
-                          : GridView.builder(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              itemCount: controller.products.length,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 16,
-                                crossAxisSpacing: 16,
-                                childAspectRatio: 0.7,
+                              child: const CircularProgressIndicator(
+                                color: Color(ColorTheme.primaryColor),
                               ),
-                              itemBuilder: (context, index) {
-                                final product = controller.products[index];
-                                return CustomProductCard(
-                                  imageUrl: product['image'],
-                                  name: product['nama'],
-                                  price: product['hargaJual'],
-                                  onTap: () => _showProductDetail(
-                                      context, product, controller),
-                                );
-                              },
                             ),
-                ),
-              ],
+                          )
+                        : controller.products.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.search_off,
+                                      size: 64,
+                                      color: const Color(ColorTheme.secondaryColor),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      "Produk tidak ditemukan",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        color: const Color(ColorTheme.textColor),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      "Coba ubah kata kunci pencarian",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: const Color(ColorTheme.secondaryColor),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : GridView.builder(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                itemCount: controller.products.length,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio: 0.7,
+                                ),
+                                itemBuilder: (context, index) {
+                                  final product = controller.products[index];
+                                  return CustomProductCard(
+                                    imageUrl: product['image'],
+                                    name: product['nama'],
+                                    price: product['hargaJual'],
+                                    onTap: () => _showProductDetail(
+                                      context,
+                                      product,
+                                      controller,
+                                    ),
+                                  );
+                                },
+                              ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -355,7 +478,7 @@ class _TransactionViewState extends State<TransactionView> {
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: const Color(ColorTheme.secondaryColor),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -381,9 +504,10 @@ class _TransactionViewState extends State<TransactionView> {
                           children: [
                             Text(
                               product['nama'],
-                              style: const TextStyle(
+                              style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
+                                color: const Color(ColorTheme.primaryColor),
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -393,14 +517,15 @@ class _TransactionViewState extends State<TransactionView> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: const Color(ColorTheme.secondaryColor)
+                                    .withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
                                 "Stok: ${product['stock']}",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   fontSize: 12,
-                                  color: Colors.grey[700],
+                                  color: const Color(ColorTheme.textColor),
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -413,14 +538,15 @@ class _TransactionViewState extends State<TransactionView> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[100],
+                                  color: const Color(ColorTheme.secondaryColor)
+                                      .withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   "Stok ukuran: $stokUkuran",
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 12,
-                                    color: Colors.grey[700],
+                                    color: const Color(ColorTheme.textColor),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -436,11 +562,12 @@ class _TransactionViewState extends State<TransactionView> {
                   
                   // Size Selection
                   if (sizes.isNotEmpty) ...[
-                    const Text(
+                    Text(
                       "Pilih Ukuran",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
+                        color: const Color(ColorTheme.primaryColor),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -448,14 +575,23 @@ class _TransactionViewState extends State<TransactionView> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
+                        border: Border.all(
+                          color: const Color(ColorTheme.secondaryColor)
+                              .withOpacity(0.3),
+                        ),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: DropdownButton<String>(
                         value: selectedSizeId,
                         isExpanded: true,
                         underline: const SizedBox(),
-                        icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: const Color(ColorTheme.secondaryColor),
+                        ),
+                        style: GoogleFonts.poppins(
+                          color: const Color(ColorTheme.textColor),
+                        ),
                         items: sizes.map<DropdownMenuItem<String>>((item) {
                           return DropdownMenuItem<String>(
                             value: item['size']['id'],
@@ -477,11 +613,12 @@ class _TransactionViewState extends State<TransactionView> {
                   ],
                   
                   // Quantity Selection
-                  const Text(
+                  Text(
                     "Jumlah",
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
+                      color: const Color(ColorTheme.primaryColor),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -489,7 +626,10 @@ class _TransactionViewState extends State<TransactionView> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey[300]!),
+                          border: Border.all(
+                            color: const Color(ColorTheme.secondaryColor)
+                                .withOpacity(0.3),
+                          ),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -504,15 +644,17 @@ class _TransactionViewState extends State<TransactionView> {
                                 minWidth: 40,
                                 minHeight: 40,
                               ),
+                              color: const Color(ColorTheme.primaryColor),
                             ),
                             Container(
                               width: 40,
                               alignment: Alignment.center,
                               child: Text(
                                 quantity.toString(),
-                                style: const TextStyle(
+                                style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
+                                  color: const Color(ColorTheme.primaryColor),
                                 ),
                               ),
                             ),
@@ -523,6 +665,7 @@ class _TransactionViewState extends State<TransactionView> {
                                 minWidth: 40,
                                 minHeight: 40,
                               ),
+                              color: const Color(ColorTheme.primaryColor),
                             ),
                           ],
                         ),
@@ -537,12 +680,12 @@ class _TransactionViewState extends State<TransactionView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[500],
+                        backgroundColor: const Color(ColorTheme.primaryColor),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        elevation: 2,
+                        elevation: 0,
                       ),
                       onPressed: () {
                         if (selectedSizeId == null) return;
@@ -554,9 +697,13 @@ class _TransactionViewState extends State<TransactionView> {
                         });
                         Navigator.pop(context);
                       },
-                      child: const Text(
+                      child: Text(
                         "Tambah ke Keranjang",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -598,19 +745,20 @@ class _TransactionViewState extends State<TransactionView> {
                         height: 4,
                         margin: const EdgeInsets.only(bottom: 20),
                         decoration: BoxDecoration(
-                          color: Colors.grey[300],
+                          color: const Color(ColorTheme.secondaryColor),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
                     
                     // Header
-                    const Center(
+                    Center(
                       child: Text(
                         "Keranjang Anda",
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: const Color(ColorTheme.primaryColor),
                         ),
                       ),
                     ),
@@ -626,23 +774,23 @@ class _TransactionViewState extends State<TransactionView> {
                                   Icon(
                                     Icons.shopping_cart_outlined,
                                     size: 64,
-                                    color: Colors.grey[400],
+                                    color: const Color(ColorTheme.secondaryColor),
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
                                     "Keranjang masih kosong",
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                       fontSize: 16,
-                                      color: Colors.grey[600],
+                                      color: const Color(ColorTheme.textColor),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     "Mulai berbelanja sekarang",
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                       fontSize: 14,
-                                      color: Colors.grey[500],
+                                      color: const Color(ColorTheme.secondaryColor),
                                     ),
                                   ),
                                 ],
@@ -661,12 +809,15 @@ class _TransactionViewState extends State<TransactionView> {
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: Colors.grey[200]!),
+                                    border: Border.all(
+                                      color: const Color(ColorTheme.secondaryColor)
+                                          .withOpacity(0.2),
+                                    ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.04),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
                                   ),
@@ -689,17 +840,18 @@ class _TransactionViewState extends State<TransactionView> {
                                           children: [
                                             Text(
                                               item['nama'] ?? '-',
-                                              style: const TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15,
+                                                color: const Color(ColorTheme.primaryColor),
                                               ),
                                             ),
                                             const SizedBox(height: 6),
                                             Text(
                                               "Rp${price.toStringAsFixed(0)}",
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontSize: 14,
-                                                color: Colors.grey[700],
+                                                color: const Color(ColorTheme.textColor),
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
@@ -712,14 +864,15 @@ class _TransactionViewState extends State<TransactionView> {
                                                     vertical: 2,
                                                   ),
                                                   decoration: BoxDecoration(
-                                                    color: Colors.grey[100],
+                                                    color: const Color(ColorTheme.secondaryColor)
+                                                        .withOpacity(0.1),
                                                     borderRadius: BorderRadius.circular(4),
                                                   ),
                                                   child: Text(
                                                     "${item['brand']?['nama'] ?? '-'}",
-                                                    style: TextStyle(
+                                                    style: GoogleFonts.poppins(
                                                       fontSize: 11,
-                                                      color: Colors.grey[600],
+                                                      color: const Color(ColorTheme.secondaryColor),
                                                     ),
                                                   ),
                                                 ),
@@ -730,14 +883,15 @@ class _TransactionViewState extends State<TransactionView> {
                                                     vertical: 2,
                                                   ),
                                                   decoration: BoxDecoration(
-                                                    color: Colors.grey[100],
+                                                    color: const Color(ColorTheme.secondaryColor)
+                                                        .withOpacity(0.1),
                                                     borderRadius: BorderRadius.circular(4),
                                                   ),
                                                   child: Text(
                                                     "Size ${item['size'] ?? '-'}",
-                                                    style: TextStyle(
+                                                    style: GoogleFonts.poppins(
                                                       fontSize: 11,
-                                                      color: Colors.grey[600],
+                                                      color: const Color(ColorTheme.secondaryColor),
                                                     ),
                                                   ),
                                                 ),
@@ -750,7 +904,10 @@ class _TransactionViewState extends State<TransactionView> {
                                         children: [
                                           Container(
                                             decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.grey[300]!),
+                                              border: Border.all(
+                                                color: const Color(ColorTheme.secondaryColor)
+                                                    .withOpacity(0.3),
+                                              ),
                                               borderRadius: BorderRadius.circular(8),
                                             ),
                                             child: Row(
@@ -771,15 +928,17 @@ class _TransactionViewState extends State<TransactionView> {
                                                     minWidth: 32,
                                                     minHeight: 32,
                                                   ),
+                                                  color: const Color(ColorTheme.primaryColor),
                                                 ),
                                                 Container(
                                                   width: 32,
                                                   alignment: Alignment.center,
                                                   child: Text(
                                                     '$qty',
-                                                    style: const TextStyle(
+                                                    style: GoogleFonts.poppins(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 14,
+                                                      color: const Color(ColorTheme.primaryColor),
                                                     ),
                                                   ),
                                                 ),
@@ -794,6 +953,7 @@ class _TransactionViewState extends State<TransactionView> {
                                                     minWidth: 32,
                                                     minHeight: 32,
                                                   ),
+                                                  color: const Color(ColorTheme.primaryColor),
                                                 ),
                                               ],
                                             ),
@@ -812,25 +972,29 @@ class _TransactionViewState extends State<TransactionView> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50],
+                          color: const Color(ColorTheme.secondaryColor).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[200]!),
+                          border: Border.all(
+                            color: const Color(ColorTheme.secondaryColor).withOpacity(0.2),
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               "Total Harga",
-                              style: TextStyle(
+                              style: GoogleFonts.poppins(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                color: const Color(ColorTheme.primaryColor),
                               ),
                             ),
                             Text(
                               "Rp${totalHarga.toStringAsFixed(0)}",
-                              style: const TextStyle(
+                              style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                color: const Color(ColorTheme.primaryColor),
                               ),
                             ),
                           ],
@@ -841,12 +1005,12 @@ class _TransactionViewState extends State<TransactionView> {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[500],
+                            backgroundColor: const Color(ColorTheme.primaryColor),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            elevation: 2,
+                            elevation: 0,
                           ),
                           onPressed: controller.cart.isEmpty
                               ? null
@@ -854,9 +1018,13 @@ class _TransactionViewState extends State<TransactionView> {
                                     context,
                                     '/transaction_submission',
                                   ),
-                          child: const Text(
+                          child: Text(
                             "Lanjutkan Transaksi",
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
