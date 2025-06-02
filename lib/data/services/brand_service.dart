@@ -2,22 +2,21 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
-
+import '../api/api_constant.dart';
+import '../api/api_endpoint.dart';
 import '../../utils/shared_preferences.dart';
 
 class BrandService {
-  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-
   Future<Map<String, dynamic>> getAllBrands({
     String? search,
     int? page,
     int? limit,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/brand').replace(
+
+    final uri = Uri.parse(ApiEndpoint.brands).replace(
       queryParameters: {
         if (search != null) 'search': search,
         if (page != null) 'page': page.toString(),
@@ -27,7 +26,10 @@ class BrandService {
 
     final response = await http.get(
       uri,
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        ...ApiConstant.header,
+      },
     );
 
     if (response.statusCode == 200) {
@@ -45,16 +47,14 @@ class BrandService {
   }) async {
     final token = await SharedPrefs.getToken();
     if (token == null) throw Exception('Token tidak ditemukan');
-    final uri = Uri.parse('$baseUrl/api/brand');
-    print('URI: $uri');
-    print('Token: $token');
+    final uri = Uri.parse(ApiEndpoint.brands);
 
-    final request =
-        http.MultipartRequest('POST', uri)
-          ..headers['Authorization'] = 'Bearer $token'
-          ..fields['nama'] = nama;
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['nama'] = nama;
 
     if (deskripsi != null) request.fields['deskripsi'] = deskripsi;
+
     if (imageFile != null) {
       final mimeType = lookupMimeType(imageFile.path);
       final type = mimeType?.split('/');
@@ -85,13 +85,14 @@ class BrandService {
     File? imageFile,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/brand/$id');
-    final request =
-        http.MultipartRequest('PUT', uri)
-          ..headers['Authorization'] = 'Bearer $token'
-          ..fields['nama'] = nama;
+    final uri = Uri.parse(ApiEndpoint.brandById(id));
+
+    final request = http.MultipartRequest('PUT', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['nama'] = nama;
 
     if (deskripsi != null) request.fields['deskripsi'] = deskripsi;
+
     if (imageFile != null) {
       final mimeType = lookupMimeType(imageFile.path);
       final type = mimeType?.split('/');
@@ -108,6 +109,7 @@ class BrandService {
 
     final streamed = await request.send();
     final response = await http.Response.fromStream(streamed);
+
     print('Status Code: ${response.statusCode}');
     print('Response Body: ${response.body}');
 
@@ -119,11 +121,14 @@ class BrandService {
 
   Future<void> deleteBrand(String id) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/brand/$id');
+    final uri = Uri.parse(ApiEndpoint.brandById(id));
 
     final response = await http.delete(
       uri,
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        ...ApiConstant.header,
+      },
     );
 
     if (response.statusCode != 200) {

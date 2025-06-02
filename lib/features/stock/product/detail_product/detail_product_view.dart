@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'detail_product_controller.dart';
-import '../edit_product/edit_product_view.dart';
 import '../../../../data/services/size_service.dart';
 
 class DetailProductView extends StatefulWidget {
@@ -42,7 +41,11 @@ class _DetailProductViewState extends State<DetailProductView> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new,
+                              color: Colors.black,
+                              size: 20,
+                            ),
                             onPressed: () => Navigator.pop(context),
                             padding: const EdgeInsets.all(8),
                           ),
@@ -59,22 +62,25 @@ class _DetailProductViewState extends State<DetailProductView> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.black, size: 20),
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.black,
+                              size: 20,
+                            ),
                             onPressed: () async {
-                              final result = await Navigator.push(
+                              final result = await Navigator.pushNamed(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditProductView(
-                                    productId: widget.productId,
-                                    product: controller.product,
-                                  ),
-                                ),
+                                '/product/edit',
+                                arguments: {
+                                  'id': widget.productId,
+                                  'product': controller.product,
+                                },
                               );
-
                               if (result == true) {
                                 controller.getProductDetails(widget.productId);
                               }
                             },
+
                             padding: const EdgeInsets.all(8),
                           ),
                         ),
@@ -108,7 +114,8 @@ class _DetailProductViewState extends State<DetailProductView> {
                 tooltip: 'Tambah Ukuran',
               ),
             ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
           );
         },
       ),
@@ -154,19 +161,12 @@ class _DetailProductViewState extends State<DetailProductView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.grey[400],
-              ),
+              Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
                 controller.errorMessage ?? 'Produk tidak ditemukan',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
@@ -174,7 +174,10 @@ class _DetailProductViewState extends State<DetailProductView> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[500],
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -217,44 +220,61 @@ class _DetailProductViewState extends State<DetailProductView> {
                 padding: const EdgeInsets.all(20),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: product['image'] != null
-                      ? Image.network(
-                          product['image'],
-                          height: 240,
-                          width: double.infinity,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 240,
-                              width: double.infinity,
+                  child:
+                      product['image'] != null
+                          ? Image.network(
+                            product['image'],
+                            height: 240,
+                            width: double.infinity,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: 240,
+                                width: double.infinity,
+                                color: Colors.grey.shade100,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_not_supported,
+                                      size: 48,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Gambar tidak tersedia',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          )
+                          : Container(
+                            height: 240,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
                               color: Colors.grey.shade100,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.image_not_supported, size: 48, color: Colors.grey.shade400),
-                                  const SizedBox(height: 8),
-                                  Text('Gambar tidak tersedia', style: TextStyle(color: Colors.grey.shade500)),
-                                ],
-                              ),
-                            );
-                          },
-                        )
-                      : Container(
-                          height: 240,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.image,
+                                  size: 48,
+                                  color: Colors.grey.shade400,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Tidak ada gambar',
+                                  style: TextStyle(color: Colors.grey.shade500),
+                                ),
+                              ],
+                            ),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.image, size: 48, color: Colors.grey.shade400),
-                              const SizedBox(height: 8),
-                              Text('Tidak ada gambar', style: TextStyle(color: Colors.grey.shade500)),
-                            ],
-                          ),
-                        ),
                 ),
               ),
             ),
@@ -278,25 +298,35 @@ class _DetailProductViewState extends State<DetailProductView> {
               child: Text(
                 product['nama'] ?? '',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF222222),
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF222222),
+                ),
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Stock Batch Information (if available)
             if (controller.hasStockBatch()) ...[
               _buildStockBatchCard(controller),
               const SizedBox(height: 16),
             ],
-            
+
             // Price Cards
             Row(
               children: [
-                Expanded(child: _buildCard('Harga Beli', 'Rp${product['hargaBeli'] ?? '0'}')),
+                Expanded(
+                  child: _buildCard(
+                    'Harga Beli',
+                    'Rp${product['hargaBeli'] ?? '0'}',
+                  ),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: _buildCard('Harga Jual', 'Rp${product['hargaJual'] ?? '0'}')),
+                Expanded(
+                  child: _buildCard(
+                    'Harga Jual',
+                    'Rp${product['hargaJual'] ?? '0'}',
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -308,11 +338,17 @@ class _DetailProductViewState extends State<DetailProductView> {
                   child: _buildCard(
                     'Total Stok',
                     controller.calculateTotalStock().toString(),
-                    textColor: controller.isLowStock() ? Colors.red : Colors.green,
+                    textColor:
+                        controller.isLowStock() ? Colors.red : Colors.green,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(child: _buildCard('Minimum Stok', product['minStock'].toString())),
+                Expanded(
+                  child: _buildCard(
+                    'Minimum Stok',
+                    product['minStock'].toString(),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 24),
@@ -452,7 +488,11 @@ class _DetailProductViewState extends State<DetailProductView> {
                   color: Colors.blue.shade600,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.inventory_2, color: Colors.white, size: 20),
+                child: const Icon(
+                  Icons.inventory_2,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -480,11 +520,20 @@ class _DetailProductViewState extends State<DetailProductView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Total Harga Batch', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                    Text(
+                      'Total Harga Batch',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       'Rp${controller.getBatchTotalPrice().toStringAsFixed(0)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ],
                 ),
@@ -493,11 +542,20 @@ class _DetailProductViewState extends State<DetailProductView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Jumlah Sepatu', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                    Text(
+                      'Jumlah Sepatu',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       '${controller.getBatchTotalShoes()} pairs',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ],
                 ),
@@ -512,11 +570,20 @@ class _DetailProductViewState extends State<DetailProductView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Rata-rata Harga/Item', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                      Text(
+                        'Rata-rata Harga/Item',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         'Rp${averageCost.toStringAsFixed(0)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ],
                   ),
@@ -525,11 +592,20 @@ class _DetailProductViewState extends State<DetailProductView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Produk dalam Batch', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                      Text(
+                        'Produk dalam Batch',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         '${batchSummary['totalProducts']} dari ${batchSummary['jumlahSepatu']}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ],
                   ),
@@ -662,7 +738,10 @@ class _DetailProductViewState extends State<DetailProductView> {
     );
   }
 
-  Widget _buildSizeList(Map<String, dynamic> product, DetailProductController controller) {
+  Widget _buildSizeList(
+    Map<String, dynamic> product,
+    DetailProductController controller,
+  ) {
     final sizes = product['sizes'] as List?;
     if (sizes == null || sizes.isEmpty) {
       return Container(
@@ -688,147 +767,170 @@ class _DetailProductViewState extends State<DetailProductView> {
     }
 
     return Column(
-      children: sizes.asMap().entries.map((entry) {
-        final index = entry.key;
-        final size = entry.value;
-        final isLast = index == sizes.length - 1;
-        
-        return Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[500],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      size['size']?['label'] ?? 'N/A',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
+      children:
+          sizes.asMap().entries.map((entry) {
+            final index = entry.key;
+            final size = entry.value;
+            final isLast = index == sizes.length - 1;
+
+            return Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey.shade200),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Stok Tersedia',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
-                          ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${size['quantity'] ?? 0} pcs',
+                        decoration: BoxDecoration(
+                          color: Colors.grey[500],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          size['size']?['label'] ?? 'N/A',
                           style: const TextStyle(
-                            fontSize: 16,
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF222222),
+                            fontSize: 14,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Stok Tersedia',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${size['quantity'] ?? 0} pcs',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF222222),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Colors.blue,
+                                size: 20,
+                              ),
+                              onPressed:
+                                  () => _showUpdateSizeDialog(
+                                    context,
+                                    controller,
+                                    size['id'],
+                                    size['size']?['label'],
+                                    size['quantity'] ?? 0,
+                                  ),
+                              padding: const EdgeInsets.all(8),
+                            ),
+                            Container(
+                              width: 1,
+                              height: 20,
+                              color: Colors.grey.shade300,
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                                size: 20,
+                              ),
+                              onPressed:
+                                  () => _showDeleteSizeConfirmation(
+                                    context,
+                                    controller,
+                                    size['size']?['id'],
+                                    size['size']?['label'],
+                                  ),
+                              padding: const EdgeInsets.all(8),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue, size: 20),
-                          onPressed: () => _showUpdateSizeDialog(
-                            context,
-                            controller,
-                            size['id'],
-                            size['size']?['label'],
-                            size['quantity'] ?? 0,
-                          ),
-                          padding: const EdgeInsets.all(8),
-                        ),
-                        Container(
-                          width: 1,
-                          height: 20,
-                          color: Colors.grey.shade300,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                          onPressed: () => _showDeleteSizeConfirmation(
-                            context,
-                            controller,
-                            size['size']?['id'],
-                            size['size']?['label'],
-                          ),
-                          padding: const EdgeInsets.all(8),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (!isLast) const SizedBox(height: 12),
-          ],
-        );
-      }).toList(),
+                ),
+                if (!isLast) const SizedBox(height: 12),
+              ],
+            );
+          }).toList(),
     );
   }
-  
+
   // Show dialog to add a new size
-  Future<void> _showAddSizeDialog(BuildContext context, DetailProductController controller) async {
+  Future<void> _showAddSizeDialog(
+    BuildContext context,
+    DetailProductController controller,
+  ) async {
     String? selectedSizeId;
     int quantity = 1;
     List<dynamic> availableSizes = [];
     bool isLoading = false;
     String? productTypeId = controller.product?['productTypeId'];
-    
+
     if (productTypeId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Tipe produk tidak diketahui')),
       );
       return;
     }
-    
+
     // Load available sizes for the product type
     try {
-      final result = await _sizeService.getAllSizes(productTypeId: productTypeId);
+      final result = await _sizeService.getAllSizes(
+        productTypeId: productTypeId,
+      );
       availableSizes = result['data'];
-      
+
       // Filter out sizes that are already added to the product
       final existingSizes = controller.product?['sizes'] ?? [];
-      final existingSizeIds = existingSizes.map((s) => s['size']?['id']).toList();
-      availableSizes = availableSizes.where((s) => !existingSizeIds.contains(s['id'])).toList();
-      
+      final existingSizeIds =
+          existingSizes.map((s) => s['size']?['id']).toList();
+      availableSizes =
+          availableSizes
+              .where((s) => !existingSizeIds.contains(s['id']))
+              .toList();
+
       if (availableSizes.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Semua ukuran sudah ditambahkan')),
         );
         return;
       }
-      
+
       selectedSizeId = availableSizes.first['id'];
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -836,45 +938,174 @@ class _DetailProductViewState extends State<DetailProductView> {
       );
       return;
     }
-    
+
     await showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: const Text('Tambah Ukuran'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isLoading)
-                  const Center(child: CircularProgressIndicator())
-                else
-                  Column(
-                    children: [
-                      DropdownButtonFormField<String>(
-                        value: selectedSizeId,
-                        decoration: InputDecoration(
-                          labelText: 'Ukuran',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+      builder:
+          (context) => StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: const Text('Tambah Ukuran'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isLoading)
+                      const Center(child: CircularProgressIndicator())
+                    else
+                      Column(
+                        children: [
+                          DropdownButtonFormField<String>(
+                            value: selectedSizeId,
+                            decoration: InputDecoration(
+                              labelText: 'Ukuran',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            items:
+                                availableSizes.map<DropdownMenuItem<String>>((
+                                  size,
+                                ) {
+                                  return DropdownMenuItem<String>(
+                                    value: size['id'],
+                                    child: Text(size['label']),
+                                  );
+                                }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedSizeId = value;
+                              });
+                            },
                           ),
-                        ),
-                        items: availableSizes.map<DropdownMenuItem<String>>((size) {
-                          return DropdownMenuItem<String>(
-                            value: size['id'],
-                            child: Text(size['label']),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedSizeId = value;
-                          });
-                        },
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Jumlah',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                            initialValue: quantity.toString(),
+                            onChanged: (value) {
+                              setState(() {
+                                quantity = int.tryParse(value) ?? 1;
+                              });
+                            },
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Batal'),
+                  ),
+                  ElevatedButton(
+                    onPressed:
+                        isLoading || selectedSizeId == null
+                            ? null
+                            : () async {
+                              setState(() {
+                                isLoading = true;
+                              });
+
+                              final success = await controller.addProductSize(
+                                productId: widget.productId,
+                                sizeId: selectedSizeId!,
+                                quantity: quantity,
+                              );
+
+                              if (!context.mounted) return;
+                              Navigator.pop(context);
+
+                              if (success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Ukuran berhasil ditambahkan',
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      controller.errorMessage ??
+                                          'Gagal menambahkan ukuran',
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[500],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text('Simpan'),
+                  ),
+                ],
+              );
+            },
+          ),
+    );
+  }
+
+  // Show dialog to update size quantity
+  Future<void> _showUpdateSizeDialog(
+    BuildContext context,
+    DetailProductController controller,
+    String? productSizeId,
+    String? sizeLabel,
+    int currentQuantity,
+  ) async {
+    if (productSizeId == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('ID ukuran tidak valid')));
+      return;
+    }
+
+    int quantity = currentQuantity;
+    bool isLoading = false;
+
+    await showDialog(
+      context: context,
+      builder:
+          (context) => StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: Text('Update Stok ${sizeLabel ?? ''}'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isLoading)
+                      const Center(child: CircularProgressIndicator())
+                    else
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Jumlah',
@@ -886,171 +1117,82 @@ class _DetailProductViewState extends State<DetailProductView> {
                         initialValue: quantity.toString(),
                         onChanged: (value) {
                           setState(() {
-                            quantity = int.tryParse(value) ?? 1;
+                            quantity = int.tryParse(value) ?? currentQuantity;
                           });
                         },
                       ),
-                    ],
-                  ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  ],
                 ),
-                child: const Text('Batal'),
-              ),
-              ElevatedButton(
-                onPressed: isLoading || selectedSizeId == null ? null : () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  
-                  final success = await controller.addProductSize(
-                    productId: widget.productId,
-                    sizeId: selectedSizeId!,
-                    quantity: quantity,
-                  );
-                  
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                  
-                  if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Ukuran berhasil ditambahkan')),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(controller.errorMessage ?? 'Gagal menambahkan ukuran')),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[500],
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text('Simpan'),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-  
-  // Show dialog to update size quantity
-  Future<void> _showUpdateSizeDialog(
-    BuildContext context,
-    DetailProductController controller,
-    String? productSizeId,
-    String? sizeLabel,
-    int currentQuantity,
-  ) async {
-    if (productSizeId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ID ukuran tidak valid')),
-      );
-      return;
-    }
-    
-    int quantity = currentQuantity;
-    bool isLoading = false;
-    
-    await showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Text('Update Stok ${sizeLabel ?? ''}'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isLoading)
-                  const Center(child: CircularProgressIndicator())
-                else
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Jumlah',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    keyboardType: TextInputType.number,
-                    initialValue: quantity.toString(),
-                    onChanged: (value) {
-                      setState(() {
-                        quantity = int.tryParse(value) ?? currentQuantity;
-                      });
-                    },
+                    child: const Text('Batal'),
                   ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  ElevatedButton(
+                    onPressed:
+                        isLoading
+                            ? null
+                            : () async {
+                              setState(() {
+                                isLoading = true;
+                              });
+
+                              final success = await controller
+                                  .updateProductSize(
+                                    productSizeId: productSizeId,
+                                    quantity: quantity,
+                                  );
+
+                              if (!context.mounted) return;
+                              Navigator.pop(context);
+
+                              if (success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Stok berhasil diperbarui'),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      controller.errorMessage ??
+                                          'Gagal memperbarui stok',
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[500],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text('Simpan'),
                   ),
-                ),
-                child: const Text('Batal'),
-              ),
-              ElevatedButton(
-                onPressed: isLoading ? null : () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  
-                  final success = await controller.updateProductSize(
-                    productSizeId: productSizeId,
-                    quantity: quantity,
-                  );
-                  
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                  
-                  if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Stok berhasil diperbarui')),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(controller.errorMessage ?? 'Gagal memperbarui stok')),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[500],
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text('Simpan'),
-              ),
-            ],
-          );
-        },
-      ),
+                ],
+              );
+            },
+          ),
     );
   }
-  
+
   // Show confirmation dialog for deleting a size
   Future<void> _showDeleteSizeConfirmation(
     BuildContext context,
@@ -1059,63 +1201,76 @@ class _DetailProductViewState extends State<DetailProductView> {
     String? sizeLabel,
   ) async {
     if (sizeId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ID ukuran tidak valid')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('ID ukuran tidak valid')));
       return;
     }
-    
+
     await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text('Konfirmasi Hapus'),
-        content: Text('Apakah Anda yakin ingin menghapus ukuran ${sizeLabel ?? ''}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text('Batal'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              
-              final success = await controller.deleteProductSize(
-                productId: widget.productId,
-                sizeId: sizeId,
-              );
-              
-              if (success) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Ukuran berhasil dihapus')),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(controller.errorMessage ?? 'Gagal menghapus ukuran')),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              elevation: 0,
+            title: const Text('Konfirmasi Hapus'),
+            content: Text(
+              'Apakah Anda yakin ingin menghapus ukuran ${sizeLabel ?? ''}?',
             ),
-            child: const Text('Hapus'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+
+                  final success = await controller.deleteProductSize(
+                    productId: widget.productId,
+                    sizeId: sizeId,
+                  );
+
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Ukuran berhasil dihapus')),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          controller.errorMessage ?? 'Gagal menghapus ukuran',
+                        ),
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text('Hapus'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

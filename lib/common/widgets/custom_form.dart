@@ -1,6 +1,6 @@
 // lib/common/widgets/custom_form.dart
-// Modern form input field dengan shadow yang subtle dan rounded corners
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomFormField extends StatelessWidget {
@@ -10,7 +10,11 @@ class CustomFormField extends StatelessWidget {
   final bool obscureText;
   final TextInputType keyboardType;
   final Function(String)? onChanged;
-  final String? errorText; // ✅ Tambahkan ini
+  final String? errorText;
+
+  // 🔧 Tambahan baru:
+  final List<TextInputFormatter>? inputFormatters;
+  final String? prefixText;
 
   const CustomFormField({
     Key? key,
@@ -20,7 +24,9 @@ class CustomFormField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.onChanged,
-    this.errorText, // ✅ Tambahkan ini juga ke konstruktor
+    this.errorText,
+    this.inputFormatters, // ✅ Tambahkan ini
+    this.prefixText, // ✅ Tambahkan ini juga
   }) : super(key: key);
 
   @override
@@ -54,6 +60,7 @@ class CustomFormField extends StatelessWidget {
             controller: controller,
             obscureText: obscureText,
             keyboardType: keyboardType,
+            inputFormatters: inputFormatters, // ✅ Gunakan di sini
             onChanged: onChanged,
             style: GoogleFonts.poppins(
               fontSize: 16,
@@ -61,7 +68,8 @@ class CustomFormField extends StatelessWidget {
             ),
             decoration: InputDecoration(
               hintText: hintText,
-              errorText: errorText, // ✅ Ini bagian pentingnya
+              errorText: errorText,
+              prefixText: prefixText, // ✅ Tampilkan prefix di sini
               hintStyle: GoogleFonts.poppins(
                 color: const Color(0xFFB0B0B0),
                 fontSize: 16,
@@ -95,3 +103,4 @@ class CustomFormField extends StatelessWidget {
     );
   }
 }
+

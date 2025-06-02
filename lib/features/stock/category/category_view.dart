@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'category_controller.dart';
-import 'create_category/create_category_view.dart';
-import 'edit_category/edit_category_view.dart';
 
 class CategoryView extends StatelessWidget {
   const CategoryView({super.key});
@@ -56,10 +54,7 @@ class CategoryBody extends StatelessWidget {
                     child: IconButton(
                       icon: const Icon(Icons.add, color: Colors.black, size: 28),
                       onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const CreateCategoryView()),
-                        );
+                        final result = await Navigator.pushNamed(context, '/category/create');
                         if (result == true) controller.fetchCategories();
                       },
                     ),
@@ -108,20 +103,17 @@ class CategoryBody extends StatelessWidget {
                                   IconButton(
                                     icon: const Icon(Icons.edit, color: Colors.blue),
                                     onPressed: () async {
-                                      final result = await Navigator.push(
+                                      final result = await Navigator.pushNamed(
                                         context,
-                                        MaterialPageRoute(
-                                          builder: (_) => EditCategoryView(
-                                            id: item['id'].toString(),
-                                            nama: item['nama'],
-                                            deskripsi: item['deskripsi'] ?? '',
-                                            productTypeId: item['productTypeId'].toString(),
-                                          ),
-                                        ),
+                                        '/category/edit',
+                                        arguments: {
+                                          'id': item['id'].toString(),
+                                          'nama': item['nama'],
+                                          'deskripsi': item['deskripsi'] ?? '',
+                                          'productTypeId': item['productTypeId'].toString(),
+                                        },
                                       );
-                                      if (result == true) {
-                                        controller.fetchCategories();
-                                      }
+                                      if (result == true) controller.fetchCategories();
                                     },
                                   ),
                                   IconButton(
@@ -166,7 +158,7 @@ class CategoryBody extends StatelessWidget {
             onPressed: () {
               Navigator.of(ctx).pop();
               controller.deleteCategory(context, id);
-              controller.fetchCategories(); // ✅ Auto-refresh setelah hapus
+              controller.fetchCategories();
             },
             child: const Text('Hapus'),
             style: ElevatedButton.styleFrom(

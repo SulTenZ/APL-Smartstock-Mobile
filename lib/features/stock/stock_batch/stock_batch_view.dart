@@ -1,8 +1,6 @@
 // lib/features/stock/stock_batch/stock_batch_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'create_stock_batch/create_stock_batch_view.dart';
-import 'edit_stock_batch/edit_stock_batch_view.dart';
 import 'stock_batch_controller.dart';
 
 class StockBatchView extends StatelessWidget {
@@ -37,7 +35,11 @@ class _StockBatchBody extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Colors.black,
+                        size: 20,
+                      ),
                       onPressed: () => Navigator.pop(context),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
@@ -56,10 +58,11 @@ class _StockBatchBody extends StatelessWidget {
                     child: IconButton(
                       icon: const Icon(Icons.add, color: Colors.black),
                       onPressed: () async {
-                        final result = await Navigator.push(
+                        final result = await Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(builder: (_) => const CreateStockBatchView()),
+                          '/stock-batch/create',
                         );
+
                         if (result == true) controller.fetchStockBatches();
                       },
                     ),
@@ -90,20 +93,39 @@ class _StockBatchBody extends StatelessWidget {
                                   ],
                                 ),
                                 child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/stock-batch/detail',
+                                      arguments: {'id': batch['id'].toString()},
+                                    );
+                                  },
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
                                   leading: Container(
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                       color: Colors.indigo.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    child: const Icon(Icons.layers, size: 28, color: Colors.indigo),
+                                    child: const Icon(
+                                      Icons.layers,
+                                      size: 28,
+                                      color: Colors.indigo,
+                                    ),
                                   ),
                                   title: Text(
                                     batch['nama'],
-                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                  subtitle: Text('Jumlah sepatu: ${batch['jumlahSepatu']} | Total harga: Rp ${controller.formatCurrency(batch['totalHarga'])}'),
+                                  subtitle: Text(
+                                    'Jumlah sepatu: ${batch['jumlahSepatu']} | Total harga: Rp ${controller.formatCurrency(batch['totalHarga'])}',
+                                  ),
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -113,15 +135,21 @@ class _StockBatchBody extends StatelessWidget {
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: IconButton(
-                                          icon: const Icon(Icons.edit, size: 20, color: Colors.blue),
+                                          icon: const Icon(
+                                            Icons.edit,
+                                            size: 20,
+                                            color: Colors.blue,
+                                          ),
                                           onPressed: () async {
-                                            final result = await Navigator.push(
+                                            final result = await Navigator.pushNamed(
                                               context,
-                                              MaterialPageRoute(
-                                                builder: (_) => EditStockBatchView(batch: batch),
-                                              ),
+                                              '/stock-batch/edit',
+                                              arguments: {'batch': batch},
                                             );
-                                            if (result == true) controller.fetchStockBatches();
+
+                                            if (result == true) {
+                                              controller.fetchStockBatches();
+                                            }
                                           },
                                         ),
                                       ),
@@ -132,8 +160,15 @@ class _StockBatchBody extends StatelessWidget {
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: IconButton(
-                                          icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                                          onPressed: () => controller.deleteBatch(context, batch['id'].toString()),
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            size: 20,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () => controller.deleteBatch(
+                                            context,
+                                            batch['id'].toString(),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -159,7 +194,11 @@ class _StockBatchBody extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'Belum ada batch stok',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.grey[600]),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[600],
+            ),
           ),
           const SizedBox(height: 8),
           Text(

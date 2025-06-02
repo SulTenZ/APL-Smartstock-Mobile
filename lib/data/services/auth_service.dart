@@ -1,19 +1,18 @@
 // lib/data/services/auth_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../api/api_constant.dart';
+import '../api/api_endpoint.dart';
 import '../../utils/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final url = Uri.parse('$baseUrl/api/auth/login');
+    final url = Uri.parse(ApiEndpoint.login);
 
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: ApiConstant.header,
         body: jsonEncode({'email': email, 'password': password}),
       );
 
@@ -23,7 +22,7 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final token = data['token'];
-        final name = data['user']['nama']; // sesuaikan dengan key dari backend
+        final name = data['user']['nama'];
         final email = data['user']['email'];
 
         await SharedPrefs.saveLoginData(token: token, name: name, email: email);
@@ -45,12 +44,12 @@ class AuthService {
     String email,
     String password,
   ) async {
-    final url = Uri.parse('$baseUrl/api/auth/register');
+    final url = Uri.parse(ApiEndpoint.register);
 
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: ApiConstant.header,
         body: jsonEncode({'nama': nama, 'email': email, 'password': password}),
       );
 
@@ -62,10 +61,7 @@ class AuthService {
       if (response.statusCode == 200) {
         return {'success': true, 'message': body['message']};
       } else {
-        return {
-          'success': false,
-          'message': body['message'] ?? 'Registrasi gagal',
-        };
+        return {'success': false, 'message': body['message'] ?? 'Registrasi gagal'};
       }
     } catch (e) {
       print("❌ ERROR saat register: $e");
@@ -74,12 +70,12 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
-    final url = Uri.parse('$baseUrl/api/auth/verify-otp');
+    final url = Uri.parse(ApiEndpoint.verifyOtp);
 
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: ApiConstant.header,
         body: jsonEncode({'email': email, 'otp': otp}),
       );
 
@@ -91,10 +87,7 @@ class AuthService {
       if (response.statusCode == 200) {
         return {'success': true, 'message': body['message']};
       } else {
-        return {
-          'success': false,
-          'message': body['message'] ?? 'Verifikasi OTP gagal',
-        };
+        return {'success': false, 'message': body['message'] ?? 'Verifikasi OTP gagal'};
       }
     } catch (e) {
       print("❌ ERROR saat verifikasi OTP: $e");
@@ -103,12 +96,12 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> resendOtp(String email) async {
-    final url = Uri.parse('$baseUrl/api/auth/resend-otp');
+    final url = Uri.parse(ApiEndpoint.resendOtp);
 
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: ApiConstant.header,
         body: jsonEncode({'email': email}),
       );
 
@@ -120,10 +113,7 @@ class AuthService {
       if (response.statusCode == 200) {
         return {'success': true, 'message': body['message']};
       } else {
-        return {
-          'success': false,
-          'message': body['message'] ?? 'Gagal mengirim ulang OTP',
-        };
+        return {'success': false, 'message': body['message'] ?? 'Gagal mengirim ulang OTP'};
       }
     } catch (e) {
       print("❌ ERROR saat resend OTP: $e");
@@ -131,3 +121,4 @@ class AuthService {
     }
   }
 }
+

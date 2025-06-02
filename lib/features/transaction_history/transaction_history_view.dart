@@ -1,7 +1,7 @@
+// lib/features/transaction_history/transaction_history_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'transaction_history_controller.dart';
-import 'transaction_history_detail/transaction_history_detail_view.dart';
 
 class TransactionHistoryView extends StatelessWidget {
   const TransactionHistoryView({super.key});
@@ -17,7 +17,6 @@ class TransactionHistoryView extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                // Header - Back icon + Judul center pakai Stack
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -55,10 +54,14 @@ class TransactionHistoryView extends StatelessWidget {
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (controller.errorMessage != null) {
-                        return Center(child: Text('Error: ${controller.errorMessage}'));
+                        return Center(
+                          child: Text('Error: ${controller.errorMessage}'),
+                        );
                       }
                       if (controller.transactions.isEmpty) {
-                        return const Center(child: Text('Tidak ada data transaksi.'));
+                        return const Center(
+                          child: Text('Tidak ada data transaksi.'),
+                        );
                       }
                       return ListView.separated(
                         itemCount: controller.transactions.length,
@@ -68,11 +71,10 @@ class TransactionHistoryView extends StatelessWidget {
                           return InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
-                              Navigator.push(
+                              Navigator.pushNamed(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (_) => TransactionHistoryDetailView(transaction: tx),
-                                ),
+                                '/transaction-history/detail',
+                                arguments: tx,
                               );
                             },
                             child: Container(
@@ -93,12 +95,17 @@ class TransactionHistoryView extends StatelessWidget {
                                   CircleAvatar(
                                     radius: 22,
                                     backgroundColor: Colors.blue.shade50,
-                                    child: const Icon(Icons.receipt_long, color: Colors.blue, size: 22),
+                                    child: const Icon(
+                                      Icons.receipt_long,
+                                      color: Colors.blue,
+                                      size: 22,
+                                    ),
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'ID: ${tx['id'] ?? '-'}',

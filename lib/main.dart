@@ -1,3 +1,4 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -9,13 +10,37 @@ import 'features/authentication/registerOTP/register_otp_view.dart';
 import 'features/home/home_view.dart';
 import 'features/stock/manage_stock_view.dart';
 import 'features/stock/product/product_controller.dart';
+import 'features/stock/product_type/product_type_view.dart';
+import 'features/stock/product_type/create_product_type/create_product_type_view.dart';
+import 'features/stock/product_type/edit_product_type/edit_product_type_view.dart';
+import 'features/stock/category/category_view.dart';
+import 'features/stock/category/create_category/create_category_view.dart';
+import 'features/stock/category/edit_category/edit_category_view.dart';
+import 'features/stock/brand/brand_view.dart';
+import 'features/stock/brand/create_brand/create_brand_view.dart';
+import 'features/stock/brand/edit_brand/edit_brand_view.dart';
+import 'features/stock/size/size_view.dart';
+import 'features/stock/size/create_size/create_size_view.dart';
+import 'features/stock/size/edit_size/edit_size_view.dart';
+import 'features/stock/product/product_view.dart';
+import 'features/stock/product/create_product/create_product_controller.dart';
+import 'features/stock/product/create_product/create_product_view.dart';
+import 'features/stock/product/detail_product/detail_product_view.dart';
+import 'features/stock/product/edit_product/edit_product_view.dart';
+import 'features/stock/stock_batch/stock_batch_view.dart';
+import 'features/stock/stock_batch/create_stock_batch/create_stock_batch_view.dart';
+import 'features/stock/stock_batch/edit_stock_batch/edit_stock_batch_view.dart';
+import 'features/stock/stock_batch/detail_stock_batch/detail_stock_batch_view.dart';
 import 'features/profile/profile_controller.dart';
 import 'features/profile/profile_view.dart';
 import 'features/transaction/transaction_view.dart';
 import 'features/transaction/transaction_controller.dart';
 import 'features/transaction/transaction_submission/transaction_submission_controller.dart';
 import 'features/transaction/transaction_submission/transaction_submission_view.dart';
+import 'features/transaction/transaction_success/transaction_success_view.dart';
 import 'features/transaction_history/transaction_history_view.dart';
+import 'features/transaction_history/transaction_history_detail/transaction_history_detail_view.dart';
+import 'features/stock_history/stock_history_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +57,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ProductController()),
         ChangeNotifierProvider(create: (_) => ProfileController()),
-        ChangeNotifierProvider(create: (_) => TransactionController()), // ⬅️ Tambahkan ini
+        ChangeNotifierProvider(create: (_) => TransactionController()),
       ],
       child: MaterialApp(
         title: 'E-Inventory',
@@ -48,20 +73,115 @@ class MyApp extends StatelessWidget {
           '/register': (context) => const RegisterView(),
           '/home': (context) => const HomeView(),
           '/manage-stock': (context) => const ManageStockView(),
+
+          // Product Type
+          '/product-type': (context) => const ProductTypeView(),
+          '/product-type/create': (context) => const CreateProductTypeView(),
+          '/product-type/edit': (context) {
+            final args =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return EditProductTypeView(id: args['id'], name: args['name']);
+          },
+
+          // Category
+          '/category': (context) => const CategoryView(),
+          '/category/create': (context) => const CreateCategoryView(),
+          '/category/edit': (context) {
+            final args =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return EditCategoryView(
+              id: args['id'],
+              nama: args['nama'],
+              deskripsi: args['deskripsi'],
+              productTypeId: args['productTypeId'],
+            );
+          },
+
+          // Brand
+          '/brand': (context) => const BrandView(),
+          '/brand/create': (context) => const CreateBrandView(),
+          '/brand/edit': (context) {
+            final args =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return EditBrandView(
+              id: args['id'],
+              nama: args['nama'],
+              deskripsi: args['deskripsi'],
+              image: args['image'],
+            );
+          },
+
+          // Size
+          '/size': (context) => const SizeView(),
+          '/size/create': (context) => const CreateSizeView(),
+          '/size/edit': (context) {
+            final args =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return EditSizeView(
+              id: args['id'],
+              label: args['label'],
+              productTypeId: args['productTypeId'],
+              initialLabel: args['label'],
+              initialProductTypeId: args['productTypeId'],
+            );
+          },
+
+          // Product
+          '/product': (context) => const ProductView(),
+          '/product/create':
+              (context) => ChangeNotifierProvider(
+                create: (_) => CreateProductController()..init(),
+                child: const CreateProductView(),
+              ),
+          '/product/detail': (context) {
+            final args =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return DetailProductView(productId: args['id']);
+          },
+          '/product/edit': (context) {
+            final args =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return EditProductView(
+              productId: args['id'],
+              product: args['product'],
+            );
+          },
+
+          // Stock Batch
+          '/stock-batch': (context) => const StockBatchView(),
+          '/stock-batch/create': (context) => const CreateStockBatchView(),
+          '/stock-batch/edit': (context) {
+            final args =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return EditStockBatchView(batch: args['batch']);
+          },
+          '/stock-batch/detail': (context) {
+            final args =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return DetailStockBatchView(batchId: args['id']);
+          },
+
+          // Profile
           '/profile': (context) => const ProfileView(),
+
+          // Transaction
           '/transaction': (context) => const TransactionView(),
-          '/transaction-history': (context) => const TransactionHistoryView(),
           '/transaction_submission': (context) {
-            // ⬇️ Ambil controller lama yang sudah punya cart
             final transactionController = Provider.of<TransactionController>(
               context,
               listen: false,
             );
-          
-
             return MultiProvider(
               providers: [
-                ChangeNotifierProvider.value(value: transactionController), // ⬅️ Ini penting
+                ChangeNotifierProvider.value(value: transactionController),
                 ChangeNotifierProvider(
                   create: (_) => TransactionSubmissionController(),
                 ),
@@ -69,6 +189,30 @@ class MyApp extends StatelessWidget {
               child: const TransactionSubmissionView(),
             );
           },
+          '/transaction-success': (context) {
+            final args =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return TransactionSuccessView(
+              transactionId: args['transactionId'],
+              customerName: args['customerName'],
+              totalAmount: args['totalAmount'],
+              items: args['items'],
+              paymentMethod: args['paymentMethod'],
+              discount: args['discount'] ?? 0,
+              notes: args['notes'],
+            );
+          },
+          '/transaction-history': (context) => const TransactionHistoryView(),
+          '/transaction-history/detail': (context) {
+            final tx =
+                ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>;
+            return TransactionHistoryDetailView(transaction: tx);
+          },
+
+          // Stock History
+          '/stock-history': (context) => const StockHistoryView(),
         },
         onGenerateRoute: (settings) {
           if (settings.name == '/register-otp') {

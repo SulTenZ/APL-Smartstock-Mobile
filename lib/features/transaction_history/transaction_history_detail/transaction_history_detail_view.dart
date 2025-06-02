@@ -17,152 +17,149 @@ class TransactionHistoryDetailView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: ListView(
+        child: Padding(
           padding: const EdgeInsets.all(20),
-          children: [
-            // Header
-            Row(
-              children: [
-                InkWell(
-                  onTap: () => Navigator.pop(context),
-                  borderRadius: BorderRadius.circular(50),
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(Icons.arrow_back, color: Colors.black),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                const Text(
-                  "Detail Transaksi",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF222222),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Informasi Transaksi
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
+            children: [
+              // Custom AppBar
+              Stack(
+                alignment: Alignment.center,
                 children: [
-                  Text('ID: ${transaction['id'] ?? "-"}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text('Tanggal: $date'),
-                  Text('Customer: $customer'),
-                  Text('Metode: ${transaction['paymentMethod'] ?? "-"}'),
-                  if (transaction['catatan'] != null && transaction['catatan'].toString().isNotEmpty)
-                    Text('Catatan: ${transaction['catatan']}'),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ),
+                  const Text(
+                    'DETAIL TRANSAKSI',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF222222),
+                    ),
+                  ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 40),
 
-            // Daftar Produk
-            const Text("Daftar Produk", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 12),
-            ...items.map((item) {
-              final product = item['product'] ?? {};
-              final size = item['size'] ?? {};
-              final sizeLabel = size is Map ? size['label']?.toString() ?? '-' : size.toString();
-              final harga = item['hargaJual'] ?? 0;
-              final quantity = item['quantity'] ?? 0;
-              final subtotal = harga * quantity;
-
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(12),
+              // Informasi Transaksi
+              Container(
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withOpacity(0.04),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
                   ],
                 ),
-                child: Row(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    product['image'] != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(product['image'], width: 48, height: 48, fit: BoxFit.cover),
-                          )
-                        : const Icon(Icons.image_outlined, size: 48),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(product['nama'] ?? '-', style: const TextStyle(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 6),
-                          Text('Jumlah: $quantity'),
-                          Text('Ukuran: $sizeLabel'),
-                          Text('Harga Satuan: Rp$harga'),
-                          Text('Subtotal: Rp$subtotal'),
-                        ],
+                    Text('ID: ${transaction['id'] ?? "-"}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text('Tanggal: $date'),
+                    Text('Customer: $customer'),
+                    Text('Metode: ${transaction['paymentMethod'] ?? "-"}'),
+                    if (transaction['catatan'] != null && transaction['catatan'].toString().isNotEmpty)
+                      Text('Catatan: ${transaction['catatan']}'),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Daftar Produk
+              const Text("Daftar Produk", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 12),
+              ...items.map((item) {
+                final product = item['product'] ?? {};
+                final size = item['size'] ?? {};
+                final sizeLabel = size is Map ? size['label']?.toString() ?? '-' : size.toString();
+                final harga = item['hargaJual'] ?? 0;
+                final quantity = item['quantity'] ?? 0;
+                final subtotal = harga * quantity;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
                       ),
+                    ],
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      product['image'] != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(product['image'], width: 48, height: 48, fit: BoxFit.cover),
+                            )
+                          : const Icon(Icons.image_outlined, size: 48),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(product['nama'] ?? '-', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 6),
+                            Text('Jumlah: $quantity'),
+                            Text('Ukuran: $sizeLabel'),
+                            Text('Harga Satuan: Rp$harga'),
+                            Text('Subtotal: Rp$subtotal'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+
+              const SizedBox(height: 24),
+
+              // Ringkasan
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
-              );
-            }),
-
-            const SizedBox(height: 24),
-
-            // Ringkasan
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                child: Column(
+                  children: [
+                    rowSummary("Total", transaction['totalAmount']),
+                    rowSummary("Diskon", transaction['diskon']),
+                    rowSummary("Profit", transaction['profit']),
+                  ],
+                ),
               ),
-              child: Column(
-                children: [
-                  rowSummary("Total", transaction['totalAmount']),
-                  rowSummary("Diskon", transaction['diskon']),
-                  rowSummary("Profit", transaction['profit']),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

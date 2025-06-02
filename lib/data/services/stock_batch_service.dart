@@ -3,18 +3,18 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import '../api/api_constant.dart';
+import '../api/api_endpoint.dart';
 import '../../utils/shared_preferences.dart';
 
 class StockBatchService {
-  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
   static const Duration timeoutDuration = Duration(seconds: 30);
 
-  // Ambil semua stock batch
   Future<List<dynamic>> getAllStockBatches() async {
     try {
       final token = await SharedPrefs.getToken();
-      final uri = Uri.parse('$baseUrl/api/stock-batch');
+      final uri = Uri.parse(ApiEndpoint.stockBatches);
 
       final response = await http.get(
         uri,
@@ -27,26 +27,21 @@ class StockBatchService {
       } else {
         throw Exception('Gagal mengambil data batch');
       }
-    } on SocketException catch (e) {
-      print('[ERROR] Network error in getAllStockBatches: $e');
+    } on SocketException {
       throw Exception('Tidak dapat terhubung ke server. Periksa koneksi internet Anda.');
-    } on HttpException catch (e) {
-      print('[ERROR] HTTP error in getAllStockBatches: $e');
+    } on HttpException {
       throw Exception('Terjadi kesalahan pada server.');
-    } on FormatException catch (e) {
-      print('[ERROR] Format error in getAllStockBatches: $e');
+    } on FormatException {
       throw Exception('Data yang diterima tidak valid.');
     } catch (e) {
-      print('[ERROR] Unexpected error in getAllStockBatches: $e');
       throw Exception('Terjadi kesalahan yang tidak terduga.');
     }
   }
 
-  // Ambil detail batch by ID
   Future<Map<String, dynamic>> getStockBatchById(String id) async {
     try {
       final token = await SharedPrefs.getToken();
-      final uri = Uri.parse('$baseUrl/api/stock-batch/$id');
+      final uri = Uri.parse(ApiEndpoint.stockBatchById(id));
 
       final response = await http.get(
         uri,
@@ -61,33 +56,22 @@ class StockBatchService {
       } else {
         throw Exception('Gagal mengambil detail batch');
       }
-    } on SocketException catch (e) {
-      print('[ERROR] Network error in getStockBatchById: $e');
-      throw Exception('Tidak dapat terhubung ke server. Periksa koneksi internet Anda.');
-    } on HttpException catch (e) {
-      print('[ERROR] HTTP error in getStockBatchById: $e');
-      throw Exception('Terjadi kesalahan pada server.');
-    } on FormatException catch (e) {
-      print('[ERROR] Format error in getStockBatchById: $e');
-      throw Exception('Data yang diterima tidak valid.');
     } catch (e) {
-      print('[ERROR] Unexpected error in getStockBatchById: $e');
-      throw Exception('Terjadi kesalahan yang tidak terduga.');
+      throw Exception('Terjadi kesalahan saat mengambil detail batch.');
     }
   }
 
-  // Buat batch baru
   Future<Map<String, dynamic>> createStockBatch({
     required String nama,
     required double totalHarga,
     required int jumlahSepatu,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/stock-batch');
+    final uri = Uri.parse(ApiEndpoint.stockBatches);
 
     final headers = {
       'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
+      ...ApiConstant.header,
     };
 
     final body = {
@@ -96,25 +80,19 @@ class StockBatchService {
       'jumlahSepatu': jumlahSepatu,
     };
 
-    try {
-      final response = await http
-          .post(uri, headers: headers, body: jsonEncode(body))
-          .timeout(timeoutDuration);
+    final response = await http
+        .post(uri, headers: headers, body: jsonEncode(body))
+        .timeout(timeoutDuration);
 
-      if (response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        return data['data'];
-      } else {
-        final responseBody = jsonDecode(response.body);
-        throw Exception(responseBody['message'] ?? 'Gagal membuat batch');
-      }
-    } catch (e) {
-      print('[ERROR] createStockBatch: $e');
-      rethrow;
+    if (response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else {
+      final responseBody = jsonDecode(response.body);
+      throw Exception(responseBody['message'] ?? 'Gagal membuat batch');
     }
   }
 
-  // Update batch
   Future<Map<String, dynamic>> updateStockBatch({
     required String id,
     String? nama,
@@ -123,18 +101,19 @@ class StockBatchService {
   }) async {
     try {
       final token = await SharedPrefs.getToken();
-      final uri = Uri.parse('$baseUrl/api/stock-batch/$id');
+      final uri = Uri.parse(ApiEndpoint.stockBatchById(id));
 
-      final Map<String, dynamic> requestBody = {};
-      if (nama != null) requestBody['nama'] = nama;
-      if (totalHarga != null) requestBody['totalHarga'] = totalHarga;
-      if (jumlahSepatu != null) requestBody['jumlahSepatu'] = jumlahSepatu;
+      final requestBody = {
+        if (nama != null) 'nama': nama,
+        if (totalHarga != null) 'totalHarga': totalHarga,
+        if (jumlahSepatu != null) 'jumlahSepatu': jumlahSepatu,
+      };
 
       final response = await http.put(
         uri,
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
+          ...ApiConstant.header,
         },
         body: jsonEncode(requestBody),
       ).timeout(timeoutDuration);
@@ -147,16 +126,14 @@ class StockBatchService {
         throw Exception(body['message'] ?? 'Gagal memperbarui batch');
       }
     } catch (e) {
-      print('[ERROR] updateStockBatch: $e');
-      rethrow;
+      throw Exception('Terjadi kesalahan saat memperbarui batch.');
     }
   }
 
-  // Hapus batch
   Future<void> deleteStockBatch(String id) async {
     try {
       final token = await SharedPrefs.getToken();
-      final uri = Uri.parse('$baseUrl/api/stock-batch/$id');
+      final uri = Uri.parse(ApiEndpoint.stockBatchById(id));
 
       final response = await http.delete(
         uri,
@@ -168,24 +145,20 @@ class StockBatchService {
         throw Exception(body['message'] ?? 'Gagal menghapus batch');
       }
     } catch (e) {
-      print('[ERROR] deleteStockBatch: $e');
-      rethrow;
+      throw Exception('Terjadi kesalahan saat menghapus batch.');
     }
   }
 
-  // Ambil detail batch + produk (alias)
   Future<Map<String, dynamic>> getStockBatchWithProducts(String id) async {
     return getStockBatchById(id);
   }
 
-  // Hitung rata-rata harga per sepatu
   double calculateAverageCostPerItem(Map<String, dynamic> batch) {
     final totalHarga = batch['totalHarga']?.toDouble() ?? 0.0;
     final jumlahSepatu = batch['jumlahSepatu']?.toInt() ?? 1;
     return jumlahSepatu > 0 ? totalHarga / jumlahSepatu : 0.0;
   }
 
-  // Ringkasan batch
   Map<String, dynamic> getBatchSummary(Map<String, dynamic> batch) {
     final products = batch['products'] as List<dynamic>? ?? [];
     final totalProducts = products.length;

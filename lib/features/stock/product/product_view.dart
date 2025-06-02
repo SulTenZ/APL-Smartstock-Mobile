@@ -1,12 +1,8 @@
-// lib/features/stock/product/product_view.dart
-import 'package:alp_shoes_secondbrand_mobile/features/stock/product/create_product/create_product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'product_controller.dart';
-import 'create_product/create_product_view.dart';
-import 'detail_product/detail_product_view.dart';
 import '../../../common/color/color_theme.dart';
+import 'product_controller.dart';
 
 class ProductView extends StatefulWidget {
   const ProductView({super.key});
@@ -69,15 +65,7 @@ class _ProductViewState extends State<ProductView> {
                         child: IconButton(
                           icon: const Icon(Icons.add),
                           onPressed: () async {
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ChangeNotifierProvider(
-                                  create: (_) => CreateProductController()..init(),
-                                  child: const CreateProductView(),
-                                ),
-                              ),
-                            );
+                            final result = await Navigator.pushNamed(context, '/product/create');
                             if (result == true) {
                               Provider.of<ProductController>(context, listen: false).getProducts(refresh: true);
                             }
@@ -145,7 +133,6 @@ class _ProductViewState extends State<ProductView> {
                                     padding: const EdgeInsets.all(20),
                                     child: Row(
                                       children: [
-                                        // Enhanced Product Image
                                         Container(
                                           width: 85,
                                           height: 85,
@@ -173,9 +160,9 @@ class _ProductViewState extends State<ProductView> {
                                                     errorBuilder: (context, error, stackTrace) {
                                                       return Container(
                                                         color: const Color(ColorTheme.secondaryColor).withOpacity(0.1),
-                                                        child: Icon(
+                                                        child: const Icon(
                                                           Icons.image_not_supported,
-                                                          color: const Color(ColorTheme.secondaryColor),
+                                                          color: Color(ColorTheme.secondaryColor),
                                                           size: 32,
                                                         ),
                                                       );
@@ -184,9 +171,9 @@ class _ProductViewState extends State<ProductView> {
                                                       if (loadingProgress == null) return child;
                                                       return Container(
                                                         color: const Color(ColorTheme.secondaryColor).withOpacity(0.1),
-                                                        child: Center(
+                                                        child: const Center(
                                                           child: CircularProgressIndicator(
-                                                            color: const Color(ColorTheme.primaryColor),
+                                                            color: Color(ColorTheme.primaryColor),
                                                             strokeWidth: 2,
                                                           ),
                                                         ),
@@ -195,23 +182,19 @@ class _ProductViewState extends State<ProductView> {
                                                   )
                                                 : Container(
                                                     color: const Color(ColorTheme.secondaryColor).withOpacity(0.1),
-                                                    child: Icon(
+                                                    child: const Icon(
                                                       Icons.image_not_supported,
-                                                      color: const Color(ColorTheme.secondaryColor),
+                                                      color: Color(ColorTheme.secondaryColor),
                                                       size: 32,
                                                     ),
                                                   ),
                                           ),
                                         ),
-                                        
                                         const SizedBox(width: 18),
-                                        
-                                        // Enhanced Product Info
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              // Product Name
                                               Text(
                                                 product['nama'] ?? '-',
                                                 style: GoogleFonts.poppins(
@@ -223,15 +206,9 @@ class _ProductViewState extends State<ProductView> {
                                                 maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
-                                              
                                               const SizedBox(height: 12),
-                                              
-                                              // Enhanced Price Tag
                                               Container(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 14,
-                                                  vertical: 8,
-                                                ),
+                                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                                 decoration: BoxDecoration(
                                                   color: const Color(ColorTheme.primaryColor),
                                                   borderRadius: BorderRadius.circular(10),
@@ -244,10 +221,7 @@ class _ProductViewState extends State<ProductView> {
                                                   ],
                                                 ),
                                                 child: Text(
-                                                  "Rp${product['hargaJual'].toString().replaceAllMapped(
-                                                    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                                                    (Match m) => '${m[1]}.',
-                                                  )}",
+                                                  "Rp${product['hargaJual'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}",
                                                   style: GoogleFonts.poppins(
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.w700,
@@ -255,15 +229,9 @@ class _ProductViewState extends State<ProductView> {
                                                   ),
                                                 ),
                                               ),
-                                              
                                               const SizedBox(height: 10),
-                                              
-                                              // Enhanced Stock Indicator
                                               Container(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 12,
-                                                  vertical: 6,
-                                                ),
+                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                                 decoration: BoxDecoration(
                                                   color: _calculateTotalStock(product) <= (product['minStock'] ?? 0)
                                                       ? Colors.red.withOpacity(0.12)
@@ -305,13 +273,9 @@ class _ProductViewState extends State<ProductView> {
                                             ],
                                           ),
                                         ),
-                                        
                                         const SizedBox(width: 16),
-                                        
-                                        // Enhanced Action Buttons
                                         Column(
                                           children: [
-                                            // View Details Button
                                             Container(
                                               decoration: BoxDecoration(
                                                 color: const Color(ColorTheme.primaryColor),
@@ -329,15 +293,14 @@ class _ProductViewState extends State<ProductView> {
                                                 child: InkWell(
                                                   borderRadius: BorderRadius.circular(12),
                                                   onTap: () async {
-                                                    await Navigator.push(
+                                                    await Navigator.pushNamed(
                                                       context,
-                                                      MaterialPageRoute(
-                                                        builder: (_) => DetailProductView(productId: product['id']),
-                                                      ),
+                                                      '/product/detail',
+                                                      arguments: {'id': product['id']},
                                                     );
                                                     controller.getProducts(refresh: true);
                                                   },
-                                                  child: Container(
+                                                  child: SizedBox(
                                                     width: 44,
                                                     height: 44,
                                                     child: const Icon(
@@ -349,10 +312,7 @@ class _ProductViewState extends State<ProductView> {
                                                 ),
                                               ),
                                             ),
-                                            
                                             const SizedBox(height: 12),
-                                            
-                                            // Delete Button
                                             Container(
                                               decoration: BoxDecoration(
                                                 color: Colors.red.withOpacity(0.1),
@@ -386,21 +346,19 @@ class _ProductViewState extends State<ProductView> {
                                                     );
                                                     if (confirm == true) {
                                                       final success = await controller.deleteProduct(product['id']);
-                                                      if (success) {
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                          const SnackBar(content: Text('Produk berhasil dihapus')),
-                                                        );
-                                                      } else {
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                          SnackBar(content: Text('Gagal menghapus produk: ${controller.errorMessage ?? 'Terjadi kesalahan'}')),
-                                                        );
-                                                      }
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(
+                                                          content: Text(success
+                                                              ? 'Produk berhasil dihapus'
+                                                              : 'Gagal menghapus produk: ${controller.errorMessage ?? 'Terjadi kesalahan'}'),
+                                                        ),
+                                                      );
                                                     }
                                                   },
-                                                  child: Container(
+                                                  child: const SizedBox(
                                                     width: 44,
                                                     height: 44,
-                                                    child: const Icon(
+                                                    child: Icon(
                                                       Icons.delete_rounded,
                                                       color: Colors.red,
                                                       size: 18,

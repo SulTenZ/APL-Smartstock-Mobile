@@ -1,4 +1,3 @@
-// lib/features/home/home_view.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -7,8 +6,6 @@ import 'home_controller.dart';
 import '../../../common/widgets/custom_navbar.dart';
 import '../../../common/widgets/custom_menu_button.dart';
 import '../../../common/color/color_theme.dart';
-import '../stock/manage_stock_view.dart';
-import '../transaction/transaction_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -24,189 +21,26 @@ class HomeView extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(ColorTheme.primaryColor).withOpacity(0.15), // Warna utama dengan opacity
-                const Color(ColorTheme.secondaryColor).withOpacity(0.08), // Warna sekunder dengan opacity
-                const Color(ColorTheme.backgroundColor), // Putih
-                const Color(0xFFF8F9FA), // Very light gray
+                const Color(ColorTheme.primaryColor).withOpacity(0.15),
+                const Color(ColorTheme.secondaryColor).withOpacity(0.08),
+                const Color(ColorTheme.backgroundColor),
+                const Color(0xFFF8F9FA),
               ],
               stops: const [0.0, 0.3, 0.7, 1.0],
             ),
           ),
           child: Stack(
             children: [
-              // Gradient bulat besar di pojok kiri atas (mirip gambar)
-              Positioned(
-                top: -150,
-                left: -150,
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(ColorTheme.primaryColor).withOpacity(0.2),
-                        const Color(ColorTheme.primaryColor).withOpacity(0.1),
-                        const Color(ColorTheme.primaryColor).withOpacity(0.05),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.4, 0.7, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-              
-              // Gradient bulat di pojok kanan atas
-              Positioned(
-                top: -100,
-                right: -100,
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(ColorTheme.secondaryColor).withOpacity(0.25),
-                        const Color(ColorTheme.secondaryColor).withOpacity(0.15),
-                        const Color(ColorTheme.secondaryColor).withOpacity(0.08),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.3, 0.6, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-              
-              // Gradient bulat besar di sisi kanan (mirip gambar)
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.2,
-                right: -200,
-                child: Container(
-                  width: 400,
-                  height: 400,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(ColorTheme.primaryColor).withOpacity(0.18),
-                        const Color(ColorTheme.primaryColor).withOpacity(0.12),
-                        const Color(ColorTheme.primaryColor).withOpacity(0.06),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.3, 0.6, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-              
-              // Gradient bulat di pojok kiri bawah
-              Positioned(
-                bottom: -180,
-                left: -180,
-                child: Container(
-                  width: 360,
-                  height: 360,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(ColorTheme.secondaryColor).withOpacity(0.2),
-                        const Color(ColorTheme.secondaryColor).withOpacity(0.12),
-                        const Color(ColorTheme.secondaryColor).withOpacity(0.06),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.4, 0.7, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-              
-              // Gradient bulat kecil di pojok kanan bawah
-              Positioned(
-                bottom: -80,
-                right: -80,
-                child: Container(
-                  width: 160,
-                  height: 160,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(ColorTheme.primaryColor).withOpacity(0.15),
-                        const Color(ColorTheme.primaryColor).withOpacity(0.08),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.6, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-              
-              // Gradient bulat tambahan di tengah kiri
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.4,
-                left: -60,
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(ColorTheme.secondaryColor).withOpacity(0.12),
-                        const Color(ColorTheme.secondaryColor).withOpacity(0.06),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.5, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-              
-              // Konten utama - MENGGUNAKAN STRUKTUR ASLI
+              // (⤵️ Semua background bulat tetap sama)
+              _buildBackground(context),
+
+              // Konten utama
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      // Header Section - MENGGUNAKAN STRUKTUR ASLI
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 40, top: 20),
-                        child: Column(
-                          children: [
-                            Text(
-                              "MENU UTAMA",
-                              style: GoogleFonts.poppins(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w400,
-                                color: const Color(ColorTheme.primaryColor),
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            // GARIS DENGAN GRADIENT
-                            Container(
-                              width: 60,
-                              height: 3,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(2),
-                                gradient: const LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    Color(ColorTheme.primaryColor),
-                                    Color(ColorTheme.secondaryColor),
-                                    Color(ColorTheme.primaryColor),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Menu Items (Scrollable) - MENGGUNAKAN STRUKTUR ASLI
+                      _buildHeader(),
                       Expanded(
                         child: SingleChildScrollView(
                           child: Column(
@@ -215,10 +49,7 @@ class HomeView extends StatelessWidget {
                                 title: "Manajemen Stok",
                                 color: const Color(ColorTheme.primaryColor),
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const ManageStockView()),
-                                  );
+                                  Navigator.pushNamed(context, '/manage-stock');
                                 },
                                 customIconPath: 'assets/images/manajemen_stok.png',
                               ),
@@ -226,10 +57,7 @@ class HomeView extends StatelessWidget {
                                 title: "Catat Transaksi",
                                 color: const Color(ColorTheme.primaryColor),
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const TransactionView()),
-                                  );
+                                  Navigator.pushNamed(context, '/transaction');
                                 },
                                 customIconPath: 'assets/images/catat_transaksi.png',
                               ),
@@ -256,8 +84,98 @@ class HomeView extends StatelessWidget {
         bottomNavigationBar: CustomNavbar(
           currentIndex: 0,
           onTap: (index) {
-            // Navigasi sesuai kebutuhan
+            // Kosongkan atau isi sesuai kebutuhan
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 40, top: 20),
+      child: Column(
+        children: [
+          Text(
+            "MENU UTAMA",
+            style: GoogleFonts.poppins(
+              fontSize: 28,
+              fontWeight: FontWeight.w400,
+              color: const Color(ColorTheme.primaryColor),
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: 60,
+            height: 3,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(2),
+              gradient: const LinearGradient(
+                colors: [
+                  Color(ColorTheme.primaryColor),
+                  Color(ColorTheme.secondaryColor),
+                  Color(ColorTheme.primaryColor),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackground(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned(
+          top: -150,
+          left: -150,
+          child: _buildCircle(300, ColorTheme.primaryColor),
+        ),
+        Positioned(
+          top: -100,
+          right: -100,
+          child: _buildCircle(200, ColorTheme.secondaryColor),
+        ),
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.2,
+          right: -200,
+          child: _buildCircle(400, ColorTheme.primaryColor),
+        ),
+        Positioned(
+          bottom: -180,
+          left: -180,
+          child: _buildCircle(360, ColorTheme.secondaryColor),
+        ),
+        Positioned(
+          bottom: -80,
+          right: -80,
+          child: _buildCircle(160, ColorTheme.primaryColor),
+        ),
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.4,
+          left: -60,
+          child: _buildCircle(120, ColorTheme.secondaryColor),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCircle(double size, int colorCode) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            Color(colorCode).withOpacity(0.2),
+            Color(colorCode).withOpacity(0.1),
+            Color(colorCode).withOpacity(0.05),
+            Colors.transparent,
+          ],
+          stops: const [0.0, 0.4, 0.7, 1.0],
         ),
       ),
     );
@@ -270,9 +188,7 @@ class HomeView extends StatelessWidget {
       barrierColor: Colors.black.withOpacity(0.5),
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           elevation: 0,
           backgroundColor: Colors.transparent,
           child: Container(
@@ -301,8 +217,6 @@ class HomeView extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
                       colors: [
                         Color(ColorTheme.primaryColor),
                         Color(0xFF424242),
@@ -316,11 +230,7 @@ class HomeView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.construction,
-                    color: Colors.white,
-                    size: 40,
-                  ),
+                  child: const Icon(Icons.construction, color: Colors.white, size: 40),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -346,9 +256,7 @@ class HomeView extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: () => Navigator.of(context).pop(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(ColorTheme.primaryColor),
                       foregroundColor: Colors.white,
@@ -357,7 +265,6 @@ class HomeView extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       elevation: 0,
-                      shadowColor: Colors.transparent,
                     ),
                     child: Text(
                       "Tutup",

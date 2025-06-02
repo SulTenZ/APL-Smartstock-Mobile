@@ -53,13 +53,17 @@ class CustomNavbar extends StatelessWidget {
         if (index == currentIndex) return;
         switch (index) {
           case 0:
-            Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/home',
+              (route) => false,
+            );
             break;
           case 1:
             Navigator.pushNamed(context, '/transaction-history');
             break;
           case 2:
-            Navigator.pushNamed(context, '/stock-batch');
+            Navigator.pushNamed(context, '/stock-history');
             break;
           case 3:
             Navigator.pushNamed(context, '/profile');
@@ -76,13 +80,13 @@ class CustomNavbar extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color: isSelected
-              ? Colors.black
-              : const Color(ColorTheme.secondaryColor),
+          color:
+              isSelected
+                  ? Colors.black
+                  : const Color(ColorTheme.secondaryColor),
           size: 22,
         ),
       ),
     );
   }
 }
-

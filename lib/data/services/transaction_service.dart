@@ -1,12 +1,11 @@
 // lib/data/services/transaction_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../api/api_constant.dart';
+import '../api/api_endpoint.dart';
 import '../../utils/shared_preferences.dart';
 
 class TransactionService {
-  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-
   // Buat transaksi baru
   Future<Map<String, dynamic>> createTransaction({
     String? customerId,
@@ -16,7 +15,7 @@ class TransactionService {
     required List<Map<String, dynamic>> items,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/transaction');
+    final uri = Uri.parse(ApiEndpoint.transactions);
 
     final bodyPayload = {
       if (customerId != null) 'customerId': customerId,
@@ -26,93 +25,65 @@ class TransactionService {
       'items': items,
     };
 
-    print('[DEBUG] Create transaction payload: $bodyPayload');
-    print('[DEBUG] POST $uri');
-    
-    try {
-      final response = await http.post(
-        uri,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(bodyPayload),
-      );
-      print('[DEBUG] Status code: ${response.statusCode}');
-      print('[DEBUG] Response body: ${response.body}');
+    final response = await http.post(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+        ...ApiConstant.header,
+      },
+      body: jsonEncode(bodyPayload),
+    );
 
-      if (response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        return data['data'];
-      } else {
-        final errorData = jsonDecode(response.body);
-        if (errorData['errors'] != null && errorData['errors'].isNotEmpty) {
-          // Handle validation errors
-          final errors = errorData['errors'].map((e) => e['msg']).join(', ');
-          throw Exception(errors);
-        } else {
-          throw Exception(errorData['message'] ?? 'Gagal membuat transaksi');
-        }
+    if (response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else {
+      final errorData = jsonDecode(response.body);
+      if (errorData['errors'] != null) {
+        final errors = errorData['errors'].map((e) => e['msg']).join(', ');
+        throw Exception(errors);
       }
-    } catch (e) {
-      if (e is FormatException) {
-        throw Exception('Gagal membuat transaksi: Respons tidak valid');
-      }
-      rethrow;
+      throw Exception(errorData['message'] ?? 'Gagal membuat transaksi');
     }
   }
 
   // Ambil semua transaksi
   Future<List<dynamic>> getAllTransactions() async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/transaction');
+    final uri = Uri.parse(ApiEndpoint.transactions);
 
-    try {
-      final response = await http.get(
-        uri,
-        headers: {'Authorization': 'Bearer $token'},
-      );
+    final response = await http.get(
+      uri,
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['data'];
-      } else {
-        final errorData = jsonDecode(response.body);
-        throw Exception(errorData['message'] ?? 'Gagal mengambil data transaksi');
-      }
-    } catch (e) {
-      if (e is FormatException) {
-        throw Exception('Gagal mengambil data transaksi: Respons tidak valid');
-      }
-      rethrow;
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else {
+      final errorData = jsonDecode(response.body);
+      throw Exception(errorData['message'] ?? 'Gagal mengambil data transaksi');
     }
   }
 
   // Ambil transaksi berdasarkan ID
   Future<Map<String, dynamic>> getTransactionById(String id) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/transaction/$id');
+    final uri = Uri.parse(ApiEndpoint.transactionById(id));
 
-    try {
-      final response = await http.get(
-        uri,
-        headers: {'Authorization': 'Bearer $token'},
-      );
+    final response = await http.get(
+      uri,
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['data'];
-      } else if (response.statusCode == 404) {
-        throw Exception('Transaksi tidak ditemukan');
-      } else {
-        final errorData = jsonDecode(response.body);
-        throw Exception(errorData['message'] ?? 'Gagal mengambil detail transaksi');
-      }
-    } catch (e) {
-      if (e is FormatException) {
-        throw Exception('Gagal mengambil detail transaksi: Respons tidak valid');
-      }
-      rethrow;
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else if (response.statusCode == 404) {
+      throw Exception('Transaksi tidak ditemukan');
+    } else {
+      final errorData = jsonDecode(response.body);
+      throw Exception(errorData['message'] ?? 'Gagal mengambil detail transaksi');
     }
   }
 
@@ -126,7 +97,7 @@ class TransactionService {
     required List<Map<String, dynamic>> items,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/transaction/$id');
+    final uri = Uri.parse(ApiEndpoint.transactionById(id));
 
     final bodyPayload = {
       if (customerId != null) 'customerId': customerId,
@@ -136,130 +107,91 @@ class TransactionService {
       'items': items,
     };
 
-    print('[DEBUG] Update transaction payload: $bodyPayload');
-    print('[DEBUG] PUT $uri');
+    final response = await http.put(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+        ...ApiConstant.header,
+      },
+      body: jsonEncode(bodyPayload),
+    );
 
-    try {
-      final response = await http.put(
-        uri,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(bodyPayload),
-      );
-      print('[DEBUG] Status code: ${response.statusCode}');
-      print('[DEBUG] Response body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['data'];
-      } else if (response.statusCode == 404) {
-        throw Exception('Transaksi tidak ditemukan');
-      } else {
-        final errorData = jsonDecode(response.body);
-        if (errorData['errors'] != null && errorData['errors'].isNotEmpty) {
-          // Handle validation errors
-          final errors = errorData['errors'].map((e) => e['msg']).join(', ');
-          throw Exception(errors);
-        } else {
-          throw Exception(errorData['message'] ?? 'Gagal memperbarui transaksi');
-        }
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else if (response.statusCode == 404) {
+      throw Exception('Transaksi tidak ditemukan');
+    } else {
+      final errorData = jsonDecode(response.body);
+      if (errorData['errors'] != null) {
+        final errors = errorData['errors'].map((e) => e['msg']).join(', ');
+        throw Exception(errors);
       }
-    } catch (e) {
-      if (e is FormatException) {
-        throw Exception('Gagal memperbarui transaksi: Respons tidak valid');
-      }
-      rethrow;
+      throw Exception(errorData['message'] ?? 'Gagal memperbarui transaksi');
     }
   }
 
   // Hapus transaksi
   Future<void> deleteTransaction(String id) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/transaction/$id');
+    final uri = Uri.parse(ApiEndpoint.transactionById(id));
 
-    try {
-      final response = await http.delete(
-        uri,
-        headers: {'Authorization': 'Bearer $token'},
-      );
+    final response = await http.delete(
+      uri,
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-      if (response.statusCode == 200) {
-        return;
-      } else if (response.statusCode == 404) {
+    if (response.statusCode != 200) {
+      if (response.statusCode == 404) {
         throw Exception('Transaksi tidak ditemukan');
       } else {
         final errorData = jsonDecode(response.body);
         throw Exception(errorData['message'] ?? 'Gagal menghapus transaksi');
       }
-    } catch (e) {
-      if (e is FormatException) {
-        throw Exception('Gagal menghapus transaksi: Respons tidak valid');
-      }
-      rethrow;
     }
   }
 
-  // Ambil laporan penjualan
+  // Laporan penjualan
   Future<Map<String, dynamic>> getSalesReport({
     required String startDate,
     required String endDate,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse(
-      '$baseUrl/api/transaction/report/sales?startDate=$startDate&endDate=$endDate',
+    final uri = Uri.parse('${ApiEndpoint.salesReport}?startDate=$startDate&endDate=$endDate');
+
+    final response = await http.get(
+      uri,
+      headers: {'Authorization': 'Bearer $token'},
     );
 
-    try {
-      final response = await http.get(
-        uri,
-        headers: {'Authorization': 'Bearer $token'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['data'];
-      } else {
-        final errorData = jsonDecode(response.body);
-        throw Exception(errorData['message'] ?? 'Gagal mengambil laporan penjualan');
-      }
-    } catch (e) {
-      if (e is FormatException) {
-        throw Exception('Gagal mengambil laporan penjualan: Respons tidak valid');
-      }
-      rethrow;
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else {
+      final errorData = jsonDecode(response.body);
+      throw Exception(errorData['message'] ?? 'Gagal mengambil laporan penjualan');
     }
   }
 
-  // Ambil laporan profit
+  // Laporan profit
   Future<Map<String, dynamic>> getProfitReport({
     required String startDate,
     required String endDate,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse(
-      '$baseUrl/api/transaction/report/profit?startDate=$startDate&endDate=$endDate',
+    final uri = Uri.parse('${ApiEndpoint.profitReport}?startDate=$startDate&endDate=$endDate');
+
+    final response = await http.get(
+      uri,
+      headers: {'Authorization': 'Bearer $token'},
     );
 
-    try {
-      final response = await http.get(
-        uri,
-        headers: {'Authorization': 'Bearer $token'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['data'];
-      } else {
-        final errorData = jsonDecode(response.body);
-        throw Exception(errorData['message'] ?? 'Gagal mengambil laporan profit');
-      }
-    } catch (e) {
-      if (e is FormatException) {
-        throw Exception('Gagal mengambil laporan profit: Respons tidak valid');
-      }
-      rethrow;
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else {
+      final errorData = jsonDecode(response.body);
+      throw Exception(errorData['message'] ?? 'Gagal mengambil laporan profit');
     }
   }
 }

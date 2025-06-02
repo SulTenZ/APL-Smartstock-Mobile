@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'brand_controller.dart';
-import 'create_brand/create_brand_view.dart';
-import 'edit_brand/edit_brand_view.dart';
 
 class BrandView extends StatelessWidget {
   const BrandView({super.key});
@@ -45,21 +43,14 @@ class BrandBody extends StatelessWidget {
                   ),
                   const Text(
                     'BRAND PRODUK',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF222222),
-                    ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: Color(0xFF222222)),
                   ),
                   Align(
                     alignment: Alignment.centerRight,
                     child: IconButton(
                       icon: const Icon(Icons.add, color: Colors.black),
                       onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const CreateBrandView()),
-                        );
+                        final result = await Navigator.pushNamed(context, '/brand/create');
                         if (result == true) controller.fetchBrands();
                       },
                     ),
@@ -108,23 +99,19 @@ class BrandBody extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
+                                        decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
                                         child: IconButton(
                                           icon: const Icon(Icons.edit, size: 20, color: Colors.blue),
                                           onPressed: () async {
-                                            final result = await Navigator.push(
+                                            final result = await Navigator.pushNamed(
                                               context,
-                                              MaterialPageRoute(
-                                                builder: (_) => EditBrandView(
-                                                  id: item['id'].toString(),
-                                                  nama: item['nama'],
-                                                  deskripsi: item['deskripsi'] ?? '',
-                                                  image: item['image'] ?? '',
-                                                ),
-                                              ),
+                                              '/brand/edit',
+                                              arguments: {
+                                                'id': item['id'].toString(),
+                                                'nama': item['nama'],
+                                                'deskripsi': item['deskripsi'] ?? '',
+                                                'image': item['image'] ?? '',
+                                              },
                                             );
                                             if (result == true) controller.fetchBrands();
                                           },
@@ -132,10 +119,7 @@ class BrandBody extends StatelessWidget {
                                       ),
                                       const SizedBox(width: 8),
                                       Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
+                                        decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
                                         child: IconButton(
                                           icon: const Icon(Icons.delete, size: 20, color: Colors.red),
                                           onPressed: () => _confirmDelete(context, controller, item['id'].toString()),

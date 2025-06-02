@@ -1,29 +1,33 @@
 // lib/data/services/category_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../api/api_constant.dart';
+import '../api/api_endpoint.dart';
 import '../../utils/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 class CategoryService {
-  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-
   Future<Map<String, dynamic>> getAllCategories({
     String? search,
     int? limit,
     int? page,
   }) async {
     final token = await SharedPrefs.getToken();
+
     final queryParameters = {
       if (search != null) 'search': search,
       if (limit != null) 'limit': limit.toString(),
       if (page != null) 'page': page.toString(),
     };
-    final uri = Uri.parse('$baseUrl/api/category').replace(queryParameters: queryParameters);
+
+    final uri = Uri.parse(ApiEndpoint.categories).replace(queryParameters: queryParameters);
 
     final response = await http.get(
       uri,
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        ...ApiConstant.header,
+      },
     );
 
     if (response.statusCode == 200) {
@@ -42,13 +46,13 @@ class CategoryService {
     required String deskripsi,
     required String productTypeId,
   }) async {
-    final url = Uri.parse('$baseUrl/api/category');
+    final url = Uri.parse(ApiEndpoint.categories);
     final token = await SharedPrefs.getToken();
 
     final response = await http.post(
       url,
       headers: {
-        'Content-Type': 'application/json',
+        ...ApiConstant.header,
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
@@ -70,7 +74,7 @@ class CategoryService {
     required String deskripsi,
     required String productTypeId,
   }) async {
-    final url = Uri.parse('$baseUrl/api/category/$id');
+    final url = Uri.parse(ApiEndpoint.categoryById(id));
     final token = await SharedPrefs.getToken();
 
     debugPrint('Updating category with data:');
@@ -82,7 +86,7 @@ class CategoryService {
     final response = await http.put(
       url,
       headers: {
-        'Content-Type': 'application/json',
+        ...ApiConstant.header,
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
@@ -99,12 +103,15 @@ class CategoryService {
   }
 
   Future<void> deleteCategory(String id) async {
-    final url = Uri.parse('$baseUrl/api/category/$id');
+    final url = Uri.parse(ApiEndpoint.categoryById(id));
     final token = await SharedPrefs.getToken();
 
     final response = await http.delete(
       url,
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        ...ApiConstant.header,
+      },
     );
 
     if (response.statusCode != 200) {

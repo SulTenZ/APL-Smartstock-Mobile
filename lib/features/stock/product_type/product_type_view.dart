@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'product_type_controller.dart';
-import 'create_product_type/create_product_type_view.dart';
-import 'edit_product_type/edit_product_type_view.dart';
 
 class ProductTypeView extends StatelessWidget {
   const ProductTypeView({super.key});
@@ -56,10 +54,7 @@ class ProductTypeBody extends StatelessWidget {
                     child: IconButton(
                       icon: const Icon(Icons.add, color: Colors.black, size: 28),
                       onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const CreateProductTypeView()),
-                        );
+                        final result = await Navigator.pushNamed(context, '/product-type/create');
                         if (result == true) controller.fetchProductTypes();
                       },
                     ),
@@ -125,11 +120,13 @@ class ProductTypeBody extends StatelessWidget {
                   icon: Icons.edit,
                   color: Colors.blue,
                   onTap: () async {
-                    final result = await Navigator.push(
+                    final result = await Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => EditProductTypeView(id: item['id'].toString(), name: item['name']),
-                      ),
+                      '/product-type/edit',
+                      arguments: {
+                        'id': item['id'].toString(),
+                        'name': item['name'],
+                      },
                     );
                     if (result == true) controller.fetchProductTypes();
                   },

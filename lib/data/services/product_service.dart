@@ -2,50 +2,52 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
+import '../api/api_constant.dart';
+import '../api/api_endpoint.dart';
 import '../../utils/shared_preferences.dart';
 
 class ProductService {
-  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  Future<Map<String, dynamic>> getAllProducts({
+    String? search,
+    int? page,
+    int? limit,
+    String? brandId,
+    int? categoryId,
+    String? productTypeId,
+  }) async {
+    final token = await SharedPrefs.getToken();
+    final uri = Uri.parse(ApiEndpoint.products).replace(
+      queryParameters: {
+        if (search != null) 'search': search,
+        if (page != null) 'page': page.toString(),
+        if (limit != null) 'limit': limit.toString(),
+        if (brandId != null) 'brandId': brandId,
+        if (categoryId != null) 'categoryId': categoryId.toString(),
+        if (productTypeId != null) 'productTypeId': productTypeId,
+      },
+    );
 
-Future<Map<String, dynamic>> getAllProducts({
-  String? search,
-  int? page,
-  int? limit,
-  String? brandId,
-  int? categoryId,
-  String? productTypeId,
-}) async {
-  final token = await SharedPrefs.getToken();
-  final uri = Uri.parse('$baseUrl/api/product').replace(
-    queryParameters: {
-      if (search != null) 'search': search,
-      if (page != null) 'page': page.toString(),
-      if (limit != null) 'limit': limit.toString(),
-      if (brandId != null) 'brandId': brandId,
-      if (categoryId != null) 'categoryId': categoryId.toString(),
-      if (productTypeId != null) 'productTypeId': productTypeId,
-    },
-  );
+    final response = await http.get(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+        ...ApiConstant.header,
+      },
+    );
 
-  final response = await http.get(
-    uri,
-    headers: {'Authorization': 'Bearer $token'},
-  );
-
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    return {'data': data['data'], 'pagination': data['pagination']};
-  } else {
-    throw Exception('Gagal mengambil data produk');
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return {'data': data['data'], 'pagination': data['pagination']};
+    } else {
+      throw Exception('Gagal mengambil data produk');
+    }
   }
-}
 
   Future<Map<String, dynamic>> getProductById(String id) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product/$id');
+    final uri = Uri.parse(ApiEndpoint.productById(id));
 
     final response = await http.get(
       uri,
@@ -75,7 +77,7 @@ Future<Map<String, dynamic>> getAllProducts({
     List<Map<String, dynamic>>? sizes,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product');
+    final uri = Uri.parse(ApiEndpoint.products);
 
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
@@ -90,7 +92,6 @@ Future<Map<String, dynamic>> getAllProducts({
     if (minStock != null) request.fields['minStock'] = minStock.toString();
     if (kondisi != null) request.fields['kondisi'] = kondisi.toUpperCase();
     if (stockBatchId != null) request.fields['stockBatchId'] = stockBatchId;
-
     if (sizes != null && sizes.isNotEmpty) {
       final cleanSizes = sizes.map((s) => {
         'sizeId': s['sizeId'],
@@ -141,7 +142,7 @@ Future<Map<String, dynamic>> getAllProducts({
     List<Map<String, dynamic>>? sizes,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product/$id');
+    final uri = Uri.parse(ApiEndpoint.productById(id));
 
     final request = http.MultipartRequest('PUT', uri)
       ..headers['Authorization'] = 'Bearer $token';
@@ -184,10 +185,9 @@ Future<Map<String, dynamic>> getAllProducts({
     }
   }
 
-  // Delete a product
   Future<void> deleteProduct(String id) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product/$id');
+    final uri = Uri.parse(ApiEndpoint.productById(id));
 
     final response = await http.delete(
       uri,
@@ -200,10 +200,9 @@ Future<Map<String, dynamic>> getAllProducts({
     }
   }
 
-  // Get products with low stock
   Future<List<dynamic>> getLowStockProducts() async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product/low-stock');
+    final uri = Uri.parse(ApiEndpoint.productLowStock);
 
     final response = await http.get(
       uri,
@@ -218,20 +217,19 @@ Future<Map<String, dynamic>> getAllProducts({
     }
   }
 
-  // Add size to a product
   Future<Map<String, dynamic>> addProductSize({
     required String productId,
     required String sizeId,
     required int quantity,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product/$productId/sizes');
+    final uri = Uri.parse(ApiEndpoint.productSizes(productId));
 
     final response = await http.post(
       uri,
       headers: {
         'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
+        ...ApiConstant.header,
       },
       body: jsonEncode({'sizeId': sizeId, 'quantity': quantity}),
     );
@@ -245,19 +243,18 @@ Future<Map<String, dynamic>> getAllProducts({
     }
   }
 
-  // Update product size stock (berdasarkan productSizeId, bukan kombinasi productId & sizeId)
   Future<Map<String, dynamic>> updateProductSize({
     required String productSizeId,
     required int quantity,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product-size/$productSizeId');
+    final uri = Uri.parse(ApiEndpoint.productSizeById(productSizeId));
 
     final response = await http.put(
       uri,
       headers: {
         'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
+        ...ApiConstant.header,
       },
       body: jsonEncode({'quantity': quantity}),
     );
@@ -267,19 +264,16 @@ Future<Map<String, dynamic>> getAllProducts({
       return data['data'];
     } else {
       final body = jsonDecode(response.body);
-      throw Exception(
-        body['message'] ?? 'Gagal memperbarui stok ukuran produk',
-      );
+      throw Exception(body['message'] ?? 'Gagal memperbarui stok ukuran produk');
     }
   }
 
-  // Delete product size
   Future<void> deleteProductSize({
     required String productId,
     required String sizeId,
   }) async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product/$productId/sizes/$sizeId');
+    final uri = Uri.parse(ApiEndpoint.productSizeDetail(productId, sizeId));
 
     final response = await http.delete(
       uri,
@@ -292,10 +286,9 @@ Future<Map<String, dynamic>> getAllProducts({
     }
   }
 
-  // Sync all product stocks
   Future<Map<String, dynamic>> syncAllProductStocks() async {
     final token = await SharedPrefs.getToken();
-    final uri = Uri.parse('$baseUrl/api/product/sync-stocks');
+    final uri = Uri.parse(ApiEndpoint.productSyncStock);
 
     final response = await http.post(
       uri,
