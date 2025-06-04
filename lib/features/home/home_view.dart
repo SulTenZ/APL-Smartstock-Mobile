@@ -1,3 +1,4 @@
+// lib/features/home/home_view.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';

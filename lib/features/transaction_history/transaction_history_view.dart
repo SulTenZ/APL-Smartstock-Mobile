@@ -1,6 +1,7 @@
 // lib/features/transaction_history/transaction_history_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'transaction_history_controller.dart';
 import '../../common/widgets/custom_navbar.dart';
 
@@ -39,10 +40,14 @@ class TransactionHistoryView extends StatelessWidget {
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (controller.errorMessage != null) {
-                        return Center(child: Text('Error: ${controller.errorMessage}'));
+                        return Center(
+                          child: Text('Error: ${controller.errorMessage}'),
+                        );
                       }
                       if (controller.transactions.isEmpty) {
-                        return const Center(child: Text('Tidak ada data transaksi.'));
+                        return const Center(
+                          child: Text('Tidak ada data transaksi.'),
+                        );
                       }
                       return ListView.separated(
                         itemCount: controller.transactions.length,
@@ -85,19 +90,27 @@ class TransactionHistoryView extends StatelessWidget {
                                   const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'ID: ${tx['id'] ?? '-'}',
+                                          tx['createdAt'] != null
+                                              ? DateFormat(
+                                                'dd MMM yyyy • HH:mm',
+                                              ).format(
+                                                DateTime.parse(tx['createdAt']),
+                                              )
+                                              : '-',
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 15,
                                             color: Color(0xFF222222),
                                           ),
                                         ),
+
                                         const SizedBox(height: 4),
                                         Text(
-                                          'Customer: ${tx['customer']?['nama'] ?? '-'}',
+                                          'Customer : ${tx['customer']?['nama'] ?? '-'}',
                                           style: const TextStyle(
                                             fontSize: 14,
                                             color: Color(0xFF666666),
