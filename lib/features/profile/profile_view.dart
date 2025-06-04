@@ -73,32 +73,20 @@ class _ProfileViewState extends State<ProfileView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Stack(
-                      alignment: Alignment.center,
+                    Column(
                       children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back_ios_new,
-                              color: Color(ColorTheme.primaryColor),
-                              size: 20,
-                            ),
-                            onPressed: () => Navigator.pop(context),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
-                        ),
                         Text(
-                          'PROFIL SAYA',
+                          "PROFIL SAYA",
                           style: GoogleFonts.poppins(
-                            fontSize: 24,
+                            fontSize: 28,
                             fontWeight: FontWeight.w400,
                             color: const Color(ColorTheme.primaryColor),
+                            letterSpacing: 1.5,
                           ),
                         ),
                       ],
                     ),
+
                     const SizedBox(height: 40),
                     Container(
                       padding: const EdgeInsets.all(6),
@@ -115,7 +103,9 @@ class _ProfileViewState extends State<ProfileView> {
                       ),
                       child: CircleAvatar(
                         radius: 60,
-                        backgroundColor: const Color(ColorTheme.secondaryColor).withOpacity(0.2),
+                        backgroundColor: const Color(
+                          ColorTheme.secondaryColor,
+                        ).withOpacity(0.2),
                         child: Text(
                           name.isNotEmpty ? name[0].toUpperCase() : 'U',
                           style: GoogleFonts.poppins(
@@ -152,7 +142,10 @@ class _ProfileViewState extends State<ProfileView> {
                             value: email,
                             icon: Icons.email_outlined,
                             isVisible: _isEmailVisible,
-                            onToggle: () => setState(() => _isEmailVisible = !_isEmailVisible),
+                            onToggle:
+                                () => setState(
+                                  () => _isEmailVisible = !_isEmailVisible,
+                                ),
                           ),
                           const Divider(height: 24, color: Color(0xFFE0E0E0)),
                           _buildInfoItem(
@@ -191,7 +184,9 @@ class _ProfileViewState extends State<ProfileView> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(ColorTheme.errorColor).withOpacity(0.2),
+                            color: const Color(
+                              ColorTheme.errorColor,
+                            ).withOpacity(0.2),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -203,16 +198,22 @@ class _ProfileViewState extends State<ProfileView> {
                           backgroundColor: const Color(ColorTheme.errorColor),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           minimumSize: const Size.fromHeight(50),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           elevation: 0,
                         ),
-                        icon: controller.isLoggingOut
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                              )
-                            : const Icon(Icons.logout),
+                        icon:
+                            controller.isLoggingOut
+                                ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : const Icon(Icons.logout),
                         label: Text(
                           controller.isLoggingOut ? 'Keluar...' : 'Keluar',
                           style: GoogleFonts.poppins(
@@ -220,7 +221,10 @@ class _ProfileViewState extends State<ProfileView> {
                             fontSize: 16,
                           ),
                         ),
-                        onPressed: controller.isLoggingOut ? null : () => _showLogoutDialog(context, controller),
+                        onPressed:
+                            controller.isLoggingOut
+                                ? null
+                                : () => _showLogoutDialog(context, controller),
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -235,7 +239,11 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildProfileSection({required IconData icon, required String title, required Widget content}) {
+  Widget _buildProfileSection({
+    required IconData icon,
+    required String title,
+    required Widget content,
+  }) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -263,10 +271,16 @@ class _ProfileViewState extends State<ProfileView> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(ColorTheme.primaryColor).withOpacity(0.1),
+                    color: const Color(
+                      ColorTheme.primaryColor,
+                    ).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, size: 22, color: const Color(ColorTheme.primaryColor)),
+                  child: Icon(
+                    icon,
+                    size: 22,
+                    color: const Color(ColorTheme.primaryColor),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -397,7 +411,9 @@ class _ProfileViewState extends State<ProfileView> {
       barrierColor: Colors.black.withOpacity(0.5),
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           backgroundColor: Colors.white,
           elevation: 0,
           title: Row(
@@ -435,7 +451,9 @@ class _ProfileViewState extends State<ProfileView> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(ColorTheme.errorColor),
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 elevation: 0,
               ),
               onPressed: () {

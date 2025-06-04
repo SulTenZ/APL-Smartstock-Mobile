@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'stock_history_controller.dart';
+import '../../common/widgets/custom_navbar.dart';
 
 class StockHistoryView extends StatelessWidget {
   const StockHistoryView({super.key});
@@ -17,22 +18,15 @@ class StockHistoryView extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                Stack(
-                  alignment: Alignment.center,
+                Column(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
                     const Text(
-                      'RIWAYAT STOK MASUK',
+                      "RIWAYAT STOK MASUK",
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 28,
                         fontWeight: FontWeight.w400,
                         color: Color(0xFF222222),
+                        letterSpacing: 1.5,
                       ),
                     ),
                   ],
@@ -126,6 +120,10 @@ class StockHistoryView extends StatelessWidget {
               ],
             ),
           ),
+        ),
+        bottomNavigationBar: CustomNavbar(
+          currentIndex: 2, // karena ini halaman ke-3 (stok)
+          onTap: (_) {},
         ),
       ),
     );

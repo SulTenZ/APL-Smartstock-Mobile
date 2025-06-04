@@ -31,7 +31,6 @@ class HomeView extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // (⤵️ Semua background bulat tetap sama)
               _buildBackground(context),
 
               // Konten utama

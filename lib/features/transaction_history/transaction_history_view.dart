@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'transaction_history_controller.dart';
+import '../../common/widgets/custom_navbar.dart';
 
 class TransactionHistoryView extends StatelessWidget {
   const TransactionHistoryView({super.key});
@@ -17,36 +18,20 @@ class TransactionHistoryView extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                Stack(
-                  alignment: Alignment.center,
+                Column(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_ios_new,
-                          color: Colors.black,
-                          size: 20,
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ),
                     const Text(
-                      'RIWAYAT TRANSAKSI',
+                      "RIWAYAT TRANSAKSI",
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 28,
                         fontWeight: FontWeight.w400,
                         color: Color(0xFF222222),
+                        letterSpacing: 1.5,
                       ),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 40),
-
-                // List Content
                 Expanded(
                   child: Consumer<TransactionHistoryController>(
                     builder: (context, controller, _) {
@@ -54,14 +39,10 @@ class TransactionHistoryView extends StatelessWidget {
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (controller.errorMessage != null) {
-                        return Center(
-                          child: Text('Error: ${controller.errorMessage}'),
-                        );
+                        return Center(child: Text('Error: ${controller.errorMessage}'));
                       }
                       if (controller.transactions.isEmpty) {
-                        return const Center(
-                          child: Text('Tidak ada data transaksi.'),
-                        );
+                        return const Center(child: Text('Tidak ada data transaksi.'));
                       }
                       return ListView.separated(
                         itemCount: controller.transactions.length,
@@ -104,8 +85,7 @@ class TransactionHistoryView extends StatelessWidget {
                                   const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'ID: ${tx['id'] ?? '-'}',
@@ -146,6 +126,10 @@ class TransactionHistoryView extends StatelessWidget {
               ],
             ),
           ),
+        ),
+        bottomNavigationBar: CustomNavbar(
+          currentIndex: 1, // karena ini halaman ke-2 (transaksi)
+          onTap: (_) {},
         ),
       ),
     );
