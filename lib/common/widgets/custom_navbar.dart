@@ -1,7 +1,12 @@
 // lib/common/widgets/custom_navbar.dart
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import '../color/color_theme.dart';
+
+// Import halaman target
+import '../../features/home/home_view.dart';
+import '../../features/transaction_history/transaction_history_view.dart';
+import '../../features/stock_history/stock_history_view.dart';
+import '../../features/profile/profile_view.dart';
 
 class CustomNavbar extends StatelessWidget {
   final int currentIndex;
@@ -25,21 +30,16 @@ class CustomNavbar extends StatelessWidget {
           ),
         ),
       ),
-      child: ClipRRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavIcon(context, Icons.home, 0),
-                _buildNavIcon(context, Icons.shopping_cart, 1),
-                _buildNavIcon(context, Icons.receipt_long, 2),
-                _buildNavIcon(context, Icons.person, 3),
-              ],
-            ),
-          ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavIcon(context, Icons.home, 0),
+            _buildNavIcon(context, Icons.shopping_cart, 1),
+            _buildNavIcon(context, Icons.receipt_long, 2),
+            _buildNavIcon(context, Icons.person, 3),
+          ],
         ),
       ),
     );
@@ -51,24 +51,26 @@ class CustomNavbar extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (index == currentIndex) return;
+
+        String targetRoute;
         switch (index) {
           case 0:
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/home',
-              (route) => false,
-            );
+            targetRoute = '/home';
             break;
           case 1:
-            Navigator.pushNamed(context, '/transaction-history');
+            targetRoute = '/transaction-history';
             break;
           case 2:
-            Navigator.pushNamed(context, '/stock-history');
+            targetRoute = '/stock-history';
             break;
           case 3:
-            Navigator.pushNamed(context, '/profile');
+            targetRoute = '/profile';
             break;
+          default:
+            targetRoute = '/home';
         }
+
+        navigateWithDirectionalSlide(context, targetRoute, currentIndex, index);
         onTap(index);
       },
       child: AnimatedContainer(
@@ -80,13 +82,47 @@ class CustomNavbar extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color:
-              isSelected
-                  ? Colors.black
-                  : const Color(ColorTheme.secondaryColor),
+          color: isSelected ? Colors.black : const Color(ColorTheme.secondaryColor),
           size: 22,
         ),
       ),
     );
+  }
+
+  void navigateWithDirectionalSlide(BuildContext context, String routeName, int from, int to) {
+    final isBack = to < from;
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 500),
+        pageBuilder: (_, __, ___) => getTargetPage(routeName),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final slideTween = Tween<Offset>(
+            begin: Offset(isBack ? -0.2 : 0.2, 0),
+            end: Offset.zero,
+          ).chain(CurveTween(curve: Curves.easeOutExpo));
+
+          return SlideTransition(
+            position: animation.drive(slideTween),
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getTargetPage(String routeName) {
+    switch (routeName) {
+      case '/home':
+        return const HomeView();
+      case '/transaction-history':
+        return const TransactionHistoryView();
+      case '/stock-history':
+        return const StockHistoryView();
+      case '/profile':
+        return const ProfileView();
+      default:
+        return const HomeView();
+    }
   }
 }
