@@ -1,19 +1,18 @@
-// lib/features/transaction/transaction_controller.dart
 import 'package:flutter/material.dart';
 import '../../../data/services/product_service.dart';
 import '../../../data/services/brand_service.dart';
-import '../../../data/services/category_service.dart';
+// import '../../../data/services/category_service.dart'; // DIHAPUS
 import '../../../data/services/product_type_service.dart';
 
 class TransactionController extends ChangeNotifier {
   final productService = ProductService();
   final brandService = BrandService();
-  final categoryService = CategoryService();
+  // final categoryService = CategoryService(); // DIHAPUS
   final productTypeService = ProductTypeService();
 
   List<Map<String, dynamic>> products = [];
   List<Map<String, dynamic>> brands = [];
-  List<Map<String, dynamic>> categories = [];
+  // List<Map<String, dynamic>> categories = []; // DIHAPUS
   List<Map<String, dynamic>> productTypes = [];
   List<Map<String, dynamic>> cart = [];
 
@@ -23,13 +22,13 @@ class TransactionController extends ChangeNotifier {
   String? search;
 
   String? selectedBrandId;
-  int? selectedCategoryId;
+  // int? selectedCategoryId; // DIHAPUS
   String? selectedProductTypeId;
 
   Future<void> initData() async {
     await Future.wait([
       fetchBrands(),
-      fetchCategories(),
+      // fetchCategories(), // DIHAPUS
       fetchProductTypes(),
       fetchProducts(),
     ]);
@@ -43,7 +42,7 @@ class TransactionController extends ChangeNotifier {
         page: currentPage,
         search: search,
         brandId: selectedBrandId,
-        categoryId: selectedCategoryId,
+        // categoryId: selectedCategoryId, // DIHAPUS
         productTypeId: selectedProductTypeId,
       );
       products = List<Map<String, dynamic>>.from(result['data']);
@@ -60,10 +59,8 @@ class TransactionController extends ChangeNotifier {
     brands = List<Map<String, dynamic>>.from(res['data']);
   }
 
-  Future<void> fetchCategories() async {
-    final res = await categoryService.getAllCategories();
-    categories = List<Map<String, dynamic>>.from(res['data']);
-  }
+  // FUNGSI fetchCategories() DIHAPUS SELURUHNYA
+  // Future<void> fetchCategories() async { ... }
 
   Future<void> fetchProductTypes() async {
     final res = await productTypeService.getAllProductTypes();
@@ -76,9 +73,9 @@ class TransactionController extends ChangeNotifier {
     fetchProducts();
   }
 
-  void setFilter({String? brandId, int? categoryId, String? typeId}) {
+  // Parameter categoryId dan logikanya DIHAPUS
+  void setFilter({String? brandId, String? typeId}) {
     if (brandId != null || brandId == null) selectedBrandId = brandId;
-    if (categoryId != null) selectedCategoryId = categoryId;
     if (typeId != null) selectedProductTypeId = typeId;
     currentPage = 1;
     fetchProducts();

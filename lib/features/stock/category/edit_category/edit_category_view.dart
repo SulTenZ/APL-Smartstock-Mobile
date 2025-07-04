@@ -69,86 +69,91 @@ class _EditCategoryBodyState extends State<EditCategoryBody> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
-                      onPressed: () => Navigator.pop(context),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
                     ),
-                  ),
-                  const Text(
-                    'EDIT KATEGORI',
+                    const Text(
+                      'EDIT KATEGORI',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF222222),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Form Kategori',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF222222),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF333333),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 40),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Form Kategori',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF333333),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              CustomFormField(
-                label: 'Nama Kategori',
-                hintText: 'Masukkan nama kategori',
-                controller: _namaController,
-                onChanged: (val) => controller.updateNama(val),
-              ),
-              const SizedBox(height: 16),
-              CustomFormField(
-                label: 'Deskripsi',
-                hintText: 'Masukkan deskripsi',
-                controller: _deskripsiController,
-                onChanged: (val) => controller.updateDeskripsi(val),
-              ),
-              const SizedBox(height: 16),
-              CustomDropDown<String>(
-                label: 'Tipe Produk',
-                hintText: 'Pilih tipe produk',
-                value: controller.productTypes.any((type) => type['id'].toString() == controller.productTypeId)
-                    ? controller.productTypeId
-                    : null,
-                items: controller.productTypes.map((type) {
-                  return DropdownMenuItem<String>(
-                    value: type['id'].toString(),
-                    child: Text(type['name']),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) controller.updateProductTypeId(value);
-                },
-              ),
-              const SizedBox(height: 24),
-              controller.isSaving
-                  ? const Center(child: CircularProgressIndicator())
-                  : CustomButton(
-                      text: 'Simpan',
-                      onPressed: () async {
-                        controller.updateNama(_namaController.text);
-                        controller.updateDeskripsi(_deskripsiController.text);
-                        final result = await controller.saveCategory(context);
-                        if (result) Navigator.pop(context, true);
-                      },
-                    ),
-            ],
+                const SizedBox(height: 16),
+                CustomFormField(
+                  label: 'Nama Kategori',
+                  hintText: 'Masukkan nama kategori',
+                  controller: _namaController,
+                  onChanged: (val) => controller.updateNama(val),
+                ),
+                const SizedBox(height: 16),
+                CustomFormField(
+                  label: 'Deskripsi',
+                  hintText: 'Masukkan deskripsi',
+                  controller: _deskripsiController,
+                  onChanged: (val) => controller.updateDeskripsi(val),
+                ),
+                const SizedBox(height: 16),
+                CustomDropDown<String>(
+                  label: 'Tipe Produk',
+                  hintText: 'Pilih tipe produk',
+                  value: controller.productTypes.any((type) => type['id'].toString() == controller.productTypeId)
+                      ? controller.productTypeId
+                      : null,
+                  items: controller.productTypes.map((type) {
+                    return DropdownMenuItem<String>(
+                      value: type['id'].toString(),
+                      child: Text(type['name']),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) controller.updateProductTypeId(value);
+                  },
+                ),
+                const SizedBox(height: 24),
+                controller.isSaving
+                    ? const Center(child: CircularProgressIndicator())
+                    : CustomButton(
+                        text: 'Simpan',
+                        onPressed: () async {
+                          controller.updateNama(_namaController.text);
+                          controller.updateDeskripsi(_deskripsiController.text);
+                          final result = await controller.saveCategory(context);
+                          if (result) Navigator.pop(context, true);
+                        },
+                      ),
+                const SizedBox(height: 20), // biar lebih lega bawah
+              ],
+            ),
           ),
         ),
       ),

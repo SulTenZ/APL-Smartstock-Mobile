@@ -19,69 +19,88 @@ class LoginView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
             child: Consumer<LoginController>(
               builder: (context, controller, _) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("Halo,", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    const Text("Selamat datang!", style: TextStyle(fontSize: 16)),
-                    const SizedBox(height: 24),
-
-                    // Email Field
-                    CustomFormField(
-                      label: "Email",
-                      hintText: "Masukkan Email",
-                      controller: controller.emailController, onChanged: (val) {  },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Password Field
-                    CustomFormField(
-                      label: "Password",
-                      hintText: "Masukkan Password",
-                      controller: controller.passwordController,
-                      obscureText: true, onChanged: (val) {  },
-                    ),
-
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {},
-                        child: const Text("Lupa Password?", style: TextStyle(color: Colors.grey)),
+                return SingleChildScrollView(
+                  // Tambahkan physics agar scroll lebih smooth di iOS/Android
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 32),
+                      const Text(
+                        "Halo,",
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 4),
+                      const Text(
+                        "Selamat datang!",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 24),
 
-                    // Button
-                    CustomButton(
-                      text: controller.isLoading ? "Loading..." : "Sign In",
-                      onPressed: controller.isLoading ? null : () => controller.login(context),
-                    ),
+                      // Email Field
+                      CustomFormField(
+                        label: "Email",
+                        hintText: "Masukkan Email",
+                        controller: controller.emailController,
+                        onChanged: (val) {},
+                      ),
 
-                    const SizedBox(height: 16),
-                    Center(
-                      child: Text.rich(
-                        TextSpan(
-                          text: "Belum mempunyai akun? ",
-                          children: [
-                            TextSpan(
-                              text: "Daftar sekarang",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  Navigator.pushNamed(context, '/register');
-                                },
-                            ),
-                          ],
+                      const SizedBox(height: 16),
+
+                      // Password Field
+                      CustomFormField(
+                        label: "Password",
+                        hintText: "Masukkan Password",
+                        controller: controller.passwordController,
+                        obscureText: true,
+                        onChanged: (val) {},
+                      ),
+
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/forgot-password');
+                          },
+                          child: const Text(
+                            "Lupa Password?",
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+
+                      // Button
+                      CustomButton(
+                        text: controller.isLoading ? "Loading..." : "Sign In",
+                        onPressed: controller.isLoading ? null : () => controller.login(context),
+                      ),
+
+                      const SizedBox(height: 16),
+                      Center(
+                        child: Text.rich(
+                          TextSpan(
+                            text: "Belum mempunyai akun? ",
+                            children: [
+                              TextSpan(
+                                text: "Daftar sekarang",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.pushNamed(context, '/register');
+                                  },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24), // Tambahan bawah biar lebih lega
+                    ],
+                  ),
                 );
               },
             ),

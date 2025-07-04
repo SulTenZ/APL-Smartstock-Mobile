@@ -120,5 +120,90 @@ class AuthService {
       return {'success': false, 'message': 'Terjadi kesalahan koneksi'};
     }
   }
+
+  // 1. Lupa Password (Kirim OTP reset ke email)
+  Future<Map<String, dynamic>> forgotPassword(String email) async {
+    final url = Uri.parse(ApiEndpoint.forgotPassword);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: ApiConstant.header,
+        body: jsonEncode({'email': email}),
+      );
+
+      print("🔑 [ForgotPassword] STATUS: ${response.statusCode}");
+      print("🔑 [ForgotPassword] BODY: ${response.body}");
+
+      final body = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {'success': true, 'message': body['message']};
+      } else {
+        return {'success': false, 'message': body['message'] ?? 'Gagal mengirim kode reset password'};
+      }
+    } catch (e) {
+      print("❌ ERROR saat forgotPassword: $e");
+      return {'success': false, 'message': 'Terjadi kesalahan koneksi'};
+    }
+  }
+
+  // 2. Verifikasi OTP Reset Password
+  Future<Map<String, dynamic>> verifyResetOtp(String email, String otp) async {
+    final url = Uri.parse(ApiEndpoint.verifyResetOtp);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: ApiConstant.header,
+        body: jsonEncode({'email': email, 'otp': otp}),
+      );
+
+      print("🔎 [VerifyResetOtp] STATUS: ${response.statusCode}");
+      print("🔎 [VerifyResetOtp] BODY: ${response.body}");
+
+      final body = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {'success': true, 'message': body['message']};
+      } else {
+        return {'success': false, 'message': body['message'] ?? 'Verifikasi OTP gagal'};
+      }
+    } catch (e) {
+      print("❌ ERROR saat verifyResetOtp: $e");
+      return {'success': false, 'message': 'Terjadi kesalahan koneksi'};
+    }
+  }
+
+  // 3. Reset Password (setelah OTP valid)
+  Future<Map<String, dynamic>> resetPassword(String email, String otp, String newPassword) async {
+    final url = Uri.parse(ApiEndpoint.resetPassword);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: ApiConstant.header,
+        body: jsonEncode({
+          'email': email,
+          'otp': otp,
+          'newPassword': newPassword,
+        }),
+      );
+
+      print("🔒 [ResetPassword] STATUS: ${response.statusCode}");
+      print("🔒 [ResetPassword] BODY: ${response.body}");
+
+      final body = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {'success': true, 'message': body['message']};
+      } else {
+        return {'success': false, 'message': body['message'] ?? 'Reset password gagal'};
+      }
+    } catch (e) {
+      print("❌ ERROR saat resetPassword: $e");
+      return {'success': false, 'message': 'Terjadi kesalahan koneksi'};
+    }
+  }
 }
 

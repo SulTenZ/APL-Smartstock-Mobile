@@ -47,7 +47,6 @@ class _TransactionViewState extends State<TransactionView> {
             child: SafeArea(
               child: Column(
                 children: [
-                  // Custom AppBar - TIDAK DIUBAH sesuai permintaan
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Stack(
@@ -186,7 +185,7 @@ class _TransactionViewState extends State<TransactionView> {
 
                   const SizedBox(height: 16),
 
-                  // Filter Dropdown
+                  // DIUBAH: Filter Dropdown HANYA untuk Tipe Produk
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
@@ -241,57 +240,7 @@ class _TransactionViewState extends State<TransactionView> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: const Color(ColorTheme.secondaryColor)
-                                    .withOpacity(0.3),
-                                width: 1,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: DropdownButton<int>(
-                              isExpanded: true,
-                              hint: Text(
-                                'Kategori',
-                                style: GoogleFonts.poppins(
-                                  color: const Color(ColorTheme.secondaryColor),
-                                ),
-                              ),
-                              value: controller.selectedCategoryId,
-                              underline: const SizedBox(),
-                              icon: Icon(
-                                Icons.keyboard_arrow_down,
-                                color: const Color(ColorTheme.secondaryColor),
-                              ),
-                              style: GoogleFonts.poppins(
-                                color: const Color(ColorTheme.textColor),
-                              ),
-                              items: controller.categories
-                                  .map<DropdownMenuItem<int>>((cat) {
-                                return DropdownMenuItem(
-                                  value: cat['id'],
-                                  child: Text(cat['nama']),
-                                );
-                              }).toList(),
-                              onChanged: (val) => controller.setFilter(categoryId: val),
-                            ),
-                          ),
-                        ),
+                        // Dropdown untuk Kategori DIHAPUS
                       ],
                     ),
                   ),
@@ -353,53 +302,51 @@ class _TransactionViewState extends State<TransactionView> {
                     child: controller.isLoading
                         ? Center(
                             child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: const CircularProgressIndicator(
-                                color: Color(ColorTheme.primaryColor),
-                              ),
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
                             ),
-                          )
+                            child: const CircularProgressIndicator(
+                              color: Color(ColorTheme.primaryColor),
+                            ),
+                          ))
                         : controller.products.isEmpty
                             ? Center(
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.search_off,
-                                      size: 64,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.search_off,
+                                    size: 64,
+                                    color: const Color(ColorTheme.secondaryColor),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    "Produk tidak ditemukan",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      color: const Color(ColorTheme.textColor),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Coba ubah kata kunci pencarian",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
                                       color: const Color(ColorTheme.secondaryColor),
                                     ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      "Produk tidak ditemukan",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        color: const Color(ColorTheme.textColor),
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      "Coba ubah kata kunci pencarian",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 14,
-                                        color: const Color(ColorTheme.secondaryColor),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
+                                  ),
+                                ],
+                              ))
                             : GridView.builder(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
@@ -803,6 +750,7 @@ class _TransactionViewState extends State<TransactionView> {
                                 final int qty = item['quantity'];
                                 final double price = item['hargaJual']?.toDouble() ?? 0;
 
+                                // ============== WIDGET YANG DIPERBAIKI MULAI DI SINI ==============
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 16),
                                   padding: const EdgeInsets.all(16),
@@ -835,64 +783,135 @@ class _TransactionViewState extends State<TransactionView> {
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
-                                        child: Column(
+                                        child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              item['nama'] ?? '-',
-                                              style: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15,
-                                                color: const Color(ColorTheme.primaryColor),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    item['nama'] ?? '-',
+                                                    style: GoogleFonts.poppins(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 15,
+                                                      color: const Color(ColorTheme.primaryColor),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 6),
+                                                  Text(
+                                                    "Rp${price.toStringAsFixed(0)}",
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize: 14,
+                                                      color: const Color(ColorTheme.textColor),
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Row(
+                                                    children: [
+                                                      Flexible(
+                                                        child: Container(
+                                                          padding: const EdgeInsets.symmetric(
+                                                            horizontal: 6,
+                                                            vertical: 2,
+                                                          ),
+                                                          decoration: BoxDecoration(
+                                                            color: const Color(ColorTheme.secondaryColor)
+                                                                .withOpacity(0.1),
+                                                            borderRadius: BorderRadius.circular(4),
+                                                          ),
+                                                          child: Text(
+                                                            "${item['brand']?['nama'] ?? '-'}",
+                                                            style: GoogleFonts.poppins(
+                                                              fontSize: 11,
+                                                              color: const Color(ColorTheme.secondaryColor),
+                                                            ),
+                                                            overflow: TextOverflow.ellipsis,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 6),
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(
+                                                          horizontal: 6,
+                                                          vertical: 2,
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                          color: const Color(ColorTheme.secondaryColor)
+                                                              .withOpacity(0.1),
+                                                          borderRadius: BorderRadius.circular(4),
+                                                        ),
+                                                        child: Text(
+                                                          "Size ${item['size'] ?? '-'}",
+                                                          style: GoogleFonts.poppins(
+                                                            fontSize: 11,
+                                                            color: const Color(ColorTheme.secondaryColor),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                            const SizedBox(height: 6),
-                                            Text(
-                                              "Rp${price.toStringAsFixed(0)}",
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 14,
-                                                color: const Color(ColorTheme.textColor),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Row(
+                                            const SizedBox(width: 8),
+                                            Column(
                                               children: [
                                                 Container(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    horizontal: 6,
-                                                    vertical: 2,
-                                                  ),
                                                   decoration: BoxDecoration(
-                                                    color: const Color(ColorTheme.secondaryColor)
-                                                        .withOpacity(0.1),
-                                                    borderRadius: BorderRadius.circular(4),
-                                                  ),
-                                                  child: Text(
-                                                    "${item['brand']?['nama'] ?? '-'}",
-                                                    style: GoogleFonts.poppins(
-                                                      fontSize: 11,
-                                                      color: const Color(ColorTheme.secondaryColor),
+                                                    border: Border.all(
+                                                      color: const Color(ColorTheme.secondaryColor)
+                                                          .withOpacity(0.3),
                                                     ),
+                                                    borderRadius: BorderRadius.circular(8),
                                                   ),
-                                                ),
-                                                const SizedBox(width: 6),
-                                                Container(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    horizontal: 6,
-                                                    vertical: 2,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: const Color(ColorTheme.secondaryColor)
-                                                        .withOpacity(0.1),
-                                                    borderRadius: BorderRadius.circular(4),
-                                                  ),
-                                                  child: Text(
-                                                    "Size ${item['size'] ?? '-'}",
-                                                    style: GoogleFonts.poppins(
-                                                      fontSize: 11,
-                                                      color: const Color(ColorTheme.secondaryColor),
-                                                    ),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      IconButton(
+                                                        icon: const Icon(Icons.remove, size: 16),
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            if (qty > 1) {
+                                                              controller.cart[index]['quantity']--;
+                                                            } else {
+                                                              controller.removeFromCart(index);
+                                                            }
+                                                          });
+                                                        },
+                                                        constraints: const BoxConstraints(
+                                                          minWidth: 32,
+                                                          minHeight: 32,
+                                                        ),
+                                                        color: const Color(ColorTheme.primaryColor),
+                                                      ),
+                                                      Container(
+                                                        width: 32,
+                                                        alignment: Alignment.center,
+                                                        child: Text(
+                                                          '$qty',
+                                                          style: GoogleFonts.poppins(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 14,
+                                                            color: const Color(ColorTheme.primaryColor),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      IconButton(
+                                                        icon: const Icon(Icons.add, size: 16),
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            controller.cart[index]['quantity']++;
+                                                          });
+                                                        },
+                                                        constraints: const BoxConstraints(
+                                                          minWidth: 32,
+                                                          minHeight: 32,
+                                                        ),
+                                                        color: const Color(ColorTheme.primaryColor),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ],
@@ -900,69 +919,10 @@ class _TransactionViewState extends State<TransactionView> {
                                           ],
                                         ),
                                       ),
-                                      Column(
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: const Color(ColorTheme.secondaryColor)
-                                                    .withOpacity(0.3),
-                                              ),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                IconButton(
-                                                  icon: const Icon(Icons.remove, size: 16),
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      if (qty > 1) {
-                                                        controller.cart[index]['quantity']--;
-                                                      } else {
-                                                        controller.removeFromCart(index);
-                                                      }
-                                                    });
-                                                  },
-                                                  constraints: const BoxConstraints(
-                                                    minWidth: 32,
-                                                    minHeight: 32,
-                                                  ),
-                                                  color: const Color(ColorTheme.primaryColor),
-                                                ),
-                                                Container(
-                                                  width: 32,
-                                                  alignment: Alignment.center,
-                                                  child: Text(
-                                                    '$qty',
-                                                    style: GoogleFonts.poppins(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 14,
-                                                      color: const Color(ColorTheme.primaryColor),
-                                                    ),
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  icon: const Icon(Icons.add, size: 16),
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      controller.cart[index]['quantity']++;
-                                                    });
-                                                  },
-                                                  constraints: const BoxConstraints(
-                                                    minWidth: 32,
-                                                    minHeight: 32,
-                                                  ),
-                                                  color: const Color(ColorTheme.primaryColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
                                     ],
                                   ),
                                 );
+                                // ============== WIDGET YANG DIPERBAIKI SELESAI DI SINI ==============
                               },
                             ),
                     ),

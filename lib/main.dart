@@ -7,6 +7,9 @@ import 'features/splash/splash_view.dart';
 import 'features/authentication/login/login_view.dart';
 import 'features/authentication/register/register_view.dart';
 import 'features/authentication/registerOTP/register_otp_view.dart';
+import 'features/authentication/forgotPassword/forgotPassword_view.dart';
+import 'features/authentication/forgotPasswordOTP/forgotPasswordOTP_view.dart';
+import 'features/authentication/resetPassword/reset_password_view.dart';
 import 'features/home/home_view.dart';
 import 'features/stock/manage_stock_view.dart';
 import 'features/stock/product/product_controller.dart';
@@ -71,6 +74,15 @@ class MyApp extends StatelessWidget {
           '/splash': (context) => const SplashView(),
           '/login': (context) => const LoginView(),
           '/register': (context) => const RegisterView(),
+          '/forgot-password': (context) => const ForgotPasswordView(),
+          '/forgot-password-otp': (context) {
+            final email = ModalRoute.of(context)!.settings.arguments as String;
+            return ForgotPasswordOtpView(email: email);
+          },
+          '/reset-password': (context) {
+            final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+            return ResetPasswordView(email: args['email'], otp: args['otp']);
+          },
           '/home': (context) => const HomeView(),
           '/manage-stock': (context) => const ManageStockView(),
 

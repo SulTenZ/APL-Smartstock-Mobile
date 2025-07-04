@@ -7,6 +7,9 @@ class ApiEndpoint {
   static const register = "${ApiConstant.baseUrl}/auth/register";
   static const verifyOtp = "${ApiConstant.baseUrl}/auth/verify-otp";
   static const resendOtp = "${ApiConstant.baseUrl}/auth/resend-otp";
+  static const forgotPassword = "${ApiConstant.baseUrl}/auth/forgot-password";
+  static const verifyResetOtp = "${ApiConstant.baseUrl}/auth/verify-reset-otp";
+  static const resetPassword = "${ApiConstant.baseUrl}/auth/reset-password";
 
   // Product Type
   static const productTypes = "${ApiConstant.baseUrl}/product-types";
