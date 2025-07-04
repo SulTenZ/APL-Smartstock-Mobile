@@ -62,7 +62,6 @@ class _StockBatchBody extends StatelessWidget {
                           context,
                           '/stock-batch/create',
                         );
-
                         if (result == true) controller.fetchStockBatches();
                       },
                     ),
@@ -146,7 +145,6 @@ class _StockBatchBody extends StatelessWidget {
                                               '/stock-batch/edit',
                                               arguments: {'batch': batch},
                                             );
-
                                             if (result == true) {
                                               controller.fetchStockBatches();
                                             }
@@ -165,10 +163,41 @@ class _StockBatchBody extends StatelessWidget {
                                             size: 20,
                                             color: Colors.red,
                                           ),
-                                          onPressed: () => controller.deleteBatch(
-                                            context,
-                                            batch['id'].toString(),
-                                          ),
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (ctx) => AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(20),
+                                                ),
+                                                title: const Text(
+                                                  'Konfirmasi Hapus',
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                                ),
+                                                content: const Text('Apakah kamu yakin ingin menghapus batch stok ini?'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () => Navigator.of(ctx).pop(),
+                                                    child: const Text('Batal'),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(ctx).pop();
+                                                      controller.deleteBatch(
+                                                        context,
+                                                        batch['id'].toString(),
+                                                      );
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.red,
+                                                      foregroundColor: Colors.white,
+                                                    ),
+                                                    child: const Text('Hapus'),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ),
                                     ],
