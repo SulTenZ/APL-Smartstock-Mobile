@@ -1,7 +1,7 @@
 // lib/data/api/api_constant.dart
 class ApiConstant {
   // static const baseUrl = "http://10.0.2.2:3000/api";
-  static const baseUrl = "https://caa6-36-72-213-212.ngrok-free.app/api";
+  static const baseUrl = "https://106f-2404-c0-9aa0-00-4345-7dd6.ngrok-free.app/api";
 
   static const header = {
     "Content-Type": "application/json",
