@@ -45,6 +45,7 @@ import 'features/transaction_history/transaction_history_view.dart';
 import 'features/transaction_history/transaction_history_detail/transaction_history_detail_view.dart';
 import 'features/stock_history/stock_history_view.dart';
 import 'features/graph/graph_view.dart';
+import 'features/audit_log/audit_log_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -229,7 +230,11 @@ class MyApp extends StatelessWidget {
 
           // Graph
           '/graph': (context) => const GraphView(),
+
+          // Audit Log
+          '/audit-log': (context) => const AuditLogView(),
         },
+        
         onGenerateRoute: (settings) {
           if (settings.name == '/register-otp') {
             final email = settings.arguments as String;

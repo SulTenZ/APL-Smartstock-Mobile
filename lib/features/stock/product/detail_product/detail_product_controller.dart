@@ -93,26 +93,46 @@ class DetailProductController extends ChangeNotifier {
     required String productSizeId,
     required int quantity,
   }) async {
+    // --- MULAI DEBUGGING LOG ---
+    print("🚀 [DEBUG] Memulai updateProductSize...");
+    print("   - productSizeId: $productSizeId");
+    print("   - quantity: $quantity");
+    // --- AKHIR DEBUGGING LOG ---
+
     try {
       isLoading = true;
       errorMessage = null;
       notifyListeners();
 
+      // Panggilan service ini sudah benar, akan menargetkan:
+      // PUT /api/product-sizes/{productSizeId}
       await _productService.updateProductSize(
         productSizeId: productSizeId,
         quantity: quantity,
       );
 
       // Refresh product details after updating size
-      await getProductDetails(product?['id']);
+      if (product != null && product!['id'] != null) {
+        await getProductDetails(product!['id']);
+      }
 
       isLoading = false;
       notifyListeners();
+      
+      // --- MULAI DEBUGGING LOG ---
+      print("✅ [DEBUG] updateProductSize BERHASIL.");
+      // --- AKHIR DEBUGGING LOG ---
+      
       return true;
     } catch (e) {
       isLoading = false;
       errorMessage = e.toString();
       notifyListeners();
+      
+      // --- MULAI DEBUGGING LOG ---
+      print("❌ [DEBUG] updateProductSize GAGAL. Error: $errorMessage");
+      // --- AKHIR DEBUGGING LOG ---
+
       return false;
     }
   }

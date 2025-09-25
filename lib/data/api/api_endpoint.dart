@@ -56,4 +56,7 @@ class ApiEndpoint {
 
   // Graph
   static const graphProfitReport = "${ApiConstant.baseUrl}/graph/profit-report";
+
+  // Audit Log (Tambahkan ini di baris terakhir)
+  static const auditLogs = "${ApiConstant.baseUrl}/audit-log";
 }

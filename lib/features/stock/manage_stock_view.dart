@@ -82,6 +82,12 @@ class ManageStockView extends StatelessWidget {
                       color: Colors.indigo,
                       onTap: () => Navigator.pushNamed(context, '/stock-batch'),
                     ),
+                    CustomSubMenuButton(
+                      icon: Icons.history,
+                      title: 'Riwayat Perubahan Stok',
+                      color: Colors.brown,
+                      onTap: () => Navigator.pushNamed(context, '/audit-log'),
+                    ),
                   ],
                 ),
               ),
