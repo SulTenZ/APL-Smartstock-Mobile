@@ -44,6 +44,7 @@ import 'features/transaction/transaction_success/transaction_success_view.dart';
 import 'features/transaction_history/transaction_history_view.dart';
 import 'features/transaction_history/transaction_history_detail/transaction_history_detail_view.dart';
 import 'features/stock_history/stock_history_view.dart';
+import 'features/graph/graph_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -225,6 +226,9 @@ class MyApp extends StatelessWidget {
 
           // Stock History
           '/stock-history': (context) => const StockHistoryView(),
+
+          // Graph
+          '/graph': (context) => const GraphView(),
         },
         onGenerateRoute: (settings) {
           if (settings.name == '/register-otp') {

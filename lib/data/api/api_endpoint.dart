@@ -53,4 +53,7 @@ class ApiEndpoint {
   static String transactionById(String id) => "$transactions/$id";
   static const salesReport = "$transactions/report/sales";
   static const profitReport = "$transactions/report/profit";
+
+  // Graph
+  static const graphProfitReport = "${ApiConstant.baseUrl}/graph/profit-report";
 }
