@@ -88,6 +88,12 @@ class ManageStockView extends StatelessWidget {
                       color: Colors.brown,
                       onTap: () => Navigator.pushNamed(context, '/audit-log'),
                     ),
+                    CustomSubMenuButton(
+                      icon: Icons.download,
+                      title: 'Unduh Laporan Keuangan',
+                      color: Colors.red,
+                      onTap: () => Navigator.pushNamed(context, '/report'),
+                    ),
                   ],
                 ),
               ),

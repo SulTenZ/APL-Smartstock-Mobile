@@ -2,6 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+// --- IMPORT BARU ---
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:month_year_picker/month_year_picker.dart';
+import 'features/report/report_view.dart';
+// --- AKHIR IMPORT BARU ---
 
 import 'features/splash/splash_view.dart';
 import 'features/authentication/login/login_view.dart';
@@ -71,6 +76,17 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
+        // --- TAMBAHAN UNTUK MONTH PICKER ---
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          MonthYearPickerLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('id', 'ID'), // Bahasa Indonesia
+          Locale('en', 'US'), // Bahasa Inggris sebagai fallback
+        ],
+        // --- AKHIR TAMBAHAN ---
         initialRoute: '/splash',
         routes: {
           '/splash': (context) => const SplashView(),
@@ -233,8 +249,11 @@ class MyApp extends StatelessWidget {
 
           // Audit Log
           '/audit-log': (context) => const AuditLogView(),
+          
+          // --- ROUTE BARU ---
+          '/report': (context) => const ReportView(),
+
         },
-        
         onGenerateRoute: (settings) {
           if (settings.name == '/register-otp') {
             final email = settings.arguments as String;
