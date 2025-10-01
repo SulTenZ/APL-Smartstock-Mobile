@@ -12,35 +12,73 @@ class AuditLogView extends StatelessWidget {
       create: (_) => AuditLogController(),
       child: Scaffold(
         backgroundColor: Colors.grey[100],
-        appBar: AppBar(
-          title: const Text("Riwayat Perubahan Stok"),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 1,
-        ),
-        body: Consumer<AuditLogController>(
-          builder: (context, controller, child) {
-            if (controller.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                // Top bar yang diperbarui
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ),
+                    const Text(
+                      'RIWAYAT STOK',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF222222),
+                      ),
+                    ),
+                  ],
+                ),
 
-            if (controller.errorMessage != null) {
-              return Center(child: Text('Error: ${controller.errorMessage}'));
-            }
+                const SizedBox(height: 40),
 
-            if (controller.auditLogs.isEmpty) {
-              return const Center(child: Text('Tidak ada riwayat perubahan stok.'));
-            }
+                // Konten
+                Expanded(
+                  child: Consumer<AuditLogController>(
+                    builder: (context, controller, child) {
+                      if (controller.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: controller.auditLogs.length,
-              itemBuilder: (context, index) {
-                final log = controller.auditLogs[index];
-                return _AuditLogCard(log: log, controller: controller);
-              },
-            );
-          },
+                      if (controller.errorMessage != null) {
+                        return Center(
+                            child: Text('Error: ${controller.errorMessage}'));
+                      }
+
+                      if (controller.auditLogs.isEmpty) {
+                        return const Center(
+                            child: Text('Tidak ada riwayat perubahan stok.'));
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(0), // Padding diatur di parent
+                        itemCount: controller.auditLogs.length,
+                        itemBuilder: (context, index) {
+                          final log = controller.auditLogs[index];
+                          return _AuditLogCard(log: log, controller: controller);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

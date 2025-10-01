@@ -12,29 +12,53 @@ class ReportView extends StatelessWidget {
       create: (_) => ReportController(),
       child: Scaffold(
         backgroundColor: Colors.grey[100],
-        appBar: AppBar(
-          title: const Text("Laporan Keuangan"),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 1,
-        ),
-        body: Consumer<ReportController>(
-          builder: (context, controller, child) {
-            return Column(
-              children: [
-                _buildDatePicker(context, controller),
-                Expanded(
-                  child: controller.isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : controller.errorMessage != null
-                          ? Center(child: Text(controller.errorMessage!))
-                          : controller.summaryData == null
-                              ? const Center(child: Text("Tidak ada data untuk periode ini."))
-                              : _buildReportBody(controller),
-                ),
-              ],
-            );
-          },
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Consumer<ReportController>(
+              builder: (context, controller, child) {
+                return Column(
+                  children: [
+                    // Top Bar yang sudah diperbarui
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                            onPressed: () => Navigator.pop(context),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ),
+                        const Text(
+                          'LAPORAN KEUANGAN',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF222222),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    _buildDatePicker(context, controller),
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: controller.isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : controller.errorMessage != null
+                              ? Center(child: Text(controller.errorMessage!))
+                              : controller.summaryData == null
+                                  ? const Center(child: Text("Tidak ada data untuk periode ini."))
+                                  : _buildReportBody(controller),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ),
         floatingActionButton: Consumer<ReportController>(
           builder: (context, controller, child) {
@@ -52,11 +76,10 @@ class ReportView extends StatelessWidget {
 
   Widget _buildDatePicker(BuildContext context, ReportController controller) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -67,17 +90,17 @@ class ReportView extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text("Periode Laporan:", style: TextStyle(fontSize: 16)),
+          const Text("Periode Laporan:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
           TextButton(
             onPressed: () => controller.selectDate(context),
             child: Row(
               children: [
                 Text(
                   DateFormat.yMMMM('id_ID').format(controller.selectedDate),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
                 ),
                 const SizedBox(width: 8),
-                const Icon(Icons.calendar_month_outlined),
+                const Icon(Icons.calendar_month_outlined, color: Colors.deepPurple),
               ],
             ),
           ),
@@ -91,7 +114,7 @@ class ReportView extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: controller.fetchReport,
       child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.zero, // Padding diatur di parent
         children: [
           _buildReportCard(
             icon: Icons.attach_money,
@@ -124,41 +147,50 @@ class ReportView extends StatelessWidget {
     required String title,
     required String value,
   }) {
-    return Card(
-      elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.1),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: iconColor.withOpacity(0.1),
-              radius: 24,
-              child: Icon(icon, color: iconColor, size: 28),
+    return Container(
+      padding: const EdgeInsets.all(20.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+            child: Icon(icon, color: iconColor, size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
