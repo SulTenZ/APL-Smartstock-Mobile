@@ -29,50 +29,52 @@ class _TransactionViewState extends State<TransactionView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TransactionController>(
-      builder: (context, controller, _) {
-        return Scaffold(
-          body: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFFAFAFA), // Very light gray
-                  Color(ColorTheme.backgroundColor), // White
-                  Color(0xFFF5F5F5), // Light gray
-                ],
-              ),
-            ),
-            child: SafeArea(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                            onPressed: () => Navigator.pop(context),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            color: const Color(ColorTheme.primaryColor),
-                          ),
-                        ),
-                        Text(
-                          "TRANSAKSI",
-                          style: GoogleFonts.poppins(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(ColorTheme.primaryColor),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Stack(
+    final controller = Provider.of<TransactionController>(context, listen: false);
+
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFFAFAFA),
+              Color(ColorTheme.backgroundColor),
+              Color(0xFFF5F5F5),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        color: const Color(ColorTheme.primaryColor),
+                      ),
+                    ),
+                    Text(
+                      "TRANSAKSI",
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(ColorTheme.primaryColor),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Consumer<TransactionController>(
+                        builder: (context, cartController, _) {
+                          return Stack(
                             children: [
                               Container(
                                 decoration: BoxDecoration(
@@ -88,11 +90,11 @@ class _TransactionViewState extends State<TransactionView> {
                                 ),
                                 child: IconButton(
                                   icon: const Icon(Icons.shopping_cart_outlined),
-                                  onPressed: () => _showCart(context, controller),
+                                  onPressed: () => _showCart(context, cartController),
                                   color: const Color(ColorTheme.primaryColor),
                                 ),
                               ),
-                              if (controller.cart.isNotEmpty)
+                              if (cartController.cart.isNotEmpty)
                                 Positioned(
                                   right: 4,
                                   top: 4,
@@ -114,7 +116,7 @@ class _TransactionViewState extends State<TransactionView> {
                                       minHeight: 18,
                                     ),
                                     child: Text(
-                                      '${controller.cart.length}',
+                                      '${cartController.cart.length}',
                                       style: GoogleFonts.poppins(
                                         fontSize: 10,
                                         color: Colors.white,
@@ -125,262 +127,238 @@ class _TransactionViewState extends State<TransactionView> {
                                   ),
                                 ),
                             ],
-                          ),
-                        ),
-                      ],
+                          );
+                        },
+                      ),
                     ),
-                  ),
+                  ],
+                ),
+              ),
 
-                  // Search Field
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      decoration: BoxDecoration(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    onChanged: controller.setSearch,
+                    style: GoogleFonts.poppins(),
+                    decoration: InputDecoration(
+                      hintText: 'Cari Produk',
+                      hintStyle: GoogleFonts.poppins(
+                        color: const Color(ColorTheme.secondaryColor),
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Color(ColorTheme.secondaryColor),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 16,
+                      ),
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+                        borderSide: BorderSide.none,
                       ),
-                      child: TextField(
-                        onChanged: controller.setSearch,
-                        style: GoogleFonts.poppins(),
-                        decoration: InputDecoration(
-                          hintText: 'Cari Produk',
-                          hintStyle: GoogleFonts.poppins(
-                            color: const Color(ColorTheme.secondaryColor),
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: const Color(ColorTheme.secondaryColor),
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                            horizontal: 16,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(
-                              color: const Color(ColorTheme.primaryColor),
-                              width: 1,
-                            ),
-                          ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(
+                          color: Color(ColorTheme.primaryColor),
+                          width: 1,
                         ),
                       ),
                     ),
                   ),
+                ),
+              ),
 
-                  const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-                  // DIUBAH: Filter Dropdown HANYA untuk Tipe Produk
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: const Color(ColorTheme.secondaryColor)
-                                    .withOpacity(0.3),
-                                width: 1,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
+              Consumer<TransactionController>(
+                builder: (context, filterController, _) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(ColorTheme.secondaryColor).withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              hint: Text(
-                                'Tipe Produk',
-                                style: GoogleFonts.poppins(
-                                  color: const Color(ColorTheme.secondaryColor),
+                                child: DropdownButton<String>(
+                                  isExpanded: true,
+                                  hint: Text(
+                                    'Tipe Produk',
+                                    style: GoogleFonts.poppins(color: const Color(ColorTheme.secondaryColor)),
+                                  ),
+                                  value: filterController.selectedProductTypeId,
+                                  underline: const SizedBox(),
+                                  icon: const Icon(Icons.keyboard_arrow_down, color: Color(ColorTheme.secondaryColor)),
+                                  style: GoogleFonts.poppins(color: const Color(ColorTheme.textColor)),
+                                  items: filterController.productTypes.map<DropdownMenuItem<String>>((type) {
+                                    return DropdownMenuItem(
+                                      value: type['id'].toString(),
+                                      child: Text(type['name']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (val) => controller.setFilter(typeId: val),
                                 ),
                               ),
-                              value: controller.selectedProductTypeId,
-                              underline: const SizedBox(),
-                              icon: Icon(
-                                Icons.keyboard_arrow_down,
-                                color: const Color(ColorTheme.secondaryColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 45,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          children: filterController.brands.map((brand) {
+                            final isSelected = filterController.selectedBrandId == brand['id'].toString();
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: FilterChip(
+                                label: Text(
+                                  brand['nama'],
+                                  style: GoogleFonts.poppins(
+                                    color: isSelected ? Colors.white : const Color(ColorTheme.textColor),
+                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                  ),
+                                ),
+                                selected: isSelected,
+                                onSelected: (_) {
+                                  final selected = filterController.selectedBrandId == brand['id'].toString();
+                                  controller.setFilter(brandId: selected ? null : brand['id'].toString());
+                                },
+                                selectedColor: const Color(ColorTheme.primaryColor),
+                                backgroundColor: Colors.white,
+                                checkmarkColor: Colors.white,
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? const Color(ColorTheme.primaryColor)
+                                      : const Color(ColorTheme.secondaryColor).withOpacity(0.5),
+                                  width: 1,
+                                ),
+                                elevation: isSelected ? 4 : 1,
+                                shadowColor: Colors.black.withOpacity(0.1),
                               ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              Expanded(
+                child: Consumer<TransactionController>(
+                  builder: (context, productController, _) {
+                    if (productController.isLoading) {
+                      return Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: const CircularProgressIndicator(color: Color(ColorTheme.primaryColor)),
+                        ),
+                      );
+                    }
+                    if (productController.products.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.search_off, size: 64, color: Color(ColorTheme.secondaryColor)),
+                            const SizedBox(height: 16),
+                            Text(
+                              "Produk tidak ditemukan",
                               style: GoogleFonts.poppins(
+                                fontSize: 16,
                                 color: const Color(ColorTheme.textColor),
+                                fontWeight: FontWeight.w500,
                               ),
-                              items: controller.productTypes
-                                  .map<DropdownMenuItem<String>>((type) {
-                                return DropdownMenuItem(
-                                  value: type['id'].toString(),
-                                  child: Text(type['name']),
-                                );
-                              }).toList(),
-                              onChanged: (val) => controller.setFilter(typeId: val),
                             ),
-                          ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "Coba ubah kata kunci pencarian",
+                              style: GoogleFonts.poppins(fontSize: 14, color: const Color(ColorTheme.secondaryColor)),
+                            ),
+                          ],
                         ),
-                        // Dropdown untuk Kategori DIHAPUS
-                      ],
-                    ),
-                  ),
-
-                  // Brand Chips
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 45,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      children: controller.brands.map((brand) {
-                        final isSelected =
-                            controller.selectedBrandId == brand['id'].toString();
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: FilterChip(
-                            label: Text(
-                              brand['nama'],
-                              style: GoogleFonts.poppins(
-                                color: isSelected
-                                    ? Colors.white
-                                    : const Color(ColorTheme.textColor),
-                                fontWeight: isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.w500,
-                              ),
-                            ),
-                            selected: isSelected,
-                            onSelected: (_) {
-                              final selected = controller.selectedBrandId ==
-                                  brand['id'].toString();
-                              controller.setFilter(
-                                brandId: selected ? null : brand['id'].toString(),
-                              );
-                            },
-                            selectedColor: const Color(ColorTheme.primaryColor),
-                            backgroundColor: Colors.white,
-                            checkmarkColor: Colors.white,
-                            side: BorderSide(
-                              color: isSelected
-                                  ? const Color(ColorTheme.primaryColor)
-                                  : const Color(ColorTheme.secondaryColor)
-                                      .withOpacity(0.5),
-                              width: 1,
-                            ),
-                            elevation: isSelected ? 4 : 1,
-                            shadowColor: Colors.black.withOpacity(0.1),
+                      );
+                    }
+                    return GridView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      itemCount: productController.products.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 0.7,
+                      ),
+                      itemBuilder: (context, index) {
+                        final product = productController.products[index];
+                        return CustomProductCard(
+                          imageUrl: product['image'],
+                          name: product['nama'],
+                          price: product['hargaJual'],
+                          onTap: () => _showProductDetail(
+                            context,
+                            product,
+                            controller,
                           ),
                         );
-                      }).toList(),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Product Grid
-                  Expanded(
-                    child: controller.isLoading
-                        ? Center(
-                            child: Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: const CircularProgressIndicator(
-                              color: Color(ColorTheme.primaryColor),
-                            ),
-                          ))
-                        : controller.products.isEmpty
-                            ? Center(
-                                child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.search_off,
-                                    size: 64,
-                                    color: const Color(ColorTheme.secondaryColor),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    "Produk tidak ditemukan",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      color: const Color(ColorTheme.textColor),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "Coba ubah kata kunci pencarian",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      color: const Color(ColorTheme.secondaryColor),
-                                    ),
-                                  ),
-                                ],
-                              ))
-                            : GridView.builder(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                itemCount: controller.products.length,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 16,
-                                  crossAxisSpacing: 16,
-                                  childAspectRatio: 0.7,
-                                ),
-                                itemBuilder: (context, index) {
-                                  final product = controller.products[index];
-                                  return CustomProductCard(
-                                    imageUrl: product['image'],
-                                    name: product['nama'],
-                                    price: product['hargaJual'],
-                                    onTap: () => _showProductDetail(
-                                      context,
-                                      product,
-                                      controller,
-                                    ),
-                                  );
-                                },
-                              ),
-                  ),
-                ],
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -418,7 +396,6 @@ class _TransactionViewState extends State<TransactionView> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Handle bar
                   Center(
                     child: Container(
                       width: 40,
@@ -431,7 +408,6 @@ class _TransactionViewState extends State<TransactionView> {
                     ),
                   ),
                   
-                  // Product Info
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -507,7 +483,6 @@ class _TransactionViewState extends State<TransactionView> {
                   
                   const SizedBox(height: 24),
                   
-                  // Size Selection
                   if (sizes.isNotEmpty) ...[
                     Text(
                       "Pilih Ukuran",
@@ -532,9 +507,9 @@ class _TransactionViewState extends State<TransactionView> {
                         value: selectedSizeId,
                         isExpanded: true,
                         underline: const SizedBox(),
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.keyboard_arrow_down,
-                          color: const Color(ColorTheme.secondaryColor),
+                          color: Color(ColorTheme.secondaryColor),
                         ),
                         style: GoogleFonts.poppins(
                           color: const Color(ColorTheme.textColor),
@@ -559,7 +534,6 @@ class _TransactionViewState extends State<TransactionView> {
                     const SizedBox(height: 20),
                   ],
                   
-                  // Quantity Selection
                   Text(
                     "Jumlah",
                     style: GoogleFonts.poppins(
@@ -622,7 +596,6 @@ class _TransactionViewState extends State<TransactionView> {
                   
                   const SizedBox(height: 24),
                   
-                  // Add to Cart Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -635,7 +608,12 @@ class _TransactionViewState extends State<TransactionView> {
                         elevation: 0,
                       ),
                       onPressed: () {
-                        if (selectedSizeId == null) return;
+                        if (selectedSizeId == null && sizes.isNotEmpty) {
+                           ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Silakan pilih ukuran terlebih dahulu.')),
+                          );
+                          return;
+                        }
                         controller.addToCart({
                           ...product,
                           'quantity': quantity,
@@ -678,14 +656,13 @@ class _TransactionViewState extends State<TransactionView> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: StatefulBuilder(
-              builder: (context, setState) {
-                final totalHarga = controller.totalHarga;
+            child: Consumer<TransactionController>(
+              builder: (context, cartController, _) {
+                final totalHarga = cartController.totalHarga;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Handle bar
                     Center(
                       child: Container(
                         width: 40,
@@ -698,7 +675,6 @@ class _TransactionViewState extends State<TransactionView> {
                       ),
                     ),
                     
-                    // Header
                     Center(
                       child: Text(
                         "Keranjang Anda",
@@ -711,17 +687,16 @@ class _TransactionViewState extends State<TransactionView> {
                     ),
                     const SizedBox(height: 20),
                     
-                    // Cart Items
                     Expanded(
-                      child: controller.cart.isEmpty
+                      child: cartController.cart.isEmpty
                           ? Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.shopping_cart_outlined,
                                     size: 64,
-                                    color: const Color(ColorTheme.secondaryColor),
+                                    color: Color(ColorTheme.secondaryColor),
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
@@ -744,13 +719,12 @@ class _TransactionViewState extends State<TransactionView> {
                               ),
                             )
                           : ListView.builder(
-                              itemCount: controller.cart.length,
+                              itemCount: cartController.cart.length,
                               itemBuilder: (context, index) {
-                                final item = controller.cart[index];
+                                final item = cartController.cart[index];
                                 final int qty = item['quantity'];
                                 final double price = item['hargaJual']?.toDouble() ?? 0;
 
-                                // ============== WIDGET YANG DIPERBAIKI MULAI DI SINI ==============
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 16),
                                   padding: const EdgeInsets.all(16),
@@ -758,8 +732,7 @@ class _TransactionViewState extends State<TransactionView> {
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: const Color(ColorTheme.secondaryColor)
-                                          .withOpacity(0.2),
+                                      color: const Color(ColorTheme.secondaryColor).withOpacity(0.2),
                                     ),
                                     boxShadow: [
                                       BoxShadow(
@@ -812,42 +785,28 @@ class _TransactionViewState extends State<TransactionView> {
                                                     children: [
                                                       Flexible(
                                                         child: Container(
-                                                          padding: const EdgeInsets.symmetric(
-                                                            horizontal: 6,
-                                                            vertical: 2,
-                                                          ),
+                                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                                           decoration: BoxDecoration(
-                                                            color: const Color(ColorTheme.secondaryColor)
-                                                                .withOpacity(0.1),
+                                                            color: const Color(ColorTheme.secondaryColor).withOpacity(0.1),
                                                             borderRadius: BorderRadius.circular(4),
                                                           ),
                                                           child: Text(
                                                             "${item['brand']?['nama'] ?? '-'}",
-                                                            style: GoogleFonts.poppins(
-                                                              fontSize: 11,
-                                                              color: const Color(ColorTheme.secondaryColor),
-                                                            ),
+                                                            style: GoogleFonts.poppins(fontSize: 11, color: const Color(ColorTheme.secondaryColor)),
                                                             overflow: TextOverflow.ellipsis,
                                                           ),
                                                         ),
                                                       ),
                                                       const SizedBox(width: 6),
                                                       Container(
-                                                        padding: const EdgeInsets.symmetric(
-                                                          horizontal: 6,
-                                                          vertical: 2,
-                                                        ),
+                                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                                         decoration: BoxDecoration(
-                                                          color: const Color(ColorTheme.secondaryColor)
-                                                              .withOpacity(0.1),
+                                                          color: const Color(ColorTheme.secondaryColor).withOpacity(0.1),
                                                           borderRadius: BorderRadius.circular(4),
                                                         ),
                                                         child: Text(
                                                           "Size ${item['size'] ?? '-'}",
-                                                          style: GoogleFonts.poppins(
-                                                            fontSize: 11,
-                                                            color: const Color(ColorTheme.secondaryColor),
-                                                          ),
+                                                          style: GoogleFonts.poppins(fontSize: 11, color: const Color(ColorTheme.secondaryColor)),
                                                         ),
                                                       ),
                                                     ],
@@ -860,30 +819,17 @@ class _TransactionViewState extends State<TransactionView> {
                                               children: [
                                                 Container(
                                                   decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                      color: const Color(ColorTheme.secondaryColor)
-                                                          .withOpacity(0.3),
-                                                    ),
+                                                    border: Border.all(color: const Color(ColorTheme.secondaryColor).withOpacity(0.3)),
                                                     borderRadius: BorderRadius.circular(8),
                                                   ),
                                                   child: Row(
                                                     mainAxisSize: MainAxisSize.min,
                                                     children: [
+                                                      // [SOLUSI]: Panggil fungsi decrement dari controller
                                                       IconButton(
                                                         icon: const Icon(Icons.remove, size: 16),
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            if (qty > 1) {
-                                                              controller.cart[index]['quantity']--;
-                                                            } else {
-                                                              controller.removeFromCart(index);
-                                                            }
-                                                          });
-                                                        },
-                                                        constraints: const BoxConstraints(
-                                                          minWidth: 32,
-                                                          minHeight: 32,
-                                                        ),
+                                                        onPressed: () => cartController.decrementCartItemQuantity(index),
+                                                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                                                         color: const Color(ColorTheme.primaryColor),
                                                       ),
                                                       Container(
@@ -898,17 +844,11 @@ class _TransactionViewState extends State<TransactionView> {
                                                           ),
                                                         ),
                                                       ),
+                                                      // [SOLUSI]: Panggil fungsi increment dari controller
                                                       IconButton(
                                                         icon: const Icon(Icons.add, size: 16),
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            controller.cart[index]['quantity']++;
-                                                          });
-                                                        },
-                                                        constraints: const BoxConstraints(
-                                                          minWidth: 32,
-                                                          minHeight: 32,
-                                                        ),
+                                                        onPressed: () => cartController.incrementCartItemQuantity(index),
+                                                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                                                         color: const Color(ColorTheme.primaryColor),
                                                       ),
                                                     ],
@@ -922,13 +862,11 @@ class _TransactionViewState extends State<TransactionView> {
                                     ],
                                   ),
                                 );
-                                // ============== WIDGET YANG DIPERBAIKI SELESAI DI SINI ==============
                               },
                             ),
                     ),
                     
-                    // Total and Checkout
-                    if (controller.cart.isNotEmpty) ...[
+                    if (cartController.cart.isNotEmpty) ...[
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -972,7 +910,7 @@ class _TransactionViewState extends State<TransactionView> {
                             ),
                             elevation: 0,
                           ),
-                          onPressed: controller.cart.isEmpty
+                          onPressed: cartController.cart.isEmpty
                               ? null
                               : () => Navigator.pushNamed(
                                     context,

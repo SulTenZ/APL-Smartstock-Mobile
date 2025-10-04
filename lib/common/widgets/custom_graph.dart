@@ -1,35 +1,25 @@
+// lib/common/widgets/custom_graph.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 typedef YLabelFormatter = String Function(double v);
 
-/// Grafik garis sederhana (sparkline) tanpa package.
-/// - Ada grid halus
-/// - Ada sumbu-Y (min, mid, max)
-/// - Line + area gradient
+/// Grafik garis sederhana (sparkline) dengan sumbu X dan Y.
 class CustomGraph extends StatelessWidget {
   final List<double> values;
+  final List<String> xLabels; // [BARU]: Label untuk sumbu-X (tanggal)
   final double height;
-
-  /// Tampilkan sumbu Y (label min, mid, max)
   final bool showYAxis;
-
-  /// Jumlah tick sumbu Y (default 3 = min, mid, max)
   final int yTicks;
-
-  /// Formatter label Y, contoh: (v) => 'Rp ${v.toStringAsFixed(0)}'
   final YLabelFormatter? yLabelFormatter;
-
-  /// Warna utama garis
   final Color lineColor;
-
-  /// Warna awal–akhir untuk area gradient
   final List<Color> gradientArea;
 
   const CustomGraph({
     super.key,
     required this.values,
-    this.height = 200,
+    this.xLabels = const [], // [BARU]
+    this.height = 220, // [DIUBAH]: Tinggi ditambah untuk memberi ruang label-X
     this.showYAxis = true,
     this.yTicks = 3,
     this.yLabelFormatter,
@@ -52,27 +42,45 @@ class CustomGraph extends StatelessWidget {
       );
     }
 
-    // lebar untuk label sumbu-Y
     final yLabelWidth = showYAxis ? 56.0 : 0.0;
+    const xAxisHeight = 20.0; // [BARU]: Ruang untuk label sumbu-X
 
     return SizedBox(
       height: height,
-      child: Row(
+      child: Column(
         children: [
-          if (showYAxis)
-            SizedBox(
-              width: yLabelWidth,
-              child: _YAxis(
-                values: values,
-                ticks: yTicks,
-                formatter: yLabelFormatter,
-              ),
-            ),
           Expanded(
-            child: CustomPaint(
-              painter: _SparklinePainter(values, lineColor, gradientArea),
-              foregroundPainter: _GridlinePainter(values),
-              child: const SizedBox.expand(),
+            child: Row(
+              children: [
+                if (showYAxis)
+                  SizedBox(
+                    width: yLabelWidth,
+                    child: _YAxis(
+                      values: values,
+                      ticks: yTicks,
+                      formatter: yLabelFormatter,
+                    ),
+                  ),
+                Expanded(
+                  child: CustomPaint(
+                    painter: _SparklinePainter(values, lineColor, gradientArea),
+                    foregroundPainter: _GridlinePainter(values),
+                    child: const SizedBox.expand(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // [BARU]: Widget untuk Sumbu-X
+          SizedBox(
+            height: xAxisHeight,
+            child: Row(
+              children: [
+                SizedBox(width: yLabelWidth), // Spasi kosong sejajar sumbu-Y
+                Expanded(
+                  child: _XAxis(labels: xLabels),
+                ),
+              ],
             ),
           ),
         ],
@@ -80,6 +88,42 @@ class CustomGraph extends StatelessWidget {
     );
   }
 }
+
+// [BARU]: Widget untuk merender label di sumbu-X
+class _XAxis extends StatelessWidget {
+  final List<String> labels;
+  const _XAxis({required this.labels});
+
+  @override
+  Widget build(BuildContext context) {
+    if (labels.isEmpty) return const SizedBox.shrink();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: labels.map((label) {
+        // Format label, misal "2023-10-27" menjadi "27/10"
+        String formattedLabel = label;
+        try {
+          final parts = label.split('-');
+          if (parts.length == 3) {
+            formattedLabel = '${parts[2]}/${parts[1]}';
+          }
+        } catch (e) {
+          // Biarkan label apa adanya jika format tidak sesuai
+        }
+
+        return Text(
+          formattedLabel,
+          style: GoogleFonts.poppins(
+            fontSize: 10,
+            color: const Color(0xFF9E9E9E),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
 
 class _YAxis extends StatelessWidget {
   final List<double> values;
@@ -170,7 +214,7 @@ class _SparklinePainter extends CustomPainter {
     final minV = values.reduce((a, b) => a < b ? a : b);
     final maxV = values.reduce((a, b) => a > b ? a : b);
     final range = (maxV - minV) == 0 ? 1.0 : (maxV - minV);
-    final dx = values.length == 1 ? 0.0 : size.width / (values.length - 1);
+    final dx = values.length <= 1 ? 0.0 : size.width / (values.length - 1);
 
     final line = Paint()
       ..color = lineColor
@@ -206,7 +250,7 @@ class _SparklinePainter extends CustomPainter {
       }
     }
 
-    pathFill.lineTo(values.length == 1 ? size.width / 2 : size.width, size.height);
+    pathFill.lineTo(size.width, size.height);
     pathFill.close();
 
     canvas.drawPath(pathFill, areaPaint);

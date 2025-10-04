@@ -1,3 +1,4 @@
+// lib/features/graph/graph_view.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -39,11 +40,8 @@ class _GraphPageState extends State<_GraphPage> {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.watch<GraphController>();
-
-    // sinkronkan text field saat state berubah (mis. reset ketika non-custom)
-    _startCtrl.text = c.startDate;
-    _endCtrl.text = c.endDate;
+    // [OPTIMASI]: Ambil controller tanpa "listen" untuk memanggil aksi
+    final controller = context.read<GraphController>();
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -52,7 +50,7 @@ class _GraphPageState extends State<_GraphPage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Top bar
+              // Top bar (Statis, tidak perlu Consumer)
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -82,21 +80,30 @@ class _GraphPageState extends State<_GraphPage> {
 
               const SizedBox(height: 24),
 
-              // Filter bar (tanpa tombol Apply)
-              _FilterBar(
-                startCtrl: _startCtrl,
-                endCtrl: _endCtrl,
-                bucket: c.bucket,
-                onBucketChanged: (b) => c.setBucket(b),
-                onDateChanged: (start, end) =>
-                    c.setDateRange(start: start, end: end),
+              // [OPTIMASI]: Bungkus hanya FilterBar dengan Consumer
+              Consumer<GraphController>(
+                builder: (context, c, _) {
+                  // sinkronkan text field saat state berubah
+                  _startCtrl.text = c.startDate;
+                  _endCtrl.text = c.endDate;
+                  
+                  return _FilterBar(
+                    startCtrl: _startCtrl,
+                    endCtrl: _endCtrl,
+                    bucket: c.bucket,
+                    onBucketChanged: (b) => controller.setBucket(b),
+                    onDateChanged: (start, end) =>
+                        controller.setDateRange(start: start, end: end),
+                  );
+                },
               ),
 
               const SizedBox(height: 20),
 
+              // [OPTIMASI]: Bungkus hanya konten utama dengan Consumer
               Expanded(
-                child: Builder(
-                  builder: (_) {
+                child: Consumer<GraphController>(
+                  builder: (context, c, _) {
                     if (c.isLoading) {
                       return const Center(child: CircularProgressIndicator());
                     }
@@ -115,9 +122,14 @@ class _GraphPageState extends State<_GraphPage> {
                         _SectionCard(
                           title: 'Tren Profit (${_bucketLabel(c.bucket)})',
                           child: CustomGraph(
+                            // [DIUBAH]: Ambil `keys` (tanggal) untuk `xLabels`
+                            xLabels: c.currentSeries.keys.toList(),
+                            
+                            // [TETAP SAMA]: Ambil `values` (profit) untuk `values`
                             values: c.currentSeries.values
                                 .map((e) => e.toDouble())
                                 .toList(),
+                                
                             showYAxis: true,
                             yTicks: 3,
                             yLabelFormatter: (v) => 'Rp ${v.toStringAsFixed(0)}',
