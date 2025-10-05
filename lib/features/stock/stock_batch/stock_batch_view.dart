@@ -20,7 +20,8 @@ class _StockBatchBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<StockBatchController>(context);
+    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
+    final controller = context.read<StockBatchController>();
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -29,6 +30,7 @@ class _StockBatchBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              // Bagian header yang statis
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -69,143 +71,155 @@ class _StockBatchBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
+              // [OPTIMASI]: Bungkus hanya bagian list dengan Consumer
               Expanded(
-                child: controller.isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : controller.stockBatches.isEmpty
-                        ? _buildEmptyState()
-                        : ListView.builder(
-                            itemCount: controller.stockBatches.length,
-                            itemBuilder: (context, index) {
-                              final batch = controller.stockBatches[index];
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: ListTile(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/stock-batch/detail',
-                                      arguments: {'id': batch['id'].toString()},
-                                    );
-                                  },
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 12,
-                                  ),
-                                  leading: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.indigo.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: const Icon(
-                                      Icons.layers,
-                                      size: 28,
-                                      color: Colors.indigo,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    batch['nama'],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    'Jumlah sepatu: ${batch['jumlahSepatu']} | Total harga: Rp ${controller.formatCurrency(batch['totalHarga'])}',
-                                  ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: IconButton(
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            size: 20,
-                                            color: Colors.blue,
-                                          ),
-                                          onPressed: () async {
-                                            final result = await Navigator.pushNamed(
-                                              context,
-                                              '/stock-batch/edit',
-                                              arguments: {'batch': batch},
-                                            );
-                                            if (result == true) {
-                                              controller.fetchStockBatches();
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: IconButton(
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            size: 20,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (ctx) => AlertDialog(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(20),
-                                                ),
-                                                title: const Text(
-                                                  'Konfirmasi Hapus',
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                                content: const Text('Apakah kamu yakin ingin menghapus batch stok ini?'),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () => Navigator.of(ctx).pop(),
-                                                    child: const Text('Batal'),
-                                                  ),
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      Navigator.of(ctx).pop();
-                                                      controller.deleteBatch(
-                                                        context,
-                                                        batch['id'].toString(),
-                                                      );
-                                                    },
-                                                    style: ElevatedButton.styleFrom(
-                                                      backgroundColor: Colors.red,
-                                                      foregroundColor: Colors.white,
-                                                    ),
-                                                    child: const Text('Hapus'),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                child: Consumer<StockBatchController>(
+                  builder: (context, consumerController, child) {
+                    if (consumerController.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (consumerController.stockBatches.isEmpty) {
+                      return _buildEmptyState();
+                    }
+                    return ListView.builder(
+                      itemCount: consumerController.stockBatches.length,
+                      itemBuilder: (context, index) {
+                        final batch = consumerController.stockBatches[index];
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/stock-batch/detail',
+                                arguments: {'id': batch['id'].toString()},
                               );
                             },
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            leading: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.indigo.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.layers,
+                                size: 28,
+                                color: Colors.indigo,
+                              ),
+                            ),
+                            title: Text(
+                              batch['nama'],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Jumlah sepatu: ${batch['jumlahSepatu']} | Total harga: Rp ${controller.formatCurrency(batch['totalHarga'])}',
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      size: 20,
+                                      color: Colors.blue,
+                                    ),
+                                    onPressed: () async {
+                                      final result = await Navigator.pushNamed(
+                                        context,
+                                        '/stock-batch/edit',
+                                        arguments: {'batch': batch},
+                                      );
+                                      if (result == true) {
+                                        controller.fetchStockBatches();
+                                      }
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      size: 20,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          title: const Text(
+                                            'Konfirmasi Hapus',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          content: const Text(
+                                              'Apakah kamu yakin ingin menghapus batch stok ini?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(ctx).pop(),
+                                              child: const Text('Batal'),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(ctx).pop();
+                                                controller.deleteBatch(
+                                                  context,
+                                                  batch['id'].toString(),
+                                                );
+                                              },
+                                              style:
+                                                  ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                                foregroundColor: Colors.white,
+                                              ),
+                                              child: const Text('Hapus'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),

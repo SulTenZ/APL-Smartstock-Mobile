@@ -20,7 +20,8 @@ class BrandBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<BrandController>(context);
+    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
+    final controller = context.read<BrandController>();
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -29,6 +30,7 @@ class BrandBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              // Bagian header yang statis
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -58,79 +60,86 @@ class BrandBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 40),
+              // [OPTIMASI]: Bungkus hanya bagian list dengan Consumer
               Expanded(
-                child: controller.isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : controller.brands.isEmpty
-                        ? _buildEmptyState()
-                        : ListView.builder(
-                            itemCount: controller.brands.length,
-                            itemBuilder: (context, index) {
-                              final item = controller.brands[index];
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                  leading: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: item['image'] != null
-                                        ? Image.network(item['image'], width: 50, height: 50, fit: BoxFit.cover)
-                                        : Container(
-                                            width: 50,
-                                            height: 50,
-                                            color: Colors.grey[300],
-                                            child: const Icon(Icons.image_not_supported, color: Colors.grey),
-                                          ),
-                                  ),
-                                  title: Text(item['nama'], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                                  subtitle: Text(item['deskripsi'] ?? '-', maxLines: 2, overflow: TextOverflow.ellipsis),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                                        child: IconButton(
-                                          icon: const Icon(Icons.edit, size: 20, color: Colors.blue),
-                                          onPressed: () async {
-                                            final result = await Navigator.pushNamed(
-                                              context,
-                                              '/brand/edit',
-                                              arguments: {
-                                                'id': item['id'].toString(),
-                                                'nama': item['nama'],
-                                                'deskripsi': item['deskripsi'] ?? '',
-                                                'image': item['image'] ?? '',
-                                              },
-                                            );
-                                            if (result == true) controller.fetchBrands();
-                                          },
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                                        child: IconButton(
-                                          icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                                          onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                child: Consumer<BrandController>(
+                  builder: (context, consumerController, child) {
+                    if (consumerController.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (consumerController.brands.isEmpty) {
+                      return _buildEmptyState();
+                    }
+                    return ListView.builder(
+                      itemCount: consumerController.brands.length,
+                      itemBuilder: (context, index) {
+                        final item = consumerController.brands[index];
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: item['image'] != null
+                                  ? Image.network(item['image'], width: 50, height: 50, fit: BoxFit.cover)
+                                  : Container(
+                                      width: 50,
+                                      height: 50,
+                                      color: Colors.grey[300],
+                                      child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                                    ),
+                            ),
+                            title: Text(item['nama'], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                            subtitle: Text(item['deskripsi'] ?? '-', maxLines: 2, overflow: TextOverflow.ellipsis),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                                  child: IconButton(
+                                    icon: const Icon(Icons.edit, size: 20, color: Colors.blue),
+                                    onPressed: () async {
+                                      final result = await Navigator.pushNamed(
+                                        context,
+                                        '/brand/edit',
+                                        arguments: {
+                                          'id': item['id'].toString(),
+                                          'nama': item['nama'],
+                                          'deskripsi': item['deskripsi'] ?? '',
+                                          'image': item['image'] ?? '',
+                                        },
+                                      );
+                                      if (result == true) controller.fetchBrands();
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                                  child: IconButton(
+                                    icon: const Icon(Icons.delete, size: 20, color: Colors.red),
+                                    onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),

@@ -20,7 +20,8 @@ class ProductTypeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<ProductTypeController>(context);
+    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
+    final controller = context.read<ProductTypeController>();
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -29,6 +30,7 @@ class ProductTypeBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              // Bagian header yang statis, tidak perlu di-rebuild
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -55,19 +57,30 @@ class ProductTypeBody extends StatelessWidget {
                       icon: const Icon(Icons.add, color: Colors.black, size: 28),
                       onPressed: () async {
                         final result = await Navigator.pushNamed(context, '/product-type/create');
-                        if (result == true) controller.fetchProductTypes();
+                        if (result == true) {
+                          // Gunakan controller yang tidak 'listen' untuk aksi
+                          controller.fetchProductTypes();
+                        }
                       },
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 40),
+              // [OPTIMASI]: Bungkus hanya bagian yang dinamis (list/konten) dengan Consumer
               Expanded(
-                child: controller.isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : controller.productTypes.isEmpty
-                        ? _buildEmptyState()
-                        : _buildProductTypeList(context, controller),
+                child: Consumer<ProductTypeController>(
+                  builder: (context, consumerController, child) {
+                    if (consumerController.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (consumerController.productTypes.isEmpty) {
+                      return _buildEmptyState();
+                    }
+                    // Kirim 'controller' (non-listen) untuk aksi, dan 'consumerController' untuk data
+                    return _buildProductTypeList(context, controller, consumerController.productTypes);
+                  },
+                ),
               ),
             ],
           ),
@@ -91,11 +104,11 @@ class ProductTypeBody extends StatelessWidget {
     );
   }
 
-  Widget _buildProductTypeList(BuildContext context, ProductTypeController controller) {
+  Widget _buildProductTypeList(BuildContext context, ProductTypeController actionController, List<dynamic> productTypes) {
     return ListView.builder(
-      itemCount: controller.productTypes.length,
+      itemCount: productTypes.length,
       itemBuilder: (context, index) {
-        final item = controller.productTypes[index];
+        final item = productTypes[index];
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
@@ -128,14 +141,14 @@ class ProductTypeBody extends StatelessWidget {
                         'name': item['name'],
                       },
                     );
-                    if (result == true) controller.fetchProductTypes();
+                    if (result == true) actionController.fetchProductTypes();
                   },
                 ),
                 const SizedBox(width: 8),
                 _buildActionButton(
                   icon: Icons.delete,
                   color: Colors.red,
-                  onTap: () => _confirmDelete(context, controller, item['id'].toString()),
+                  onTap: () => _confirmDelete(context, actionController, item['id'].toString()),
                 ),
               ],
             ),

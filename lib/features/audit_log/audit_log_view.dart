@@ -8,8 +8,9 @@ class AuditLogView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // [OPTIMASI]: Provider hanya membungkus bagian yang membutuhkan data (Body)
     return ChangeNotifierProvider(
-      create: (_) => AuditLogController(),
+      create: (_) => AuditLogController()..fetchAuditLogs(),
       child: Scaffold(
         backgroundColor: Colors.grey[100],
         body: SafeArea(
@@ -17,7 +18,7 @@ class AuditLogView extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                // Top bar yang diperbarui
+                // Header statis
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -44,43 +45,51 @@ class AuditLogView extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 40),
-
-                // Konten
-                Expanded(
-                  child: Consumer<AuditLogController>(
-                    builder: (context, controller, child) {
-                      if (controller.isLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      if (controller.errorMessage != null) {
-                        return Center(
-                            child: Text('Error: ${controller.errorMessage}'));
-                      }
-
-                      if (controller.auditLogs.isEmpty) {
-                        return const Center(
-                            child: Text('Tidak ada riwayat perubahan stok.'));
-                      }
-
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(0), // Padding diatur di parent
-                        itemCount: controller.auditLogs.length,
-                        itemBuilder: (context, index) {
-                          final log = controller.auditLogs[index];
-                          return _AuditLogCard(log: log, controller: controller);
-                        },
-                      );
-                    },
-                  ),
+                // Body dinamis yang akan di-rebuild
+                const Expanded(
+                  child: _AuditLogList(),
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AuditLogList extends StatelessWidget {
+  const _AuditLogList();
+
+  @override
+  Widget build(BuildContext context) {
+    // [OPTIMASI]: Consumer hanya membungkus list yang dinamis
+    return Consumer<AuditLogController>(
+      builder: (context, controller, child) {
+        if (controller.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (controller.errorMessage != null) {
+          return Center(
+              child: Text('Error: ${controller.errorMessage}'));
+        }
+
+        if (controller.auditLogs.isEmpty) {
+          return const Center(
+              child: Text('Tidak ada riwayat perubahan stok.'));
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(0),
+          itemCount: controller.auditLogs.length,
+          itemBuilder: (context, index) {
+            final log = controller.auditLogs[index];
+            return _AuditLogCard(log: log, controller: controller);
+          },
+        );
+      },
     );
   }
 }

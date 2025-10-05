@@ -20,7 +20,8 @@ class SizeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<SizeController>(context);
+    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
+    final controller = context.read<SizeController>();
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -29,6 +30,7 @@ class SizeBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              // Bagian header yang statis
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -69,165 +71,171 @@ class SizeBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
+              // [OPTIMASI]: Bungkus hanya bagian list dengan Consumer
               Expanded(
-                child:
-                    controller.isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : controller.sizes.isEmpty
-                        ? _buildEmptyState()
-                        : ListView.builder(
-                          itemCount: controller.sizes.length,
-                          itemBuilder: (context, index) {
-                            final size = controller.sizes[index];
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 16),
+                child: Consumer<SizeController>(
+                  builder: (context, consumerController, child) {
+                    if (consumerController.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (consumerController.sizes.isEmpty) {
+                      return _buildEmptyState();
+                    }
+                    return ListView.builder(
+                      itemCount: consumerController.sizes.length,
+                      itemBuilder: (context, index) {
+                        final size = consumerController.sizes[index];
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            leading: Container(
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
+                                color: Colors.indigo.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
-                                ),
-                                leading: Container(
-                                  padding: const EdgeInsets.all(10),
+                              child: const Icon(
+                                Icons.square_foot,
+                                size: 28,
+                                color: Colors.indigo,
+                              ),
+                            ),
+                            title: Text(
+                              size['label'],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                            subtitle: Text(
+                              size['productType']?['name'] ??
+                                  'Tipe tidak ditemukan',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.indigo.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
+                                    color: Colors.blue.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: const Icon(
-                                    Icons.square_foot,
-                                    size: 28,
-                                    color: Colors.indigo,
-                                  ),
-                                ),
-                                title: Text(
-                                  size['label'],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  size['productType']?['name'] ??
-                                      'Tipe tidak ditemukan',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: IconButton(
-                                        icon: const Icon(
-                                          Icons.edit,
-                                          size: 20,
-                                          color: Colors.blue,
-                                        ),
-                                        onPressed: () async {
-                                          final result =
-                                              await Navigator.pushNamed(
-                                                context,
-                                                '/size/edit',
-                                                arguments: {
-                                                  'id': size['id'],
-                                                  'label': size['label'],
-                                                  'productTypeId':
-                                                      size['productTypeId'],
-                                                },
-                                              );
-                                          if (result == true)
-                                            controller.fetchSizes();
-                                        },
-                                      ),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      size: 20,
+                                      color: Colors.blue,
                                     ),
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.red.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: IconButton(
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          size: 20,
-                                          color: Colors.red,
-                                        ),
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder:
-                                                (ctx) => AlertDialog(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          20,
-                                                        ),
-                                                  ),
-                                                  title: const Text(
-                                                    'Konfirmasi Hapus',
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  content: const Text(
-                                                    'Apakah kamu yakin ingin menghapus ukuran ini?',
-                                                  ),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed:
-                                                          () =>
-                                                              Navigator.of(
-                                                                ctx,
-                                                              ).pop(),
-                                                      child: const Text(
-                                                        'Batal',
-                                                      ),
-                                                    ),
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.of(ctx).pop();
-                                                        controller.deleteSize(
-                                                          context,
-                                                          size['id'],
-                                                        );
-                                                      },
-                                                      style:
-                                                          ElevatedButton.styleFrom(
-                                                            backgroundColor:
-                                                                Colors.red,
-                                                            foregroundColor:
-                                                                Colors.white,
-                                                          ),
-                                                      child: const Text(
-                                                        'Hapus',
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                          );
+                                    onPressed: () async {
+                                      final result =
+                                          await Navigator.pushNamed(
+                                        context,
+                                        '/size/edit',
+                                        arguments: {
+                                          'id': size['id'],
+                                          'label': size['label'],
+                                          'productTypeId':
+                                              size['productTypeId'],
                                         },
-                                      ),
-                                    ),
-                                  ],
+                                      );
+                                      if (result == true)
+                                        controller.fetchSizes();
+                                    },
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      size: 20,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (ctx) => AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          title: const Text(
+                                            'Konfirmasi Hapus',
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight.bold,
+                                            ),
+                                          ),
+                                          content: const Text(
+                                            'Apakah kamu yakin ingin menghapus ukuran ini?',
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed:
+                                                  () =>
+                                                      Navigator.of(
+                                                ctx,
+                                              ).pop(),
+                                              child: const Text(
+                                                'Batal',
+                                              ),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(ctx).pop();
+                                                controller.deleteSize(
+                                                  context,
+                                                  size['id'],
+                                                );
+                                              },
+                                              style:
+                                                  ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    Colors.red,
+                                                foregroundColor:
+                                                    Colors.white,
+                                              ),
+                                              child: const Text(
+                                                'Hapus',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),

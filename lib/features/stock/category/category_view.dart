@@ -20,7 +20,8 @@ class CategoryBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<CategoryController>(context);
+    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
+    final controller = context.read<CategoryController>();
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -29,6 +30,7 @@ class CategoryBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              // Bagian header yang statis
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -62,70 +64,91 @@ class CategoryBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 40),
+              // [OPTIMASI]: Bungkus hanya bagian list dengan Consumer
               Expanded(
-                child: controller.isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: controller.categories.length,
-                        itemBuilder: (context, index) {
-                          final item = controller.categories[index];
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
+                child: Consumer<CategoryController>(
+                  builder: (context, consumerController, child) {
+                    if (consumerController.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    // Tambahkan pengecekan jika data kosong
+                    if (consumerController.categories.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.folder_off_outlined, size: 80, color: Colors.grey[400]),
+                            const SizedBox(height: 16),
+                            Text("Belum ada kategori", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.grey[600])),
+                            const SizedBox(height: 8),
+                            Text("Tambahkan kategori dengan menekan ikon + di atas", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey[500]))
+                          ],
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: consumerController.categories.length,
+                      itemBuilder: (context, index) {
+                        final item = consumerController.categories[index];
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                            leading: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.teal.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(Icons.category_outlined, size: 28, color: Colors.teal),
+                            ),
+                            title: Text(
+                              item['nama'],
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                            ),
+                            subtitle: Text(item['deskripsi'] ?? '-', style: const TextStyle(color: Colors.grey)),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit, color: Colors.blue),
+                                  onPressed: () async {
+                                    final result = await Navigator.pushNamed(
+                                      context,
+                                      '/category/edit',
+                                      arguments: {
+                                        'id': item['id'].toString(),
+                                        'nama': item['nama'],
+                                        'deskripsi': item['deskripsi'] ?? '',
+                                        'productTypeId': item['productTypeId'].toString(),
+                                      },
+                                    );
+                                    if (result == true) controller.fetchCategories();
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
                                 ),
                               ],
                             ),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                              leading: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.teal.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(Icons.category_outlined, size: 28, color: Colors.teal),
-                              ),
-                              title: Text(
-                                item['nama'],
-                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                              ),
-                              subtitle: Text(item['deskripsi'] ?? '-', style: const TextStyle(color: Colors.grey)),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.edit, color: Colors.blue),
-                                    onPressed: () async {
-                                      final result = await Navigator.pushNamed(
-                                        context,
-                                        '/category/edit',
-                                        arguments: {
-                                          'id': item['id'].toString(),
-                                          'nama': item['nama'],
-                                          'deskripsi': item['deskripsi'] ?? '',
-                                          'productTypeId': item['productTypeId'].toString(),
-                                        },
-                                      );
-                                      if (result == true) controller.fetchCategories();
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () => _confirmDelete(context, controller, item['id'].toString()),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),
@@ -158,7 +181,7 @@ class CategoryBody extends StatelessWidget {
             onPressed: () {
               Navigator.of(ctx).pop();
               controller.deleteCategory(context, id);
-              controller.fetchCategories();
+              // Tidak perlu fetchCategories lagi di sini, karena controller akan notifyListeners
             },
             child: const Text('Hapus'),
             style: ElevatedButton.styleFrom(
