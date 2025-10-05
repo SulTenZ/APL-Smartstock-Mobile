@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_animate/flutter_animate.dart'; // <-- Import flutter_animate
 import 'profile_controller.dart';
 import '../../../common/widgets/custom_navbar.dart';
 import '../../../common/color/color_theme.dart';
@@ -85,7 +86,7 @@ class _ProfileViewState extends State<ProfileView> {
                           ),
                         ),
                       ],
-                    ),
+                    ).animate().fadeIn(duration: 600.ms), // Animasi header
 
                     const SizedBox(height: 40),
                     Container(
@@ -115,7 +116,11 @@ class _ProfileViewState extends State<ProfileView> {
                           ),
                         ),
                       ),
-                    ),
+                    )
+                        .animate()
+                        .fadeIn(duration: 600.ms, delay: 200.ms)
+                        .scale(duration: 600.ms), // Animasi avatar
+
                     const SizedBox(height: 20),
                     Text(
                       name,
@@ -124,7 +129,11 @@ class _ProfileViewState extends State<ProfileView> {
                         fontWeight: FontWeight.w600,
                         color: const Color(ColorTheme.textColor),
                       ),
-                    ),
+                    )
+                        .animate()
+                        .fadeIn(duration: 600.ms, delay: 300.ms)
+                        .slideY(begin: 0.5, end: 0), // Animasi nama
+
                     const SizedBox(height: 36),
                     _buildProfileSection(
                       icon: Icons.person_outline,
@@ -144,8 +153,8 @@ class _ProfileViewState extends State<ProfileView> {
                             isVisible: _isEmailVisible,
                             onToggle:
                                 () => setState(
-                                  () => _isEmailVisible = !_isEmailVisible,
-                                ),
+                              () => _isEmailVisible = !_isEmailVisible,
+                            ),
                           ),
                           const Divider(height: 24, color: Color(0xFFE0E0E0)),
                           _buildInfoItem(
@@ -156,7 +165,11 @@ class _ProfileViewState extends State<ProfileView> {
                           ),
                         ],
                       ),
-                    ),
+                    )
+                        .animate()
+                        .fadeIn(duration: 600.ms, delay: 400.ms)
+                        .slideY(begin: 0.3, end: 0), // Animasi kartu info 1
+
                     const SizedBox(height: 16),
                     _buildProfileSection(
                       icon: Icons.info_outline,
@@ -176,7 +189,11 @@ class _ProfileViewState extends State<ProfileView> {
                           ),
                         ],
                       ),
-                    ),
+                    )
+                        .animate()
+                        .fadeIn(duration: 600.ms, delay: 500.ms)
+                        .slideY(begin: 0.3, end: 0), // Animasi kartu info 2
+
                     const SizedBox(height: 24),
                     Container(
                       width: double.infinity,
@@ -206,13 +223,13 @@ class _ProfileViewState extends State<ProfileView> {
                         icon:
                             controller.isLoggingOut
                                 ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
                                 : const Icon(Icons.logout),
                         label: Text(
                           controller.isLoggingOut ? 'Keluar...' : 'Keluar',
@@ -226,7 +243,11 @@ class _ProfileViewState extends State<ProfileView> {
                                 ? null
                                 : () => _showLogoutDialog(context, controller),
                       ),
-                    ),
+                    )
+                        .animate()
+                        .fadeIn(duration: 600.ms, delay: 600.ms)
+                        .slideY(begin: 0.5, end: 0), // Animasi tombol keluar
+
                     const SizedBox(height: 30),
                   ],
                 ),
@@ -471,5 +492,3 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 }
-
-

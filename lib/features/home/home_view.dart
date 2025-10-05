@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui';
+import 'package:flutter_animate/flutter_animate.dart'; // <-- Import flutter_animate
 import 'home_controller.dart';
 import '../../../common/widgets/custom_navbar.dart';
 import '../../../common/widgets/custom_menu_button.dart';
@@ -45,6 +46,7 @@ class HomeView extends StatelessWidget {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
+                              // [ANIMASI DITAMBAHKAN DI SINI]
                               CustomMenuButton(
                                 title: "Manajemen Stok",
                                 color: const Color(ColorTheme.primaryColor),
@@ -52,7 +54,10 @@ class HomeView extends StatelessWidget {
                                   Navigator.pushNamed(context, '/manage-stock');
                                 },
                                 customIconPath: 'assets/images/manajemen_stok.png',
-                              ),
+                              )
+                                  .animate()
+                                  .fadeIn(duration: 600.ms, delay: 300.ms)
+                                  .slideY(begin: 0.5, end: 0),
                               CustomMenuButton(
                                 title: "Catat Transaksi",
                                 color: const Color(ColorTheme.primaryColor),
@@ -60,7 +65,10 @@ class HomeView extends StatelessWidget {
                                   Navigator.pushNamed(context, '/transaction');
                                 },
                                 customIconPath: 'assets/images/catat_transaksi.png',
-                              ),
+                              )
+                                  .animate()
+                                  .fadeIn(duration: 600.ms, delay: 400.ms)
+                                  .slideY(begin: 0.5, end: 0),
                               CustomMenuButton(
                                 title: "Statistik Laba",
                                 color: const Color(ColorTheme.primaryColor),
@@ -68,7 +76,10 @@ class HomeView extends StatelessWidget {
                                   Navigator.pushNamed(context, '/graph');
                                 },
                                 customIconPath: 'assets/images/statistik_laba.png',
-                              ),
+                              )
+                                  .animate()
+                                  .fadeIn(duration: 600.ms, delay: 500.ms)
+                                  .slideY(begin: 0.5, end: 0),
                             ],
                           ),
                         ),
