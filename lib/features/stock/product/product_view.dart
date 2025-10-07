@@ -32,7 +32,6 @@ class _ProductViewState extends State<ProductView> {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
     final controller = context.read<ProductController>();
 
     return Scaffold(
@@ -40,7 +39,6 @@ class _ProductViewState extends State<ProductView> {
       body: SafeArea(
         child: Column(
           children: [
-            // Bagian header dan search bar yang statis
             Padding(
               padding: const EdgeInsets.all(20),
               child: Stack(
@@ -100,7 +98,6 @@ class _ProductViewState extends State<ProductView> {
               ),
             ),
             const SizedBox(height: 12),
-            // [OPTIMASI]: Bungkus hanya bagian list dengan Consumer
             Expanded(
               child: Consumer<ProductController>(
                 builder: (context, consumerController, child) {

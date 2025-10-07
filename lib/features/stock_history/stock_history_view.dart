@@ -122,7 +122,7 @@ class StockHistoryView extends StatelessWidget {
           ),
         ),
         bottomNavigationBar: CustomNavbar(
-          currentIndex: 2, // karena ini halaman ke-3 (stok)
+          currentIndex: 2,
           onTap: (_) {},
         ),
       ),

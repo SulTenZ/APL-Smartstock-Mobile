@@ -20,7 +20,6 @@ class ProductTypeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
     final controller = context.read<ProductTypeController>();
 
     return Scaffold(
@@ -30,7 +29,6 @@ class ProductTypeBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Bagian header yang statis, tidak perlu di-rebuild
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -58,7 +56,6 @@ class ProductTypeBody extends StatelessWidget {
                       onPressed: () async {
                         final result = await Navigator.pushNamed(context, '/product-type/create');
                         if (result == true) {
-                          // Gunakan controller yang tidak 'listen' untuk aksi
                           controller.fetchProductTypes();
                         }
                       },
@@ -67,7 +64,6 @@ class ProductTypeBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 40),
-              // [OPTIMASI]: Bungkus hanya bagian yang dinamis (list/konten) dengan Consumer
               Expanded(
                 child: Consumer<ProductTypeController>(
                   builder: (context, consumerController, child) {
@@ -77,7 +73,6 @@ class ProductTypeBody extends StatelessWidget {
                     if (consumerController.productTypes.isEmpty) {
                       return _buildEmptyState();
                     }
-                    // Kirim 'controller' (non-listen) untuk aksi, dan 'consumerController' untuk data
                     return _buildProductTypeList(context, controller, consumerController.productTypes);
                   },
                 ),

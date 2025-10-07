@@ -10,7 +10,6 @@ class TransactionHistoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Provider hanya membungkus bagian yang membutuhkan data (Body)
     return ChangeNotifierProvider(
       create: (_) => TransactionHistoryController()..fetchTransactions(),
       child: Scaffold(
@@ -20,7 +19,6 @@ class TransactionHistoryView extends StatelessWidget {
             padding: EdgeInsets.all(20),
             child: Column(
               children: [
-                // Header statis, tidak perlu di-rebuild
                 Text(
                   "RIWAYAT TRANSAKSI",
                   style: TextStyle(
@@ -31,7 +29,6 @@ class TransactionHistoryView extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 40),
-                // Body dinamis yang akan di-rebuild
                 Expanded(
                   child: _TransactionHistoryList(),
                 ),
@@ -40,7 +37,7 @@ class TransactionHistoryView extends StatelessWidget {
           ),
         ),
         bottomNavigationBar: CustomNavbar(
-          currentIndex: 1, // karena ini halaman ke-2 (transaksi)
+          currentIndex: 1,
           onTap: (_) {},
         ),
       ),

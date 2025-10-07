@@ -20,7 +20,6 @@ class SizeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
     final controller = context.read<SizeController>();
 
     return Scaffold(
@@ -30,7 +29,6 @@ class SizeBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Bagian header yang statis
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -71,7 +69,6 @@ class SizeBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              // [OPTIMASI]: Bungkus hanya bagian list dengan Consumer
               Expanded(
                 child: Consumer<SizeController>(
                   builder: (context, consumerController, child) {

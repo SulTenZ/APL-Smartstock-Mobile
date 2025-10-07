@@ -40,7 +40,6 @@ class _GraphPageState extends State<_GraphPage> {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Ambil controller tanpa "listen" untuk memanggil aksi
     final controller = context.read<GraphController>();
 
     return Scaffold(
@@ -50,7 +49,6 @@ class _GraphPageState extends State<_GraphPage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Top bar (Statis, tidak perlu Consumer)
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -80,10 +78,8 @@ class _GraphPageState extends State<_GraphPage> {
 
               const SizedBox(height: 24),
 
-              // [OPTIMASI]: Bungkus hanya FilterBar dengan Consumer
               Consumer<GraphController>(
                 builder: (context, c, _) {
-                  // sinkronkan text field saat state berubah
                   _startCtrl.text = c.startDate;
                   _endCtrl.text = c.endDate;
                   
@@ -100,7 +96,6 @@ class _GraphPageState extends State<_GraphPage> {
 
               const SizedBox(height: 20),
 
-              // [OPTIMASI]: Bungkus hanya konten utama dengan Consumer
               Expanded(
                 child: Consumer<GraphController>(
                   builder: (context, c, _) {
@@ -122,10 +117,8 @@ class _GraphPageState extends State<_GraphPage> {
                         _SectionCard(
                           title: 'Tren Profit (${_bucketLabel(c.bucket)})',
                           child: CustomGraph(
-                            // [DIUBAH]: Ambil `keys` (tanggal) untuk `xLabels`
                             xLabels: c.currentSeries.keys.toList(),
                             
-                            // [TETAP SAMA]: Ambil `values` (profit) untuk `values`
                             values: c.currentSeries.values
                                 .map((e) => e.toDouble())
                                 .toList(),
@@ -143,7 +136,6 @@ class _GraphPageState extends State<_GraphPage> {
 
                         const SizedBox(height: 20),
 
-                        // Ringkasan full width (column)
                         _SummaryColumn(
                           revenue: c.totalRevenue,
                           cost: c.totalCost,
@@ -252,7 +244,6 @@ class _FilterBar extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // Tanggal hanya muncul jika Custom
         if (showCustomDates)
           Row(
             children: [
@@ -352,7 +343,6 @@ class _DateField extends StatelessWidget {
   }
 }
 
-// ===== Summary column (full width cards) =====
 class _SummaryColumn extends StatelessWidget {
   final num revenue;
   final num cost;

@@ -62,8 +62,7 @@ class CustomProductCard extends StatelessWidget {
                       imageUrl,
                       fit: BoxFit.cover,
                       width: double.infinity,
-                      // TAMBAHKAN ALIGNMENT INI UNTUK CROP BAGIAN ATAS
-                      alignment: Alignment.bottomCenter, // Ini akan menampilkan bagian bawah gambar
+                      alignment: Alignment.bottomCenter,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: const Color(ColorTheme.secondaryColor).withOpacity(0.1),
@@ -91,7 +90,6 @@ class CustomProductCard extends StatelessWidget {
                 ),
               ),
               
-              // Content Container
               Expanded(
                 flex: 2,
                 child: Padding(
@@ -115,7 +113,6 @@ class CustomProductCard extends StatelessWidget {
                       
                       const SizedBox(height: 4),
                       
-                      // Price Container
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,

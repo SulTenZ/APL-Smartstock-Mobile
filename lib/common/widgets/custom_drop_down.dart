@@ -1,5 +1,4 @@
 // lib/common/widgets/custom_drop_down.dart
-// Modern dropdown widget dengan styling yang clean dan minimalis
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

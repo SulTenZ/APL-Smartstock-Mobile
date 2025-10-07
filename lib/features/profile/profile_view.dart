@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart'; // <-- Import flutter_animate
+import 'package:flutter_animate/flutter_animate.dart';
 import 'profile_controller.dart';
 import '../../../common/widgets/custom_navbar.dart';
 import '../../../common/color/color_theme.dart';
@@ -86,7 +86,7 @@ class _ProfileViewState extends State<ProfileView> {
                           ),
                         ),
                       ],
-                    ).animate().fadeIn(duration: 600.ms), // Animasi header
+                    ).animate().fadeIn(duration: 600.ms),
 
                     const SizedBox(height: 40),
                     Container(
@@ -119,7 +119,7 @@ class _ProfileViewState extends State<ProfileView> {
                     )
                         .animate()
                         .fadeIn(duration: 600.ms, delay: 200.ms)
-                        .scale(duration: 600.ms), // Animasi avatar
+                        .scale(duration: 600.ms),
 
                     const SizedBox(height: 20),
                     Text(
@@ -132,7 +132,7 @@ class _ProfileViewState extends State<ProfileView> {
                     )
                         .animate()
                         .fadeIn(duration: 600.ms, delay: 300.ms)
-                        .slideY(begin: 0.5, end: 0), // Animasi nama
+                        .slideY(begin: 0.5, end: 0),
 
                     const SizedBox(height: 36),
                     _buildProfileSection(
@@ -168,7 +168,7 @@ class _ProfileViewState extends State<ProfileView> {
                     )
                         .animate()
                         .fadeIn(duration: 600.ms, delay: 400.ms)
-                        .slideY(begin: 0.3, end: 0), // Animasi kartu info 1
+                        .slideY(begin: 0.3, end: 0),
 
                     const SizedBox(height: 16),
                     _buildProfileSection(
@@ -192,7 +192,7 @@ class _ProfileViewState extends State<ProfileView> {
                     )
                         .animate()
                         .fadeIn(duration: 600.ms, delay: 500.ms)
-                        .slideY(begin: 0.3, end: 0), // Animasi kartu info 2
+                        .slideY(begin: 0.3, end: 0),
 
                     const SizedBox(height: 24),
                     Container(
@@ -246,7 +246,7 @@ class _ProfileViewState extends State<ProfileView> {
                     )
                         .animate()
                         .fadeIn(duration: 600.ms, delay: 600.ms)
-                        .slideY(begin: 0.5, end: 0), // Animasi tombol keluar
+                        .slideY(begin: 0.5, end: 0),
 
                     const SizedBox(height: 30),
                   ],

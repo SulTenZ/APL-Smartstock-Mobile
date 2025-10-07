@@ -20,7 +20,6 @@ class _StockBatchBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
     final controller = context.read<StockBatchController>();
 
     return Scaffold(
@@ -30,7 +29,6 @@ class _StockBatchBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Bagian header yang statis
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -71,7 +69,6 @@ class _StockBatchBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              // [OPTIMASI]: Bungkus hanya bagian list dengan Consumer
               Expanded(
                 child: Consumer<StockBatchController>(
                   builder: (context, consumerController, child) {

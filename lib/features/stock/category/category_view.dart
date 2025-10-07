@@ -20,7 +20,6 @@ class CategoryBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
     final controller = context.read<CategoryController>();
 
     return Scaffold(
@@ -30,7 +29,6 @@ class CategoryBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Bagian header yang statis
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -64,14 +62,12 @@ class CategoryBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 40),
-              // [OPTIMASI]: Bungkus hanya bagian list dengan Consumer
               Expanded(
                 child: Consumer<CategoryController>(
                   builder: (context, consumerController, child) {
                     if (consumerController.isLoading) {
                       return const Center(child: CircularProgressIndicator());
                     }
-                    // Tambahkan pengecekan jika data kosong
                     if (consumerController.categories.isEmpty) {
                       return Center(
                         child: Column(
@@ -181,7 +177,6 @@ class CategoryBody extends StatelessWidget {
             onPressed: () {
               Navigator.of(ctx).pop();
               controller.deleteCategory(context, id);
-              // Tidak perlu fetchCategories lagi di sini, karena controller akan notifyListeners
             },
             child: const Text('Hapus'),
             style: ElevatedButton.styleFrom(

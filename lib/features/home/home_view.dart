@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui';
-import 'package:flutter_animate/flutter_animate.dart'; // <-- Import flutter_animate
+import 'package:flutter_animate/flutter_animate.dart';
 import 'home_controller.dart';
 import '../../../common/widgets/custom_navbar.dart';
 import '../../../common/widgets/custom_menu_button.dart';
@@ -35,7 +35,6 @@ class HomeView extends StatelessWidget {
             children: [
               _buildBackground(context),
 
-              // Konten utama
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -46,7 +45,6 @@ class HomeView extends StatelessWidget {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              // [ANIMASI DITAMBAHKAN DI SINI]
                               CustomMenuButton(
                                 title: "Manajemen Stok",
                                 color: const Color(ColorTheme.primaryColor),
@@ -94,7 +92,6 @@ class HomeView extends StatelessWidget {
         bottomNavigationBar: CustomNavbar(
           currentIndex: 0,
           onTap: (index) {
-            // Kosongkan atau isi sesuai kebutuhan
           },
         ),
       ),

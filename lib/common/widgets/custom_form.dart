@@ -12,7 +12,6 @@ class CustomFormField extends StatelessWidget {
   final Function(String)? onChanged;
   final String? errorText;
 
-  // 🔧 Tambahan baru:
   final List<TextInputFormatter>? inputFormatters;
   final String? prefixText;
 
@@ -25,8 +24,8 @@ class CustomFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.onChanged,
     this.errorText,
-    this.inputFormatters, // ✅ Tambahkan ini
-    this.prefixText, // ✅ Tambahkan ini juga
+    this.inputFormatters,
+    this.prefixText,
   }) : super(key: key);
 
   @override
@@ -60,7 +59,7 @@ class CustomFormField extends StatelessWidget {
             controller: controller,
             obscureText: obscureText,
             keyboardType: keyboardType,
-            inputFormatters: inputFormatters, // ✅ Gunakan di sini
+            inputFormatters: inputFormatters,
             onChanged: onChanged,
             style: GoogleFonts.poppins(
               fontSize: 16,
@@ -69,7 +68,7 @@ class CustomFormField extends StatelessWidget {
             decoration: InputDecoration(
               hintText: hintText,
               errorText: errorText,
-              prefixText: prefixText, // ✅ Tampilkan prefix di sini
+              prefixText: prefixText,
               hintStyle: GoogleFonts.poppins(
                 color: const Color(0xFFB0B0B0),
                 fontSize: 16,

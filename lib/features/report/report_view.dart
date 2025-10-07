@@ -19,7 +19,6 @@ class ReportView extends StatelessWidget {
               builder: (context, controller, child) {
                 return Column(
                   children: [
-                    // Top Bar yang sudah diperbarui
                     Stack(
                       alignment: Alignment.center,
                       children: [
@@ -114,7 +113,7 @@ class ReportView extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: controller.fetchReport,
       child: ListView(
-        padding: EdgeInsets.zero, // Padding diatur di parent
+        padding: EdgeInsets.zero,
         children: [
           _buildReportCard(
             icon: Icons.attach_money,

@@ -7,7 +7,7 @@ typedef YLabelFormatter = String Function(double v);
 /// Grafik garis sederhana (sparkline) dengan sumbu X dan Y.
 class CustomGraph extends StatelessWidget {
   final List<double> values;
-  final List<String> xLabels; // [BARU]: Label untuk sumbu-X (tanggal)
+  final List<String> xLabels;
   final double height;
   final bool showYAxis;
   final int yTicks;
@@ -18,8 +18,8 @@ class CustomGraph extends StatelessWidget {
   const CustomGraph({
     super.key,
     required this.values,
-    this.xLabels = const [], // [BARU]
-    this.height = 220, // [DIUBAH]: Tinggi ditambah untuk memberi ruang label-X
+    this.xLabels = const [],
+    this.height = 220,
     this.showYAxis = true,
     this.yTicks = 3,
     this.yLabelFormatter,
@@ -43,7 +43,7 @@ class CustomGraph extends StatelessWidget {
     }
 
     final yLabelWidth = showYAxis ? 56.0 : 0.0;
-    const xAxisHeight = 20.0; // [BARU]: Ruang untuk label sumbu-X
+    const xAxisHeight = 20.0;
 
     return SizedBox(
       height: height,
@@ -71,12 +71,11 @@ class CustomGraph extends StatelessWidget {
               ],
             ),
           ),
-          // [BARU]: Widget untuk Sumbu-X
           SizedBox(
             height: xAxisHeight,
             child: Row(
               children: [
-                SizedBox(width: yLabelWidth), // Spasi kosong sejajar sumbu-Y
+                SizedBox(width: yLabelWidth),
                 Expanded(
                   child: _XAxis(labels: xLabels),
                 ),
@@ -89,7 +88,6 @@ class CustomGraph extends StatelessWidget {
   }
 }
 
-// [BARU]: Widget untuk merender label di sumbu-X
 class _XAxis extends StatelessWidget {
   final List<String> labels;
   const _XAxis({required this.labels});
@@ -101,7 +99,6 @@ class _XAxis extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: labels.map((label) {
-        // Format label, misal "2023-10-27" menjadi "27/10"
         String formattedLabel = label;
         try {
           final parts = label.split('-');
@@ -109,7 +106,6 @@ class _XAxis extends StatelessWidget {
             formattedLabel = '${parts[2]}/${parts[1]}';
           }
         } catch (e) {
-          // Biarkan label apa adanya jika format tidak sesuai
         }
 
         return Text(

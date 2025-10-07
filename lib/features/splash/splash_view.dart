@@ -19,18 +19,17 @@ class _SplashViewState extends State<SplashView>
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _fadeOutAnimation; // Tambahan untuk fade out
+  late Animation<double> _fadeOutAnimation;
 
   @override
   void initState() {
     super.initState();
     
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 3000), // Diperpanjang untuk fade out
+      duration: const Duration(milliseconds: 3000),
       vsync: this,
     );
 
-    // Fade in animation (0.0 - 0.6)
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -39,7 +38,6 @@ class _SplashViewState extends State<SplashView>
       curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
     ));
 
-    // Scale animation (0.0 - 0.7)
     _scaleAnimation = Tween<double>(
       begin: 0.5,
       end: 1.0,
@@ -48,7 +46,6 @@ class _SplashViewState extends State<SplashView>
       curve: const Interval(0.0, 0.7, curve: Curves.elasticOut),
     ));
 
-    // Slide animation (0.2 - 0.8)
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -57,7 +54,6 @@ class _SplashViewState extends State<SplashView>
       curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
     ));
 
-    // Fade out animation (0.75 - 1.0)
     _fadeOutAnimation = Tween<double>(
       begin: 1.0,
       end: 0.0,
@@ -70,10 +66,8 @@ class _SplashViewState extends State<SplashView>
   }
 
   void _startSplashSequence() async {
-    // Start entrance animations
     _animationController.forward();
     
-    // Handle navigation after delay
     _controller.handleNavigation(context);
   }
 
@@ -90,7 +84,7 @@ class _SplashViewState extends State<SplashView>
         animation: _animationController,
         builder: (context, child) {
           return FadeTransition(
-            opacity: _fadeOutAnimation, // Apply fade out to entire screen
+            opacity: _fadeOutAnimation,
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -107,10 +101,8 @@ class _SplashViewState extends State<SplashView>
               ),
               child: Stack(
                 children: [
-                  // Background gradient circles (same as before)
                   _buildBackgroundGradients(context),
                   
-                  // Main content
                   SafeArea(
                     child: Center(
                       child: FadeTransition(
@@ -118,7 +110,6 @@ class _SplashViewState extends State<SplashView>
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Logo with glass morphism effect
                             ScaleTransition(
                               scale: _scaleAnimation,
                               child: _buildLogoContainer(),
@@ -126,7 +117,6 @@ class _SplashViewState extends State<SplashView>
                             
                             const SizedBox(height: 50),
                             
-                            // Text content
                             SlideTransition(
                               position: _slideAnimation,
                               child: _buildTextContent(),
@@ -134,7 +124,6 @@ class _SplashViewState extends State<SplashView>
                             
                             const SizedBox(height: 70),
                             
-                            // Loading indicator
                             FadeTransition(
                               opacity: _fadeAnimation,
                               child: _buildLoadingIndicator(),
@@ -156,7 +145,6 @@ class _SplashViewState extends State<SplashView>
   Widget _buildBackgroundGradients(BuildContext context) {
     return Stack(
       children: [
-        // Gradient bulat di pojok kiri atas
         Positioned(
           top: -120,
           left: -120,
@@ -178,7 +166,6 @@ class _SplashViewState extends State<SplashView>
           ),
         ),
         
-        // Gradient bulat di pojok kanan atas
         Positioned(
           top: -80,
           right: -80,
@@ -200,7 +187,6 @@ class _SplashViewState extends State<SplashView>
           ),
         ),
         
-        // Gradient bulat di pojok kiri bawah
         Positioned(
           bottom: -100,
           left: -100,
@@ -222,7 +208,6 @@ class _SplashViewState extends State<SplashView>
           ),
         ),
         
-        // Gradient bulat di pojok kanan bawah
         Positioned(
           bottom: -60,
           right: -60,
@@ -301,7 +286,6 @@ class _SplashViewState extends State<SplashView>
   Widget _buildTextContent() {
     return Column(
       children: [
-        // Main title
         Text(
           'APL Shoes',
           style: GoogleFonts.poppins(
@@ -314,7 +298,6 @@ class _SplashViewState extends State<SplashView>
         
         const SizedBox(height: 8),
         
-        // Gradient line
         Container(
           width: 80,
           height: 3,
@@ -332,7 +315,6 @@ class _SplashViewState extends State<SplashView>
         
         const SizedBox(height: 12),
         
-        // Subtitle
         Text(
           'Secondbrand',
           style: GoogleFonts.poppins(

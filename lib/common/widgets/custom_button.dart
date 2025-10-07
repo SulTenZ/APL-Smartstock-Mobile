@@ -1,5 +1,4 @@
 // lib/common/widgets/custom_button.dart
-// Modern button widget dengan gradient background dan rounded corners besar
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

@@ -8,7 +8,6 @@ class AuditLogView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Provider hanya membungkus bagian yang membutuhkan data (Body)
     return ChangeNotifierProvider(
       create: (_) => AuditLogController()..fetchAuditLogs(),
       child: Scaffold(
@@ -18,7 +17,6 @@ class AuditLogView extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                // Header statis
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -46,7 +44,6 @@ class AuditLogView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 40),
-                // Body dinamis yang akan di-rebuild
                 const Expanded(
                   child: _AuditLogList(),
                 ),
@@ -64,7 +61,6 @@ class _AuditLogList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Consumer hanya membungkus list yang dinamis
     return Consumer<AuditLogController>(
       builder: (context, controller, child) {
         if (controller.isLoading) {

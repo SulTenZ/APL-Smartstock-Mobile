@@ -20,7 +20,6 @@ class BrandBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Ambil controller untuk aksi (tanpa listen)
     final controller = context.read<BrandController>();
 
     return Scaffold(
@@ -30,7 +29,6 @@ class BrandBody extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Bagian header yang statis
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -60,7 +58,6 @@ class BrandBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 40),
-              // [OPTIMASI]: Bungkus hanya bagian list dengan Consumer
               Expanded(
                 child: Consumer<BrandController>(
                   builder: (context, consumerController, child) {
