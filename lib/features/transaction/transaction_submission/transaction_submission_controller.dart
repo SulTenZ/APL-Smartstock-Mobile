@@ -64,9 +64,7 @@ class TransactionSubmissionController extends ChangeNotifier {
     if (namaController.text.isNotEmpty) {
       final customer = await _customerService.createCustomer(
         nama: namaController.text,
-        // email: emailController.text.isEmpty ? null : emailController.text,
         phone: phoneController.text.isEmpty ? null : phoneController.text,
-        // alamat: alamatController.text.isEmpty ? null : alamatController.text,
       );
       customerId = customer['id'];
     }
@@ -92,9 +90,7 @@ class TransactionSubmissionController extends ChangeNotifier {
   @override
   void dispose() {
     namaController.dispose();
-    // emailController.dispose();
     phoneController.dispose();
-    // alamatController.dispose();
     catatanController.dispose();
     diskonController.dispose();
     super.dispose();

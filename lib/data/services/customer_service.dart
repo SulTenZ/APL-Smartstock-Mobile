@@ -42,18 +42,14 @@ class CustomerService {
 
   Future<Map<String, dynamic>> createCustomer({
     required String nama,
-    // String? email,
-    String? phone,
-    // String? alamat,
+    String? phone
   }) async {
     final token = await SharedPrefs.getToken();
     final uri = Uri.parse(ApiEndpoint.customers);
 
     final bodyPayload = {
       'nama': nama,
-      // if (email != null && email.trim().isNotEmpty) 'email': email,
       if (phone != null && phone.trim().isNotEmpty) 'phone': phone,
-      // if (alamat != null && alamat.trim().isNotEmpty) 'alamat': alamat,
     };
 
     print('[DEBUG] Create customer payload: $bodyPayload');
@@ -85,9 +81,7 @@ class CustomerService {
   Future<Map<String, dynamic>> updateCustomer({
     required String id,
     String? nama,
-    String? email,
     String? phone,
-    // String? alamat,
   }) async {
     final token = await SharedPrefs.getToken();
     final uri = Uri.parse(ApiEndpoint.customerById(id));
@@ -100,9 +94,7 @@ class CustomerService {
       },
       body: jsonEncode({
         if (nama != null) 'nama': nama,
-        if (email != null) 'email': email,
         if (phone != null) 'phone': phone,
-        // if (alamat != null) 'alamat': alamat,
       }),
     );
 

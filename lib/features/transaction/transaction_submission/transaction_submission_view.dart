@@ -90,14 +90,6 @@ class _TransactionSubmissionViewState extends State<TransactionSubmissionView> {
                       onChanged: (_) {},
                     ),
                     const SizedBox(height: 12),
-                    // CustomFormField(
-                    //   label: "Email",
-                    //   hintText: "Email Customer",
-                    //   controller: submitController.emailController,
-                    //   keyboardType: TextInputType.emailAddress,
-                    //   onChanged: (_) {},
-                    // ),
-                    const SizedBox(height: 12),
                     CustomFormField(
                       label: "No HP",
                       hintText: "08xxxxxx",
@@ -105,14 +97,6 @@ class _TransactionSubmissionViewState extends State<TransactionSubmissionView> {
                       keyboardType: TextInputType.phone,
                       onChanged: (_) {},
                     ),
-                    // const SizedBox(height: 12),
-                    // CustomFormField(
-                    //   label: "Alamat",
-                    //   hintText: "Alamat Customer",
-                    //   controller: submitController.alamatController,
-                    //   keyboardType: TextInputType.multiline,
-                    //   onChanged: (_) {},
-                    // ),
                     const SizedBox(height: 12),
 
                     // [OPTIMASI]: Bungkus bagian dinamis dengan Consumer
