@@ -1,13 +1,13 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-// --- IMPORT BARU ---
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:month_year_picker/month_year_picker.dart';
-import 'features/report/report_view.dart';
-// --- AKHIR IMPORT BARU ---
 
+// --- IMPORT BARU ---
+import 'data/services/onesignal_service.dart';
+
+import 'features/report/report_view.dart';
 import 'features/splash/splash_view.dart';
 import 'features/authentication/login/login_view.dart';
 import 'features/authentication/register/register_view.dart';
@@ -55,6 +55,12 @@ import 'features/audit_log/audit_log_view.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+
+  // --- INISIALISASI ONESIGNAL ---
+  // Inisialisasi OneSignal service saat aplikasi dimulai
+  await OneSignalService().init();
+  // --- AKHIR INISIALISASI ---
+
   runApp(const MyApp());
 }
 
@@ -76,17 +82,15 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        // --- TAMBAHAN UNTUK MONTH PICKER ---
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           MonthYearPickerLocalizations.delegate,
         ],
         supportedLocales: const [
-          Locale('id', 'ID'), // Bahasa Indonesia
-          Locale('en', 'US'), // Bahasa Inggris sebagai fallback
+          Locale('id', 'ID'),
+          Locale('en', 'US'),
         ],
-        // --- AKHIR TAMBAHAN ---
         initialRoute: '/splash',
         routes: {
           '/splash': (context) => const SplashView(),
@@ -98,29 +102,24 @@ class MyApp extends StatelessWidget {
             return ForgotPasswordOtpView(email: email);
           },
           '/reset-password': (context) {
-            final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+            final args =
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return ResetPasswordView(email: args['email'], otp: args['otp']);
           },
           '/home': (context) => const HomeView(),
           '/manage-stock': (context) => const ManageStockView(),
-
-          // Product Type
           '/product-type': (context) => const ProductTypeView(),
           '/product-type/create': (context) => const CreateProductTypeView(),
           '/product-type/edit': (context) {
             final args =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return EditProductTypeView(id: args['id'], name: args['name']);
           },
-
-          // Category
           '/category': (context) => const CategoryView(),
           '/category/create': (context) => const CreateCategoryView(),
           '/category/edit': (context) {
             final args =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return EditCategoryView(
               id: args['id'],
               nama: args['nama'],
@@ -128,14 +127,11 @@ class MyApp extends StatelessWidget {
               productTypeId: args['productTypeId'],
             );
           },
-
-          // Brand
           '/brand': (context) => const BrandView(),
           '/brand/create': (context) => const CreateBrandView(),
           '/brand/edit': (context) {
             final args =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return EditBrandView(
               id: args['id'],
               nama: args['nama'],
@@ -143,14 +139,11 @@ class MyApp extends StatelessWidget {
               image: args['image'],
             );
           },
-
-          // Size
           '/size': (context) => const SizeView(),
           '/size/create': (context) => const CreateSizeView(),
           '/size/edit': (context) {
             final args =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return EditSizeView(
               id: args['id'],
               label: args['label'],
@@ -159,50 +152,37 @@ class MyApp extends StatelessWidget {
               initialProductTypeId: args['productTypeId'],
             );
           },
-
-          // Product
           '/product': (context) => const ProductView(),
-          '/product/create':
-              (context) => ChangeNotifierProvider(
+          '/product/create': (context) => ChangeNotifierProvider(
                 create: (_) => CreateProductController()..init(),
                 child: const CreateProductView(),
               ),
           '/product/detail': (context) {
             final args =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return DetailProductView(productId: args['id']);
           },
           '/product/edit': (context) {
             final args =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return EditProductView(
               productId: args['id'],
               product: args['product'],
             );
           },
-
-          // Stock Batch
           '/stock-batch': (context) => const StockBatchView(),
           '/stock-batch/create': (context) => const CreateStockBatchView(),
           '/stock-batch/edit': (context) {
             final args =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return EditStockBatchView(batch: args['batch']);
           },
           '/stock-batch/detail': (context) {
             final args =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return DetailStockBatchView(batchId: args['id']);
           },
-
-          // Profile
           '/profile': (context) => const ProfileView(),
-
-          // Transaction
           '/transaction': (context) => const TransactionView(),
           '/transaction_submission': (context) {
             final transactionController = Provider.of<TransactionController>(
@@ -221,8 +201,7 @@ class MyApp extends StatelessWidget {
           },
           '/transaction-success': (context) {
             final args =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return TransactionSuccessView(
               transactionId: args['transactionId'],
               customerName: args['customerName'],
@@ -236,23 +215,13 @@ class MyApp extends StatelessWidget {
           '/transaction-history': (context) => const TransactionHistoryView(),
           '/transaction-history/detail': (context) {
             final tx =
-                ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>;
+                ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
             return TransactionHistoryDetailView(transaction: tx);
           },
-
-          // Stock History
           '/stock-history': (context) => const StockHistoryView(),
-
-          // Graph
           '/graph': (context) => const GraphView(),
-
-          // Audit Log
           '/audit-log': (context) => const AuditLogView(),
-          
-          // --- ROUTE BARU ---
           '/report': (context) => const ReportView(),
-
         },
         onGenerateRoute: (settings) {
           if (settings.name == '/register-otp') {
