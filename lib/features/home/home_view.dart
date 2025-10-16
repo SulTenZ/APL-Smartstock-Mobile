@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 import 'dart:ui';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'home_controller.dart';
-import '../../../common/widgets/custom_navbar.dart';
-import '../../../common/widgets/custom_menu_button.dart';
-import '../../../common/color/color_theme.dart';
+import '../../common/widgets/custom_navbar.dart';
+import '../../common/widgets/custom_menu_button.dart';
+import '../../common/color/color_theme.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -34,13 +34,14 @@ class HomeView extends StatelessWidget {
           child: Stack(
             children: [
               _buildBackground(context),
-
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      _buildHeader(),
+                      // --- HEADER DENGAN TOMBOL NOTIFIKASI ---
+                      _buildHeaderWithNotification(context),
+                      // ------------------------------------
                       Expanded(
                         child: SingleChildScrollView(
                           child: Column(
@@ -92,38 +93,89 @@ class HomeView extends StatelessWidget {
         bottomNavigationBar: CustomNavbar(
           currentIndex: 0,
           onTap: (index) {
+            // Logika navbar Anda tetap di sini
           },
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  // --- WIDGET HEADER BARU YANG MENGGANTIKAN _buildHeader LAMA ---
+  Widget _buildHeaderWithNotification(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 40, top: 20),
-      child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            "MENU UTAMA",
-            style: GoogleFonts.poppins(
-              fontSize: 28,
-              fontWeight: FontWeight.w400,
-              color: const Color(ColorTheme.primaryColor),
-              letterSpacing: 1.5,
+          // Expanded agar title tetap di tengah
+          const Spacer(),
+          Expanded(
+            flex: 4,
+            child: Column(
+              children: [
+                Text(
+                  "MENU UTAMA",
+                  style: GoogleFonts.poppins(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(ColorTheme.primaryColor),
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  width: 60,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2),
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(ColorTheme.primaryColor),
+                        Color(ColorTheme.secondaryColor),
+                        Color(ColorTheme.primaryColor),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            width: 60,
-            height: 3,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              gradient: const LinearGradient(
-                colors: [
-                  Color(ColorTheme.primaryColor),
-                  Color(ColorTheme.secondaryColor),
-                  Color(ColorTheme.primaryColor),
-                ],
+          // Spacer untuk menyeimbangkan dan mendorong tombol ke kanan
+          Expanded(
+            flex: 1,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Consumer<HomeController>(
+                builder: (context, controller, child) {
+                  return Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications_outlined, size: 30, color: Color(ColorTheme.primaryColor)),
+                        onPressed: () async {
+                          await Navigator.pushNamed(context, '/notifications');
+                          controller.fetchUnreadCount();
+                        },
+                      ),
+                      if (controller.unreadCount > 0)
+                        Container(
+                           padding: const EdgeInsets.all(4),
+                           decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${controller.unreadCount}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -131,6 +183,7 @@ class HomeView extends StatelessWidget {
       ),
     );
   }
+
 
   Widget _buildBackground(BuildContext context) {
     return Stack(

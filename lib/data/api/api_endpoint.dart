@@ -63,4 +63,9 @@ class ApiEndpoint {
   // Reports
   static const financialSummary = "${ApiConstant.baseUrl}/reports/financial-summary";
   static const downloadFinancialSummary = "${ApiConstant.baseUrl}/reports/financial-summary/download";
+
+  // Notification
+  static const String notifications = "${ApiConstant.baseUrl}/notifications";
+  static const String markAllNotificationsAsRead = "${ApiConstant.baseUrl}/notifications/read-all";
+  static String markNotificationAsRead(String id) => "${ApiConstant.baseUrl}/notifications/$id/read";
 }

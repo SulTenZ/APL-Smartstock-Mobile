@@ -1,12 +1,11 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 
-// --- IMPORT BARU ---
 import 'data/services/onesignal_service.dart';
-
 import 'features/report/report_view.dart';
 import 'features/splash/splash_view.dart';
 import 'features/authentication/login/login_view.dart';
@@ -52,14 +51,22 @@ import 'features/stock_history/stock_history_view.dart';
 import 'features/graph/graph_view.dart';
 import 'features/audit_log/audit_log_view.dart';
 
+// --- IMPORT BARU ---
+import 'package:intl/date_symbol_data_local.dart';
+import 'features/notification/notification_view.dart';
+import 'common/color/color_theme.dart';
+// --- AKHIR IMPORT BARU ---
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
-  // --- INISIALISASI ONESIGNAL ---
-  // Inisialisasi OneSignal service saat aplikasi dimulai
   await OneSignalService().init();
-  // --- AKHIR INISIALISASI ---
+  
+  // --- INISIALISASI BARU ---
+  await initializeDateFormatting('id_ID', null);
+  // --- AKHIR INISIALISASI BARU ---
 
   runApp(const MyApp());
 }
@@ -79,8 +86,15 @@ class MyApp extends StatelessWidget {
         title: 'E-Inventory',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(ColorTheme.primaryColor)),
           useMaterial3: true,
+          scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+            appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: IconThemeData(color: Color(ColorTheme.primaryColor)),
+            titleTextStyle: TextStyle(color: Color(ColorTheme.primaryColor), fontSize: 20, fontWeight: FontWeight.bold),
+          )
         ),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
@@ -222,6 +236,8 @@ class MyApp extends StatelessWidget {
           '/graph': (context) => const GraphView(),
           '/audit-log': (context) => const AuditLogView(),
           '/report': (context) => const ReportView(),
+          // --- ROUTE BARU ---
+          '/notifications': (context) => const NotificationView(),
         },
         onGenerateRoute: (settings) {
           if (settings.name == '/register-otp') {
