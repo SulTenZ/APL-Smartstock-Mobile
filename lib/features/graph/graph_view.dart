@@ -358,9 +358,9 @@ class _SummaryColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _SummaryCard(title: 'Total Revenue', value: revenue),
+        _SummaryCard(title: 'Total Penghasilan', value: revenue),
         const SizedBox(height: 12),
-        _SummaryCard(title: 'Total Cost', value: cost),
+        _SummaryCard(title: 'Total Pengeluaran', value: cost),
         const SizedBox(height: 12),
         _SummaryCard(title: 'Total Profit', value: profit),
       ],

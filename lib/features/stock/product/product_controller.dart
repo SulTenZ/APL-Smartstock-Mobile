@@ -8,20 +8,28 @@ class ProductController extends ChangeNotifier {
   List<dynamic> products = [];
   Map<String, dynamic>? pagination;
   bool isLoading = false;
+  bool isLoadingMore = false;
   String? errorMessage;
   String searchQuery = '';
   int currentPage = 1;
   int itemsPerPage = 10;
+  
+  bool get hasMore {
+    if (pagination == null) return false;
+    return (pagination!['currentPage'] ?? 1) < (pagination!['totalPages'] ?? 1);
+  }
   
   // Get all products
   Future<void> getProducts({bool refresh = false}) async {
     if (refresh) {
       currentPage = 1;
       products = [];
+      isLoading = true;
+    } else {
+      isLoadingMore = true;
     }
     
     try {
-      isLoading = true;
       errorMessage = null;
       notifyListeners();
       
@@ -39,22 +47,21 @@ class ProductController extends ChangeNotifier {
       
       pagination = result['pagination'];
       
-      isLoading = false;
-      notifyListeners();
     } catch (e) {
-      isLoading = false;
       errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+      isLoadingMore = false;
       notifyListeners();
     }
   }
   
   // Load next page of products
   Future<void> loadMore() async {
-    if (isLoading) return;
-    if (pagination != null && pagination!['currentPage'] < pagination!['totalPages']) {
-      currentPage++;
-      await getProducts();
-    }
+    if (isLoadingMore || !hasMore) return;
+    
+    currentPage++;
+    await getProducts();
   }
   
   // Search products
@@ -87,20 +94,14 @@ class ProductController extends ChangeNotifier {
   // Delete product
   Future<bool> deleteProduct(String id) async {
     try {
-      isLoading = true;
-      errorMessage = null;
-      notifyListeners();
-      
       await _productService.deleteProduct(id);
       
       // Remove the product from the list
       products.removeWhere((product) => product['id'] == id);
       
-      isLoading = false;
       notifyListeners();
       return true;
     } catch (e) {
-      isLoading = false;
       errorMessage = e.toString();
       notifyListeners();
       return false;

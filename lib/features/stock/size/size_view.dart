@@ -15,8 +15,38 @@ class SizeView extends StatelessWidget {
   }
 }
 
-class SizeBody extends StatelessWidget {
+class SizeBody extends StatefulWidget {
   const SizeBody({super.key});
+
+  @override
+  State<SizeBody> createState() => _SizeBodyState();
+}
+
+class _SizeBodyState extends State<SizeBody> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      final controller = context.read<SizeController>();
+      if (!controller.isLoadingMore && controller.hasMore) {
+        controller.loadMore();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,15 +102,25 @@ class SizeBody extends StatelessWidget {
               Expanded(
                 child: Consumer<SizeController>(
                   builder: (context, consumerController, child) {
-                    if (consumerController.isLoading) {
+                    if (consumerController.isLoading && consumerController.sizes.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (consumerController.sizes.isEmpty) {
                       return _buildEmptyState();
                     }
                     return ListView.builder(
-                      itemCount: consumerController.sizes.length,
+                      controller: _scrollController,
+                      itemCount: consumerController.sizes.length + (consumerController.isLoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == consumerController.sizes.length) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+
                         final size = consumerController.sizes[index];
                         return Container(
                           margin: const EdgeInsets.only(bottom: 16),

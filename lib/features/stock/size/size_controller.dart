@@ -12,14 +12,27 @@ class SizeController extends ChangeNotifier {
   Map<String, dynamic> meta = {};
 
   bool isLoading = false;
+  bool isLoadingMore = false;
   int currentPage = 1;
   int limit = 10;
   String? search;
   String? selectedProductTypeId;
 
-  Future<void> fetchSizes() async {
-    isLoading = true;
+  bool get hasMore {
+    final totalPages = meta['totalPages'] ?? 1;
+    return currentPage < totalPages;
+  }
+
+  Future<void> fetchSizes({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      isLoadingMore = true;
+    } else {
+      isLoading = true;
+      currentPage = 1;
+      sizes.clear();
+    }
     notifyListeners();
+
     try {
       final result = await _sizeService.getAllSizes(
         search: search,
@@ -27,13 +40,31 @@ class SizeController extends ChangeNotifier {
         page: currentPage,
         productTypeId: selectedProductTypeId,
       );
-      sizes = List<Map<String, dynamic>>.from(result['data']);
+      
+      if (isLoadMore) {
+        sizes.addAll(List<Map<String, dynamic>>.from(result['data']));
+      } else {
+        sizes = List<Map<String, dynamic>>.from(result['data']);
+      }
+      
       meta = result['meta'];
     } catch (e) {
       debugPrint('Error fetchSizes: $e');
     }
-    isLoading = false;
+
+    if (isLoadMore) {
+      isLoadingMore = false;
+    } else {
+      isLoading = false;
+    }
     notifyListeners();
+  }
+
+  Future<void> loadMore() async {
+    if (isLoadingMore || !hasMore) return;
+    
+    currentPage++;
+    await fetchSizes(isLoadMore: true);
   }
 
   Future<void> fetchProductTypes() async {
@@ -49,7 +80,7 @@ class SizeController extends ChangeNotifier {
   Future<void> deleteSize(BuildContext context, String id) async {
     try {
       await _sizeService.deleteSize(id);
-      fetchSizes();
+      await fetchSizes();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
@@ -59,12 +90,11 @@ class SizeController extends ChangeNotifier {
 
   void updateSearch(String value) {
     search = value;
-    currentPage = 1;
     fetchSizes();
   }
 
   void nextPage() {
-    if ((meta['page'] ?? 1) < (meta['totalPages'] ?? 1)) {
+    if (hasMore) {
       currentPage++;
       fetchSizes();
     }
@@ -75,5 +105,16 @@ class SizeController extends ChangeNotifier {
       currentPage--;
       fetchSizes();
     }
+  }
+
+  void setProductTypeFilter(String? productTypeId) {
+    selectedProductTypeId = productTypeId;
+    fetchSizes();
+  }
+
+  void clearFilters() {
+    search = null;
+    selectedProductTypeId = null;
+    fetchSizes();
   }
 }

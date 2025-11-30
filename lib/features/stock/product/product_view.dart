@@ -14,10 +14,12 @@ class ProductView extends StatefulWidget {
 
 class _ProductViewState extends State<ProductView> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProductController>(context, listen: false)
           .getProducts(refresh: true);
@@ -27,7 +29,19 @@ class _ProductViewState extends State<ProductView> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      final controller = context.read<ProductController>();
+      if (!controller.isLoadingMore && controller.hasMore) {
+        controller.loadMore();
+      }
+    }
   }
 
   @override
@@ -101,7 +115,7 @@ class _ProductViewState extends State<ProductView> {
             Expanded(
               child: Consumer<ProductController>(
                 builder: (context, consumerController, child) {
-                  if (consumerController.isLoading) {
+                  if (consumerController.isLoading && consumerController.products.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (consumerController.products.isEmpty) {
@@ -109,9 +123,19 @@ class _ProductViewState extends State<ProductView> {
                         child: Text('Tidak ada produk yang tersedia'));
                   }
                   return ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(16),
-                    itemCount: consumerController.products.length,
+                    itemCount: consumerController.products.length + (consumerController.isLoadingMore ? 1 : 0),
                     itemBuilder: (context, index) {
+                      if (index == consumerController.products.length) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
                       final product = consumerController.products[index];
                       return Container(
                         margin: const EdgeInsets.only(bottom: 20),
@@ -404,14 +428,16 @@ class _ProductViewState extends State<ProductView> {
                                             final success =
                                                 await controller.deleteProduct(
                                                     product['id']);
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Text(success
-                                                    ? 'Produk berhasil dihapus'
-                                                    : 'Gagal menghapus produk: ${controller.errorMessage ?? 'Terjadi kesalahan'}'),
-                                              ),
-                                            );
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(success
+                                                      ? 'Produk berhasil dihapus'
+                                                      : 'Gagal menghapus produk: ${controller.errorMessage ?? 'Terjadi kesalahan'}'),
+                                                ),
+                                              );
+                                            }
                                           }
                                         },
                                         child: const SizedBox(
