@@ -1,4 +1,3 @@
-// lib/features/stock/product/create_product/create_product_view.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -333,6 +332,9 @@ class _CreateProductViewState extends State<CreateProductView> {
                         text: controller.formSubmitting ? 'Menyimpan...' : 'Simpan Produk',
                         isDisabled: controller.formSubmitting,
                         onPressed: () async {
+                          // Unfocus keyboard agar tap pertama langsung terbaca sebagai aksi
+                          FocusScope.of(context).unfocus();
+
                           if (_formKey.currentState!.validate()) {
                             controller.nama = _namaController.text.trim();
                             controller.deskripsi = _deskripsiController.text.trim();
@@ -341,7 +343,20 @@ class _CreateProductViewState extends State<CreateProductView> {
                             controller.minStock = int.tryParse(_minStockController.text) ?? 0;
 
                             final success = await controller.createProduct();
-                            if (success) Navigator.pop(context, true);
+                            
+                            if (success) {
+                              if (context.mounted) Navigator.pop(context, true);
+                            } else {
+                              // Tampilkan pesan error jika validasi controller gagal
+                              if (context.mounted && controller.errorMessage != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(controller.errorMessage!),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
                           }
                         },
                       ),

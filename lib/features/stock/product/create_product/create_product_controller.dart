@@ -171,38 +171,55 @@ class CreateProductController extends ChangeNotifier {
   }
 
   Future<bool> createProduct() async {
+    // --- PRINT DEBUG UNTUK MELIHAT DATA YANG AKAN DIKIRIM ---
+    print("🔍 [Controller] Memulai Validasi Lokal...");
+    print("📝 Nama: $nama");
+    print("📝 Harga Beli: $hargaBeli");
+    print("📝 Harga Jual: $hargaJual");
+    print("📝 Kategori ID: $categoryId");
+    print("📝 Brand ID: $brandId");
+    print("📝 Tipe Produk ID: $productTypeId");
+    print("📝 Jumlah Sizes: ${sizes.length}");
+    
     if (nama.isEmpty) {
       errorMessage = 'Nama produk tidak boleh kosong';
+      print("❌ Validasi Gagal: $errorMessage");
       notifyListeners();
       return false;
     }
     if (hargaBeli <= 0) {
       errorMessage = 'Harga beli harus lebih dari 0';
+      print("❌ Validasi Gagal: $errorMessage");
       notifyListeners();
       return false;
     }
     if (hargaJual <= 0) {
       errorMessage = 'Harga jual harus lebih dari 0';
+      print("❌ Validasi Gagal: $errorMessage");
       notifyListeners();
       return false;
     }
     if (categoryId == null) {
       errorMessage = 'Kategori harus dipilih';
+      print("❌ Validasi Gagal: $errorMessage");
       notifyListeners();
       return false;
     }
     if (brandId == null) {
       errorMessage = 'Brand harus dipilih';
+      print("❌ Validasi Gagal: $errorMessage");
       notifyListeners();
       return false;
     }
     if (productTypeId == null) {
       errorMessage = 'Tipe produk harus dipilih';
+      print("❌ Validasi Gagal: $errorMessage");
       notifyListeners();
       return false;
     }
     if (sizes.isEmpty) {
       errorMessage = 'Tambahkan minimal satu ukuran dengan stok';
+      print("❌ Validasi Gagal: $errorMessage");
       notifyListeners();
       return false;
     }
@@ -211,6 +228,8 @@ class CreateProductController extends ChangeNotifier {
       formSubmitting = true;
       notifyListeners();
 
+      print("⏳ [Controller] Memanggil Service createProduct...");
+      
       await _productService.createProduct(
         nama: nama,
         deskripsi: deskripsi.isEmpty ? null : deskripsi,
@@ -226,12 +245,16 @@ class CreateProductController extends ChangeNotifier {
         sizes: sizes,
       );
 
+      print("✅ [Controller] Berhasil membuat produk!");
       formSubmitting = false;
       notifyListeners();
       return true;
     } catch (e) {
       formSubmitting = false;
       errorMessage = e.toString();
+      
+      print("❌ [Controller] Exception Tertangkap: $e");
+      
       notifyListeners();
       return false;
     }

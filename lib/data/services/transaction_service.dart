@@ -17,6 +17,9 @@ class TransactionService {
     final token = await SharedPrefs.getToken();
     final uri = Uri.parse(ApiEndpoint.transactions);
 
+    print("🚀 [TransactionService] Creating Transaction...");
+    print("📍 URL: $uri");
+
     final bodyPayload = {
       if (customerId != null) 'customerId': customerId,
       'paymentMethod': paymentMethod,
@@ -24,6 +27,8 @@ class TransactionService {
       if (catatan != null) 'catatan': catatan,
       'items': items,
     };
+
+    print("📦 Payload: ${jsonEncode(bodyPayload)}");
 
     final response = await http.post(
       uri,
@@ -33,6 +38,9 @@ class TransactionService {
       },
       body: jsonEncode(bodyPayload),
     );
+
+    print("📥 Status: ${response.statusCode}");
+    print("📥 Body: ${response.body}");
 
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);

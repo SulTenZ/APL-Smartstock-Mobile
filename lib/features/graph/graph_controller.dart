@@ -65,6 +65,16 @@ class GraphController extends ChangeNotifier {
     }
   }
 
+  // Helper untuk mengurutkan Map berdasarkan Key (Tanggal) secara Ascending
+  Map<String, num> _sortMap(Map<String, dynamic> input) {
+    // 1. Ambil semua key dan urutkan
+    var sortedKeys = input.keys.toList()..sort();
+    // 2. Buat map baru berdasarkan urutan key tersebut
+    return {
+      for (var key in sortedKeys) key: (input[key] as num),
+    };
+  }
+
   Future<void> fetch() async {
     _loading = true;
     _error = null;
@@ -81,14 +91,11 @@ class GraphController extends ChangeNotifier {
       _totalCost = (data['summary']?['totalCost'] ?? 0) as num;
       _totalProfit = (data['summary']?['totalProfit'] ?? 0) as num;
 
-      final byDay = Map<String, num>.from(
-          (data['profitByDay'] ?? const <String, dynamic>{}) as Map);
-      final byWeek = Map<String, num>.from(
-          (data['profitByWeek'] ?? const <String, dynamic>{}) as Map);
-      final byMonth = Map<String, num>.from(
-          (data['profitByMonth'] ?? const <String, dynamic>{}) as Map);
-      final byYear = Map<String, num>.from(
-          (data['profitByYear'] ?? const <String, dynamic>{}) as Map);
+      // Mengambil data dan langsung mengurutkannya menggunakan _sortMap
+      final byDay = _sortMap(data['profitByDay'] ?? {});
+      final byWeek = _sortMap(data['profitByWeek'] ?? {});
+      final byMonth = _sortMap(data['profitByMonth'] ?? {});
+      final byYear = _sortMap(data['profitByYear'] ?? {});
 
       switch (_bucket) {
         case ProfitBucket.day:

@@ -62,6 +62,7 @@ class ProductService {
     }
   }
 
+  // --- BAGIAN INI YANG DITAMBAHKAN LOGGING ---
   Future<Map<String, dynamic>> createProduct({
     required String nama,
     String? deskripsi,
@@ -79,6 +80,9 @@ class ProductService {
     final token = await SharedPrefs.getToken();
     final uri = Uri.parse(ApiEndpoint.products);
 
+    print("🚀 [ProductService] Memulai Request Create Product...");
+    print("📍 URL: $uri");
+
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
       ..fields['nama'] = nama
@@ -92,15 +96,19 @@ class ProductService {
     if (minStock != null) request.fields['minStock'] = minStock.toString();
     if (kondisi != null) request.fields['kondisi'] = kondisi.toUpperCase();
     if (stockBatchId != null) request.fields['stockBatchId'] = stockBatchId;
+    
     if (sizes != null && sizes.isNotEmpty) {
       final cleanSizes = sizes.map((s) => {
         'sizeId': s['sizeId'],
         'quantity': s['quantity'],
       }).toList();
-      request.fields['sizes'] = jsonEncode(cleanSizes);
+      final sizesJson = jsonEncode(cleanSizes);
+      request.fields['sizes'] = sizesJson;
+      print("📦 Sizes Data: $sizesJson");
     }
 
     if (imageFile != null) {
+      print("📸 Mengupload gambar: ${imageFile.path}");
       final mimeType = lookupMimeType(imageFile.path);
       final type = mimeType?.split('/');
       if (type != null && type.length == 2) {
@@ -112,17 +120,28 @@ class ProductService {
           ),
         );
       }
+    } else {
+      print("⚠️ Tidak ada gambar yang dipilih.");
     }
 
+    print("📤 Mengirim Request...");
     final streamed = await request.send();
     final response = await http.Response.fromStream(streamed);
+
+    print("📥 Response Status: ${response.statusCode}");
+    print("📥 Response Body: ${response.body}");
 
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
       return data['data'];
     } else {
       final body = jsonDecode(response.body);
-      throw Exception(body['message'] ?? 'Gagal menambah produk');
+      // Menampilkan pesan error spesifik dari backend jika ada
+      final message = body['message'] ?? 'Gagal menambah produk';
+      final errors = body['errors'] != null ? jsonEncode(body['errors']) : '';
+      
+      print("❌ ERROR BACKEND: $message $errors");
+      throw Exception('$message $errors');
     }
   }
 

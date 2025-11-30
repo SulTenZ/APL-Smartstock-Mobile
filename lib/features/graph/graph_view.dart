@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart'; // PENTING: Pastikan package intl terinstall
 
 import '../../common/widgets/custom_drop_down.dart';
 import '../../common/widgets/custom_graph.dart';
@@ -36,6 +37,32 @@ class _GraphPageState extends State<_GraphPage> {
     _startCtrl.dispose();
     _endCtrl.dispose();
     super.dispose();
+  }
+
+  // Helper untuk memformat label sumbu X agar lebih enak dibaca
+  String _formatLabel(String rawLabel, ProfitBucket bucket) {
+    try {
+      if (bucket == ProfitBucket.year) {
+        return rawLabel; // Contoh: "2024"
+      } else if (bucket == ProfitBucket.month) {
+        // Raw: "2024-05" -> Formatted: "Mei 24"
+        final date = DateFormat('yyyy-MM').parse(rawLabel);
+        return DateFormat('MMM yy', 'id_ID').format(date);
+      } else if (bucket == ProfitBucket.week) {
+        // Raw: "2024-W05" -> Formatted: "W05"
+        final parts = rawLabel.split('-W');
+        if (parts.length == 2) {
+          return 'W${parts[1]}';
+        }
+        return rawLabel;
+      } else {
+        // Harian / Custom. Raw: "2024-05-20" -> Formatted: "20 Mei"
+        final date = DateTime.parse(rawLabel);
+        return DateFormat('d MMM', 'id_ID').format(date);
+      }
+    } catch (e) {
+      return rawLabel; // Jika gagal parse, kembalikan string aslinya
+    }
   }
 
   @override
@@ -117,19 +144,30 @@ class _GraphPageState extends State<_GraphPage> {
                         _SectionCard(
                           title: 'Tren Profit (${_bucketLabel(c.bucket)})',
                           child: CustomGraph(
-                            xLabels: c.currentSeries.keys.toList(),
+                            // Format label sumbu X menggunakan helper _formatLabel
+                            xLabels: c.currentSeries.keys
+                                .map((key) => _formatLabel(key, c.bucket))
+                                .toList(),
                             
                             values: c.currentSeries.values
                                 .map((e) => e.toDouble())
                                 .toList(),
                                 
                             showYAxis: true,
-                            yTicks: 3,
-                            yLabelFormatter: (v) => 'Rp ${v.toStringAsFixed(0)}',
+                            yTicks: 4, // Tambah jumlah grid lines agar lebih detail
+                            yLabelFormatter: (v) {
+                              // Format angka sumbu Y (Jutaan/Ribuan)
+                              if (v >= 1000000) {
+                                return '${(v / 1000000).toStringAsFixed(1)}jt';
+                              } else if (v >= 1000) {
+                                return '${(v / 1000).toStringAsFixed(0)}rb';
+                              }
+                              return v.toStringAsFixed(0);
+                            },
                             lineColor: const Color(0xFF4E73DF),
-                            gradientArea: const [
-                              Color(0xFF4E73DF),
-                              Color(0xFF2ECC71),
+                            gradientArea: [
+                              const Color(0xFF4E73DF).withOpacity(0.5),
+                              const Color(0xFF4E73DF).withOpacity(0.0),
                             ],
                           ),
                         ),

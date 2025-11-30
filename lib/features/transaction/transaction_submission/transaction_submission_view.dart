@@ -1,4 +1,3 @@
-// lib/features/transaction/transaction_submission/transaction_submission_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../common/widgets/custom_button.dart';
@@ -34,7 +33,6 @@ class _TransactionSubmissionViewState extends State<TransactionSubmissionView> {
 
   @override
   Widget build(BuildContext context) {
-    // [OPTIMASI]: Ambil controller tanpa "listen" untuk memanggil aksi
     final submitController =
         Provider.of<TransactionSubmissionController>(context, listen: false);
     final cartController =
@@ -82,7 +80,6 @@ class _TransactionSubmissionViewState extends State<TransactionSubmissionView> {
                     Text("ID : $transactionId"),
                     const SizedBox(height: 12),
 
-                    // Form fields yang tidak perlu rebuild UI lain
                     CustomFormField(
                       label: "Nama",
                       hintText: "Nama Customer",
@@ -99,7 +96,6 @@ class _TransactionSubmissionViewState extends State<TransactionSubmissionView> {
                     ),
                     const SizedBox(height: 12),
 
-                    // [OPTIMASI]: Bungkus bagian dinamis dengan Consumer
                     Consumer<TransactionSubmissionController>(
                       builder: (context, controller, _) {
                         return Column(
@@ -134,7 +130,6 @@ class _TransactionSubmissionViewState extends State<TransactionSubmissionView> {
                               controller: controller.diskonController,
                               keyboardType: TextInputType.number,
                               onChanged: (_) {
-                                // Panggil method yang sudah ada, tanpa mengubah apapun
                                 submitController.setItems(controller.items);
                               },
                             ),
@@ -217,12 +212,10 @@ class _TransactionSubmissionViewState extends State<TransactionSubmissionView> {
                             ),
                             if (controller.diskonController.text.isNotEmpty &&
                                 double.tryParse(
-                                      controller.diskonController.text,
-                                    ) !=
+                                        controller.diskonController.text) !=
                                     null &&
                                 double.tryParse(
-                                      controller.diskonController.text,
-                                    )! >
+                                        controller.diskonController.text)! >
                                     0)
                               Row(
                                 mainAxisAlignment:
@@ -250,7 +243,6 @@ class _TransactionSubmissionViewState extends State<TransactionSubmissionView> {
                                   ),
                                 ),
                                 Text(
-                                  // Gunakan getter 'totalHarga' yang sudah ada
                                   "Rp${controller.totalHarga.toStringAsFixed(0)}",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -278,6 +270,9 @@ class _TransactionSubmissionViewState extends State<TransactionSubmissionView> {
                           child: CustomButton(
                             text: "Selesai",
                             onPressed: () async {
+                              // --- PERBAIKAN: UNFOCUS KEYBOARD ---
+                              FocusScope.of(context).unfocus();
+
                               if (submitController.items.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
