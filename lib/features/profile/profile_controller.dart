@@ -2,12 +2,18 @@
 import 'package:flutter/material.dart';
 import '../../utils/shared_preferences.dart';
 
+// 1. IMPORT SERVICE ONESIGNAL
+import '../../data/services/onesignal_service.dart';
+
 class ProfileController extends ChangeNotifier {
   bool isLoggingOut = false;
   bool isLoadingProfile = false;
 
   String? _cachedName;
   String? _cachedEmail;
+
+  // 2. BUAT INSTANCE ONESIGNAL SERVICE
+  final OneSignalService _oneSignalService = OneSignalService();
 
   // Getter untuk data yang disimpan
   String? get cachedName => _cachedName;
@@ -52,6 +58,10 @@ class ProfileController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // 3. PANGGIL LOGOUT ONESIGNAL SEBELUM CLEAR DATA
+      // Ini menghapus External ID dari perangkat ini
+      await _oneSignalService.logout();
+
       await SharedPrefs.clear();
       _cachedName = null;
       _cachedEmail = null;
@@ -60,7 +70,9 @@ class ProfileController extends ChangeNotifier {
       notifyListeners();
 
       if (context.mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
       isLoggingOut = false;

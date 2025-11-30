@@ -1,16 +1,16 @@
+// lib/data/services/auth_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../api/api_constant.dart';
 import '../api/api_endpoint.dart';
 import '../../utils/shared_preferences.dart';
 
-// --- IMPORT BARU ---
+// 1. IMPORT SERVICE ONESIGNAL
 import 'onesignal_service.dart';
 
 class AuthService {
-  // --- TAMBAHAN ---
+  // 2. BUAT INSTANCE ONESIGNAL SERVICE
   final OneSignalService _oneSignalService = OneSignalService();
-  // --- AKHIR TAMBAHAN ---
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     final url = Uri.parse(ApiEndpoint.login);
@@ -29,15 +29,19 @@ class AuthService {
         final data = jsonDecode(response.body);
         final token = data['token'];
         final name = data['user']['nama'];
-        final userEmail = data['user']['email'];
+        final userEmail =
+            data['user']['email']; // Pastikan backend mengirim field ini
 
         await SharedPrefs.saveLoginData(
-            token: token, name: name, email: userEmail);
+          token: token,
+          name: name,
+          email: userEmail,
+        );
         await SharedPrefs.debugPrintAll();
 
-        // --- SINKRONISASI ONESIGNAL SAAT LOGIN ---
+        // 3. PANGGIL LOGIN ONESIGNAL SETELAH DATA DISIMPAN
+        // Ini akan mendaftarkan email user sebagai External ID di OneSignal
         await _oneSignalService.login(userEmail);
-        // --- AKHIR SINKRONISASI ---
 
         return {'success': true, 'data': data};
       } else {
@@ -50,7 +54,6 @@ class AuthService {
     }
   }
 
-  // ... sisa kode di file ini tetap sama ...
   Future<Map<String, dynamic>> register(
     String nama,
     String email,
@@ -75,7 +78,7 @@ class AuthService {
       } else {
         return {
           'success': false,
-          'message': body['message'] ?? 'Registrasi gagal'
+          'message': body['message'] ?? 'Registrasi gagal',
         };
       }
     } catch (e) {
@@ -104,7 +107,7 @@ class AuthService {
       } else {
         return {
           'success': false,
-          'message': body['message'] ?? 'Verifikasi OTP gagal'
+          'message': body['message'] ?? 'Verifikasi OTP gagal',
         };
       }
     } catch (e) {
@@ -133,7 +136,7 @@ class AuthService {
       } else {
         return {
           'success': false,
-          'message': body['message'] ?? 'Gagal mengirim ulang OTP'
+          'message': body['message'] ?? 'Gagal mengirim ulang OTP',
         };
       }
     } catch (e) {
@@ -163,7 +166,7 @@ class AuthService {
       } else {
         return {
           'success': false,
-          'message': body['message'] ?? 'Gagal mengirim kode reset password'
+          'message': body['message'] ?? 'Gagal mengirim kode reset password',
         };
       }
     } catch (e) {
@@ -193,7 +196,7 @@ class AuthService {
       } else {
         return {
           'success': false,
-          'message': body['message'] ?? 'Verifikasi OTP gagal'
+          'message': body['message'] ?? 'Verifikasi OTP gagal',
         };
       }
     } catch (e) {
@@ -204,7 +207,10 @@ class AuthService {
 
   // 3. Reset Password (setelah OTP valid)
   Future<Map<String, dynamic>> resetPassword(
-      String email, String otp, String newPassword) async {
+    String email,
+    String otp,
+    String newPassword,
+  ) async {
     final url = Uri.parse(ApiEndpoint.resetPassword);
 
     try {
@@ -228,7 +234,7 @@ class AuthService {
       } else {
         return {
           'success': false,
-          'message': body['message'] ?? 'Reset password gagal'
+          'message': body['message'] ?? 'Reset password gagal',
         };
       }
     } catch (e) {

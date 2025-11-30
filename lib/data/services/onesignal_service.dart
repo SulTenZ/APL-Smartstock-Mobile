@@ -1,4 +1,4 @@
-// lib/data/services/notification_service.dart
+// lib/data/services/onesignal_service.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -15,12 +15,14 @@ class OneSignalService {
 
     if (oneSignalAppId.isEmpty) {
       if (kDebugMode) {
-        print("🔴 [OneSignal] ERROR: ONESIGNAL_APP_ID is not set in .env file.");
+        print(
+          "🔴 [OneSignal] ERROR: ONESIGNAL_APP_ID is not set in .env file.",
+        );
       }
       return;
     }
 
-    // Mengaktifkan log OneSignal untuk debugging
+    // Mengaktifkan log OneSignal untuk debugging (opsional, matikan saat release)
     OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
 
     // Inisialisasi OneSignal SDK
@@ -30,7 +32,7 @@ class OneSignalService {
       print("✅ [OneSignal] Service Initialized with App ID: $oneSignalAppId");
     }
 
-    // Meminta izin notifikasi kepada pengguna (penting untuk iOS)
+    // Meminta izin notifikasi kepada pengguna
     await OneSignal.Notifications.requestPermission(true);
     if (kDebugMode) {
       print("🔔 [OneSignal] Notification permission request sent.");
@@ -39,30 +41,30 @@ class OneSignalService {
     // Menambahkan listener untuk notifikasi yang diklik
     OneSignal.Notifications.addClickListener((event) {
       if (kDebugMode) {
-        print('🖱️ [OneSignal] Notification clicked: ${event.notification}');
+        print(
+          '🖱️ [OneSignal] Notification clicked: ${event.notification.title}',
+        );
         final additionalData = event.notification.additionalData;
         if (additionalData != null) {
           print('📦 [OneSignal] Additional Data: $additionalData');
-          // Di sini Anda bisa menambahkan logika navigasi berdasarkan `type`
-          // final type = additionalData['type'];
-          // final productId = additionalData['productId'];
-          // if (type == 'LOW_STOCK') { ... }
+          // Tambahkan logika navigasi di sini jika diperlukan
+          // GlobalKey<NavigatorState>().currentState?.pushNamed(...)
         }
       }
     });
   }
 
-  /// Menetapkan ID pengguna eksternal (email) setelah login berhasil.
-  /// Ini menghubungkan perangkat dengan user di sistem Anda.
+  /// PENTING: Panggil ini setelah user berhasil Login di aplikasi Anda.
+  /// Ini menghubungkan device ini dengan Email user di server OneSignal.
   Future<void> login(String email) async {
-    // Menetapkan externalUserId
-    OneSignal.login(email);
+    OneSignal.login(email); // External ID set to Email
     if (kDebugMode) {
       print("👤 [OneSignal] User logged in with external ID: $email");
     }
   }
 
-  /// Menghapus ID pengguna eksternal saat logout.
+  /// PENTING: Panggil ini saat user Logout dari aplikasi.
+  /// Ini memutuskan hubungan device dengan user tersebut agar tidak terima notifikasi lagi.
   Future<void> logout() async {
     OneSignal.logout();
     if (kDebugMode) {
