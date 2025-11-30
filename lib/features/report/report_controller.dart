@@ -52,29 +52,37 @@ class ReportController with ChangeNotifier {
     }
   }
 
+  // --- BAGIAN YANG DIPERBAIKI ---
   Future<void> downloadPdf() async {
-    // Untuk membuka link download, kita butuh token.
-    // Cara paling mudah adalah dengan menambahkan token sebagai query parameter.
-    // Mari kita modifikasi sedikit getFinancialSummaryPdfUrl di service.
-    // (Untuk sekarang kita asumsikan backend tidak butuh token di URL)
+    try {
+      // Kita gunakan 'await' karena method di service sekarang mengembalikan Future<String>
+      // Ini akan menyelesaikan error "Future<String> can't be assigned to String"
+      final urlString = await _reportService.getFinancialSummaryPdfUrl(
+        year: _selectedDate.year,
+        month: _selectedDate.month,
+      );
 
-    final urlString = _reportService.getFinancialSummaryPdfUrl(
-      year: _selectedDate.year,
-      month: _selectedDate.month,
-    );
-    
-    final uri = Uri.parse(urlString);
+      final uri = Uri.parse(urlString);
 
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      errorMessage = 'Tidak dapat membuka link download';
+      if (await canLaunchUrl(uri)) {
+        // Mode externalApplication penting agar browser/PDF viewer default yang menangani
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        errorMessage = 'Tidak dapat membuka link download';
+        notifyListeners();
+      }
+    } catch (e) {
+      errorMessage = 'Gagal menyiapkan link download: $e';
       notifyListeners();
     }
   }
 
   String formatCurrency(dynamic value) {
     final number = value is num ? value : num.tryParse(value.toString()) ?? 0;
-    return NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(number);
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(number);
   }
 }
